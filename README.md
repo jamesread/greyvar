@@ -17,7 +17,7 @@ The canonical game stack is the **Go server** and **web client**. Legacy C++ cli
 | `res/` | Textures and tilesets |
 | `world-generator/` | Procedural world generation tool |
 | `tiled-plugins/` | Tiled editor extensions |
-| `site/` | Project website (GitHub Pages) |
+| `site/` | Project website (published to GitHub Pages) |
 | `media/` | Screenshots and marketing assets |
 | `legacy/client/` | Legacy C++ native client |
 | `legacy/engine/` | Legacy boleas C++ engine |
@@ -46,6 +46,8 @@ make tidy   # tidy all Go modules
 make test   # run Go tests
 make datlint
 ```
+
+The project site is deployed from `site/` to https://jamesread.github.io/greyvar/
 
 See component READMEs for more detail:
 
