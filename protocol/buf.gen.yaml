@@ -1,0 +1,7 @@
+version: v2
+plugins: 
+  - remote: buf.build/protocolbuffers/go
+    out: out/go/
+
+  - remote: buf.build/bufbuild/es
+    out: out/js/

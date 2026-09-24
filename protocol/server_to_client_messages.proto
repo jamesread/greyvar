@@ -1,0 +1,166 @@
+syntax = "proto3";
+
+option go_package = "gen/greyvarprotocol";
+
+package greyvarproto;
+
+message ServerUpdate {
+	repeated EntityPosition entityPositions = 2;
+	repeated EntitySpawn entitySpawns = 3;
+	PlayerJoined playerJoined = 4;
+	Tile singleTileChange = 5;
+	Grid grid = 6;
+	ConnectionResponse connectionResponse = 7;
+	repeated EntityDefinition entityDefinitions = 8;
+	repeated EntityStateChange entityStateChanges = 9;
+	repeated int64 entityDespawns = 10;
+	WorldListResponse worldListResponse = 11;
+	ConsoleMessage consoleMessage = 12;
+	HudMessage hudMessage = 13;
+	InventoryUpdate inventoryUpdate = 14;
+}
+
+message EntityPosition {
+	int64 entityId = 1;
+	int32 x = 2; 
+	int32 y = 3;
+}
+
+message EntityStateChange {
+	int64 entityId = 1;
+	string newState = 2;
+}
+
+message EntitySpawn {
+	int64 entityId = 1;
+	int32 x = 2;
+	int32 y = 3;
+	int32 w = 4;
+	int32 h = 5;
+	uint32 primaryColor = 7;
+	string definition = 9;
+	string initialState = 10;
+}
+
+message EntityDefinition {
+	string name = 1;
+	repeated EntityState states = 3;
+	string texture = 4;
+}
+
+message EntityState {
+	string name = 1;
+	repeated int32 frames = 2;
+	// Optional hold duration in milliseconds for each frame (parallel to frames).
+	// A zero or missing entry uses the client's default playback rate for that frame.
+	repeated int32 holds = 3;
+	// Tile-local collision shapes from the entity tileset (same as map tile collision).
+	repeated CollisionRect collision = 4;
+}
+
+message PlayerQuit {
+	int64 playerId = 1;
+}
+
+message PlayerAlreadyHere {
+	int64 playerId = 1; 
+}
+
+message PlayerJoined {
+	string username = 1;
+	int64 entityId = 2;
+}
+
+message PlayerYou {
+	int64 playerId = 1; 
+}
+
+message CollisionRect {
+	float x = 1;
+	float y = 2;
+	float w = 3;
+	float h = 4;
+}
+
+message Tile {
+	uint32 col = 1;
+	uint32 row = 2;
+	string tex = 3;
+	bool flipH = 4;
+	bool flipV = 5;
+	int32 rot = 6;
+	string atlasKey = 7;
+	int32 frameIndex = 8;
+	repeated CollisionRect collision = 9;
+	bool collisionFromTsx = 10;
+}
+
+message Tileset {
+	string key = 1;
+	string image = 2;
+	uint32 tileWidth = 3;
+	uint32 tileHeight = 4;
+	uint32 columns = 5;
+}
+
+message GridLayer {
+	string name = 1;
+	string kind = 2;
+	repeated Tile tiles = 3;
+}
+
+message GridTransition {
+	string fromGridId = 1;
+	int32 scrollDeltaX = 2;
+	int32 scrollDeltaY = 3;
+}
+
+message Grid {
+	string title = 1;
+	repeated Tile tiles = 2;
+	uint32 rowCount = 3;
+	uint32 colCount = 4;
+	string gridId = 5;
+	string worldId = 6;
+	repeated Tileset tilesets = 7;
+	GridTransition transition = 8;
+	repeated GridLayer layers = 9;
+}
+
+message ConnectionResponse {
+	string serverVersion = 1;
+	repeated PlayerAlreadyHere playerAlreadyHere = 5;
+}
+
+message WorldSummary {
+	string worldId = 1;
+	string title = 2;
+	uint32 gridCount = 3;
+	string spawnGrid = 4;
+}
+
+message WorldListResponse {
+	repeated WorldSummary worlds = 1;
+}
+
+message ConsoleMessage {
+	string text = 1;
+}
+
+// On-screen floating prompt (signs, item pickup, etc.). Empty text clears.
+// entityId anchors the box near that entity in world space when non-zero.
+message HudMessage {
+	string text = 1;
+	int64 entityId = 2;
+}
+
+message InventoryItem {
+	string definition = 1;
+	int32 count = 2;
+}
+
+message InventoryUpdate {
+	repeated InventoryItem items = 1;
+}
+
+message NoResponse {}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:textureAttributes xmlns:tns="http://www.example.org/TextureAttributes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.example.org/TextureAttributes TextureAttributes.xsd ">
+	<tns:texture filename="barrier.png" traversable="false" />
+	<tns:texture filename="water.png" traversable="false" />
+</tns:textureAttributes> 
+  

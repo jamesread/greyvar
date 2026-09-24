@@ -1,0 +1,6 @@
+---
+title: cake
+solid: true
+initialState: cakey
+states:
+  cakey: {}

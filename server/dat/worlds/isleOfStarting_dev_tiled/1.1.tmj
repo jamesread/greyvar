@@ -1,0 +1,273 @@
+{ "compressionlevel":-1,
+ "height":16,
+ "infinite":false,
+ "layers":[
+        {
+         "data":[129, 128, 68, 129, 68, 129, 129, 68, 127, 68, 68, 68, 68, 127, 28, 49,
+            128, 129, 129, 68, 127, 68, 129, 68, 129, 68, 68, 68, 68, 68, 68, 69,
+            68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 128, 127, 68, 68, 69,
+            129, 68, 128, 129, 68, 68, 128, 68, 128, 68, 68, 68, 68, 68, 68, 69,
+            68, 128, 68, 128, 68, 68, 68, 68, 129, 68, 128, 68, 68, 68, 68, 28,
+            68, 68, 128, 68, 68, 68, 128, 129, 68, 68, 68, 127, 128, 68, 68, 68,
+            68, 68, 129, 68, 68, 68, 68, 127, 128, 68, 127, 68, 68, 68, 127, 128,
+            68, 68, 68, 68, 127, 128, 68, 68, 128, 68, 68, 68, 129, 127, 68, 68,
+            68, 128, 68, 68, 68, 68, 68, 129, 68, 68, 127, 127, 68, 68, 128, 68,
+            68, 128, 127, 68, 127, 68, 129, 68, 68, 68, 68, 68, 68, 127, 68, 129,
+            68, 128, 129, 129, 129, 68, 68, 68, 68, 127, 68, 128, 68, 128, 68, 68,
+            68, 129, 68, 68, 68, 68, 68, 68, 127, 129, 68, 129, 68, 129, 8, 88,
+            68, 68, 127, 68, 68, 68, 68, 128, 68, 128, 68, 68, 127, 68, 69, 0,
+            9, 68, 127, 128, 68, 127, 128, 129, 68, 68, 127, 68, 68, 68, 69, 0,
+            29, 68, 127, 127, 68, 129, 68, 68, 68, 68, 68, 68, 68, 128, 69, 0,
+            129, 68, 129, 128, 68, 68, 129, 128, 68, 68, 8, 88, 88, 9, 69, 0],
+         "height":16,
+         "id":3,
+         "name":"biome",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":16,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "data":[11, 91, 91, 91, 91, 91, 91, 92, 0, 90, 91, 91, 91, 91, 91, 12,
+            72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 70,
+            72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 70,
+            72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 70,
+            72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90,
+            92, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            45, 45, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            65, 65, 25, 46, 0, 0, 0, 305, 365, 365, 384, 365, 365, 365, 365, 365,
+            65, 65, 65, 66, 0, 0, 0, 346, 0, 0, 366, 0, 0, 0, 53, 54,
+            65, 65, 65, 66, 0, 0, 0, 0, 0, 0, 366, 0, 0, 0, 73, 74,
+            65, 65, 5, 86, 0, 0, 0, 0, 325, 365, 326, 327, 0, 0, 73, 74,
+            65, 65, 25, 45, 46, 0, 0, 0, 0, 0, 346, 0, 0, 0, 73, 74,
+            65, 65, 65, 65, 66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 74,
+            134, 135, 65, 65, 66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 74,
+            154, 155, 65, 5, 86, 0, 0, 0, 0, 0, 0, 53, 54, 54, 35, 74,
+            154, 155, 65, 25, 45, 45, 45, 45, 45, 46, 53, 35, 74, 74, 74, 74],
+         "height":16,
+         "id":5,
+         "name":"terrain",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":16,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":4,
+         "name":"Object Layer 1",
+         "objects":[
+                {
+                 "gid":401,
+                 "height":16,
+                 "id":10,
+                 "name":"",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":112,
+                 "y":128
+                }, 
+                {
+                 "gid":220,
+                 "height":16,
+                 "id":26,
+                 "name":"",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":48,
+                 "y":80
+                }, 
+                {
+                 "gid":199,
+                 "height":16,
+                 "id":27,
+                 "name":"",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":32,
+                 "y":64
+                }, 
+                {
+                 "gid":200,
+                 "height":16,
+                 "id":28,
+                 "name":"",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":48,
+                 "y":64
+                }, 
+                {
+                 "gid":219,
+                 "height":16,
+                 "id":29,
+                 "name":"",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":32,
+                 "y":80
+                }, 
+                {
+                 "gid":417,
+                 "height":15,
+                 "id":35,
+                 "name":"",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":15,
+                 "x":102,
+                 "y":81.25
+                }, 
+                {
+                 "gid":430,
+                 "height":15,
+                 "id":36,
+                 "name":"",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"collision_type",
+                         "type":"string",
+                         "value":"touch"
+                        }, 
+                        {
+                         "name":"msg",
+                         "type":"string",
+                         "value":"Hello there!"
+                        }],
+                 "rotation":0,
+                 "type":"signpost",
+                 "visible":true,
+                 "width":15,
+                 "x":47,
+                 "y":129
+                }, 
+                {
+                 "gid":440,
+                 "height":15,
+                 "id":37,
+                 "name":"",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"pot",
+                 "visible":true,
+                 "width":15,
+                 "x":80,
+                 "y":175.75
+                }, 
+                {
+                 "gid":430,
+                 "height":15,
+                 "id":38,
+                 "name":"",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"collision_type",
+                         "type":"string",
+                         "value":"touch"
+                        }, 
+                        {
+                         "name":"msg",
+                         "type":"string",
+                         "value":"Welcome!"
+                        }],
+                 "rotation":0,
+                 "type":"signpost",
+                 "visible":true,
+                 "width":15,
+                 "x":137.5,
+                 "y":111.25
+                }, 
+                {
+                 "gid":437,
+                 "height":15,
+                 "id":40,
+                 "name":"",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":15,
+                 "x":144,
+                 "y":144
+                }, 
+                {
+                 "gid":442,
+                 "height":15,
+                 "id":41,
+                 "name":"",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"teleport_destination",
+                         "type":"string",
+                         "value":"0.0.tmj"
+                        }, 
+                        {
+                         "name":"teleport_world",
+                         "type":"string",
+                         "value":"isleOfDebug_dev_tiled"
+                        }],
+                 "rotation":0,
+                 "type":"teleportPad",
+                 "visible":true,
+                 "width":15,
+                 "x":160,
+                 "y":64
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }],
+ "nextlayerid":6,
+ "nextobjectid":42,
+ "orientation":"orthogonal",
+ "renderorder":"right-down",
+ "tiledversion":"1.12.2",
+ "tileheight":16,
+ "tilesets":[
+        {
+         "firstgid":1,
+         "source":"..\/..\/..\/..\/res\/img\/textures\/tilesets\/grass_terrains.tsx"
+        }, 
+        {
+         "firstgid":401,
+         "source":"..\/..\/entdefs\/gameplay.tsx"
+        }, 
+        {
+         "firstgid":417,
+         "source":"..\/..\/entdefs\/general-entities.tsx"
+        }, 
+        {
+         "firstgid":447,
+         "source":"..\/..\/..\/..\/res\/img\/textures\/entities\/exterior_entities.tsx"
+        }],
+ "tilewidth":16,
+ "type":"map",
+ "version":"1.10",
+ "width":16
+}

@@ -1,0 +1,16 @@
+---
+title: 7segmentDisplay
+solid: true
+initialState: empty
+states:
+  zero: {}
+  one: {}
+  two: {}
+  three: {}
+  four: {}
+  five: {}
+  six: {}
+  seven: {}
+  eight: {}
+  nine: {}
+  empty: {}

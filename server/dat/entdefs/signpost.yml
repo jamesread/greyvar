@@ -1,0 +1,6 @@
+---
+title: signpost
+solid: true
+initialState: signy
+states:
+  signy: {}

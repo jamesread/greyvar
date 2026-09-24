@@ -1,0 +1,186 @@
+{ "compressionlevel":-1,
+ "height":16,
+ "infinite":false,
+ "layers":[
+        {
+         "data":[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 169, 169, 169, 169, 169, 3, 3, 3, 3, 3, 2147483650, 1, 62, 64,
+            63, 63, 44, 83, 43, 63, 63, 63, 63, 63, 63, 64, 2147483652, 3, 82, 43,
+            144, 83, 144, 83, 83, 83, 83, 144, 144, 23, 103, 104, 62, 63, 44, 144,
+            83, 144, 83, 83, 83, 83, 142, 143, 142, 43, 63, 63, 44, 142, 144, 142,
+            83, 83, 83, 83, 143, 83, 83, 83, 83, 83, 83, 144, 144, 83, 143, 143,
+            144, 83, 142, 83, 144, 143, 83, 142, 83, 83, 83, 144, 83, 83, 83, 142,
+            142, 83, 144, 142, 83, 144, 144, 83, 83, 144, 83, 142, 143, 83, 83, 143,
+            23, 24, 83, 143, 83, 83, 83, 83, 83, 83, 83, 143, 83, 83, 83, 143,
+            43, 82, 83, 83, 83, 83, 83, 83, 142, 144, 83, 83, 83, 83, 142, 144,
+            0, 82, 143, 83, 142, 83, 83, 83, 83, 83, 83, 143, 142, 83, 83, 143,
+            0, 82, 142, 142, 83, 143, 83, 83, 83, 83, 83, 83, 83, 83, 144, 23,
+            0, 82, 83, 83, 83, 143, 83, 83, 143, 83, 83, 142, 143, 83, 143, 84,
+            0, 82, 83, 83, 83, 143, 83, 143, 142, 83, 142, 143, 83, 83, 143, 84,
+            0, 102, 103, 24, 143, 144, 83, 144, 142, 143, 83, 142, 83, 143, 23, 104,
+            0, 0, 0, 102, 103, 24, 144, 143, 142, 142, 23, 103, 103, 103, 104, 0],
+         "height":16,
+         "id":3,
+         "name":"biome",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":16,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "data":[0, 0, 0, 59, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+            60, 60, 60, 41, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80,
+            80, 80, 20, 21, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80,
+            100, 21, 40, 41, 80, 80, 80, 80, 80, 80, 80, 80, 80, 20, 100, 100,
+            60, 41, 20, 100, 100, 100, 100, 100, 100, 100, 21, 80, 80, 81, 62, 64,
+            100, 100, 101, 0, 0, 0, 0, 0, 0, 0, 99, 100, 100, 101, 102, 104,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 65, 67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            66, 66, 47, 87, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            86, 86, 26, 107, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            86, 86, 87, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            86, 86, 87, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 65, 66,
+            86, 86, 87, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86,
+            86, 86, 46, 66, 67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86,
+            86, 86, 86, 86, 46, 66, 66, 67, 0, 65, 66, 66, 66, 66, 47, 86,
+            86, 86, 86, 86, 86, 86, 86, 87, 0, 85, 86, 86, 86, 86, 86, 86],
+         "height":16,
+         "id":6,
+         "name":"terrain",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":16,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":4,
+         "name":"Object Layer 1",
+         "objects":[],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }],
+ "nextlayerid":7,
+ "nextobjectid":1,
+ "orientation":"orthogonal",
+ "renderorder":"right-down",
+ "tiledversion":"1.12.2",
+ "tileheight":16,
+ "tilesets":[
+        {
+         "columns":15,
+         "firstgid":1,
+         "margin":0,
+         "name":"export",
+         "spacing":0,
+         "tilecount":15,
+         "tileheight":16,
+         "tiles":[
+                {
+                 "id":0,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/water.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":1,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/waterSandCornerInverse.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":2,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/waterSand.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":3,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/waterSandCorner.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":4,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/sand.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":5,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/sandyGrass.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":6,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grass.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":7,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassMudCorner.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":8,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassMud.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":9,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassMudCornerInside.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":10,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/mud.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":11,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/dirtHillsideDarkGrass.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":12,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/dirtHillsideCornerDarkOpposite.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":13,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/hill.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":14,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/dirtHillsideDarkCornerInsideSmall.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }],
+         "tilewidth":16
+        }, 
+        {
+         "firstgid":16,
+         "source":"..\/..\/..\/..\/res\/img\/textures\/tilesets\/grass_terrains.tsx"
+        }],
+ "tilewidth":16,
+ "type":"map",
+ "version":"1.10",
+ "width":16
+}

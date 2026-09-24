@@ -1,0 +1,6 @@
+---
+title: pot
+solid: true
+initialState: potlike
+states:
+  potlike: {}

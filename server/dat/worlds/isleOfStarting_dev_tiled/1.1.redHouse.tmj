@@ -1,0 +1,98 @@
+{ "compressionlevel":-1,
+ "height":16,
+ "infinite":false,
+ "layers":[
+        {
+         "data":[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 38, 39, 39, 39, 39, 39, 39, 39, 39, 40, 1, 1, 1,
+            1, 1, 1, 47, 48, 48, 48, 48, 48, 48, 24, 25, 49, 1, 1, 1,
+            1, 1, 1, 47, 48, 48, 48, 48, 48, 48, 48, 48, 49, 1, 1, 1,
+            1, 1, 1, 47, 48, 48, 48, 48, 48, 48, 48, 48, 49, 1, 1, 1,
+            1, 1, 1, 47, 48, 48, 48, 48, 48, 48, 48, 48, 49, 1, 1, 1,
+            1, 1, 1, 47, 48, 48, 48, 48, 48, 48, 48, 48, 49, 1, 1, 1,
+            1, 1, 1, 56, 57, 57, 57, 57, 57, 57, 57, 57, 58, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+         "height":16,
+         "id":3,
+         "name":"Tile Layer 1",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":16,
+         "x":0,
+         "y":0
+        }],
+ "nextlayerid":5,
+ "nextobjectid":1,
+ "orientation":"orthogonal",
+ "renderorder":"right-down",
+ "tiledversion":"1.12.2",
+ "tileheight":16,
+ "tilesets":[
+        {
+         "columns":7,
+         "firstgid":1,
+         "margin":0,
+         "name":"export",
+         "spacing":0,
+         "tilecount":7,
+         "tileheight":16,
+         "tiles":[
+                {
+                 "id":0,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/black.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":1,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/stoneCastleCornder.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":2,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/castleInternalWall.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":3,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/stone.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":4,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/castleSofa.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":5,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/stonePotBottom.png"
+                }, 
+                {
+                 "id":6,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/stoneCastleDoor.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }],
+         "tilewidth":16
+        }, 
+        {
+         "firstgid":8,
+         "source":"..\/..\/..\/..\/res\/img\/textures\/tilesets\/interior.tsx"
+        }],
+ "tilewidth":16,
+ "type":"map",
+ "version":"1.10",
+ "width":16
+}

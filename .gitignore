@@ -1,0 +1,45 @@
+# Binaries
+/greyvar-server
+/server/greyvar-server
+/datlint/greyvar-datlint
+/dat-editor/greyvar-dat-editor
+/world-generator/world-generator
+
+# Go
+*.test
+*.out
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Build artifacts
+/legacy/client/CMakeFiles/
+/legacy/client/CMakeCache.txt
+/legacy/client/cmake_install.cmake
+/legacy/client/compile_commands.json
+/legacy/client/Makefile
+/legacy/client/bin/
+/legacy/editor/target/
+/protocol/out/
+/tmp/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Certs (generated locally)
+/server/*.key
+/server/*.crt
+/server/*.csr
+/server/ca.*
+
+# Tiled session state
+*.tiled-session
+
+# Env
+.env
+.env.*

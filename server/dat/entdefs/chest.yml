@@ -1,0 +1,7 @@
+---
+title: chest
+solid: true
+initialState: closed
+states:
+  closed: {}
+  open: {}

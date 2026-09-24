@@ -1,0 +1,109 @@
+Greyvar
+=======
+
+Tagline (in development) 
+------------------------
+
+Collaborate to escape puzzle worlds.
+
+Other ideas; 
+    Escape-room style puzzles
+    Navigate puzzle worlds 
+    Cooperatively solve puzzle islands 
+    
+Short description: A casual pace multiplayer co-op puzzle game. Weird and
+wonderful worlds of puzzles that include quests, logic puzzles, tower defence, 
+building, farming, and exploration in a 8-bit art style.  
+
+Key gameplay design goals;
+--------------------------
+
+1 over-arching quest per world, that can be broken into many mini-quests
+Flexible game engine controlled on the server that can support mini quests like;
+    Tower defence-style quests:
+        eg: flow this river away from village
+        eg: 
+    Building buildings, helping with construction, expand a village
+        Farming/mining for resources
+        Crafting is fun and easy to implement
+    "Teleportation" between grids to move resources around
+
+Some sort of "reward" for completing worlds. Achievement points. XP. 
+    Support team leaderboards?
+
+Favor collaboration over competition
+Cross platform multiplayer; with sofa & controller gameplay, mobile AND desktop PC
+
+hand-crafted puzzles/worlds can be made with the map editor. Promote
+user-designed content.
+
+NPCs
+    Should be fairly dumb and generic.  Avoid quest-givers/recivers type of
+    NPCs. Fixed dialog possible, etc.
+
+Stretch goals;
+--------------
+
+Server-side puzzle/world generation with AI :)
+    Pro: Unlimited content. How to avoid the No Mans Sky problem.
+Single-player offline mini-quests should be possible
+
+Avoid;
+------
+
+No combat
+Timed puzzles and time trials suck. Promote using brains instead of reflexes.
+
+Structure
+---------
+
+Worlds
+- Have a theme/style: temperate, desert, snow
+- Islands would be cool. Varying sizes. Makes the edge of the world easyier,
+  clean.
+
+Worlds contain multiple grids
+    "Screens"
+
+Inspiration;
+------------
+
+Portal 2 - innovative puzzle games. Coop didn't really take off though?
+
+Mario Maker - Huge corpus of user-generated content. 
+
+Pokemon Gen 1 - Just love how simple the graphics where. 
+
+Zelda - Some good long-term puzzles. The RPG is fun, pretty linear. No multiplayer. 
+
+Why would people play this game?
+--------------------------------
+
+- Enjoy puzzle/co-op/casual games
+
+- Multiplayer puzzle games, especially co-op is an under-represented market. 
+
+- Want a good party-game
+
+Why should I make this game?
+-----------------------------
+
+I want a good co-op game that I can play cross platform.
+
+I feel like building a game engine like this would be a fun technical
+challenge.
+
+I like ambitious projects. 
+
+On being open source;
+---------------------
+
+Why?
+
+- Open the game-development process and make it transparent from early days.
+
+- So others can learn from the game engine. Developing in the open is just
+  nice too.
+
+- Maybe sell binary distributions of the game later on, via Steam and
+  AppStores. Profit/revenue isn't even remotely an objective of this game.

@@ -1,0 +1,12 @@
+CMakeFiles
+CMakeCache.txt
+**/bin
+**/*.swp
+**/*.swo
+Makefile
+cmake_install.cmake
+.buildid
+pkg
+*.pc
+install_manifest.txt
+compile_commands.json

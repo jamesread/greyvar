@@ -1,0 +1,27 @@
+<project name = "Greyvar-client" default = "package">
+    <target name = "package" depends = "package-zip" />
+
+	<exec outputproperty = "version" executable = "buildid">
+		<arg line = "-k tag" />
+	</exec>
+    
+    <target name = "package-zip">  
+           <zip destfile = "pkg/Greyvar-${version}.zip"> 
+            <zipfileset prefix = "greyvar-${version}" dir = "bin" />  
+
+			<zipfileset dir = "./" prefix = "greyvar-${version}">
+            	 <include name = "res/**" /> 
+            </zipfileset>
+           	
+           	<zipfileset dir = "./var/windowsLibs/" prefix = "greyvar-${version}">
+				<include name = "**" />
+			</zipfileset>
+           	
+           	<zipfileset dir = "./" prefix = "greyvar-${version}">
+           	    <include name = "etc/" />
+           	    <include name = "doc/" />
+           	</zipfileset>
+
+           </zip>
+    </target> 
+</project>

@@ -1,0 +1,13 @@
+---
+title: player
+initialState: idle
+states:
+  idle: {}
+  walkLeft: {}
+  walkRight: {}
+  walkUp: {}
+  walkDown: {}
+  walkUpLeft: {}
+  walkUpRight: {}
+  walkDownLeft: {}
+  walkDownRight: {}

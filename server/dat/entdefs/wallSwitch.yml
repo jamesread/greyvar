@@ -1,0 +1,7 @@
+---
+title: wallSwitch
+solid: true
+initialState: flickedLeft
+states:
+  flickedLeft: {}
+  flickedRight: {}

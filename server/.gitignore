@@ -1,0 +1,12 @@
+/greyvar-server
+tmp/
+*.pyc
+**/*.swp
+**/*.swo
+**/*.directory
+gen
+/go.work
+greyvar.crt
+greyvar.csr
+greyvar.key
+protocol

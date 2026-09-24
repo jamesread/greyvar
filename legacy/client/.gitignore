@@ -1,0 +1,15 @@
+**/*.pyc
+CMakeFiles
+CMakeCache.txt
+pkg
+bin
+Makefile
+cmake_install.cmake
+**/*.swp
+**/*.swo
+**/*.directory
+**/*.out
+doc/doxygen
+rpt/**
+compile_commands.json
+**/greyvar-qml-launcher_autogen/**

@@ -1,0 +1,6 @@
+---
+title: pressureButton
+initialState: unpressed
+states:
+  unpressed: {}
+  pressed: {}

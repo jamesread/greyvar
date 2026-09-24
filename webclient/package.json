@@ -1,0 +1,30 @@
+{
+  "name": "greyvar-webgl",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "dependencies": {
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "parcel": "2.16.4",
+    "phaser": "^4.2.1",
+    "protobufjs": "^8.7.1",
+    "vite": "^8.2.1"
+  },
+  "devDependencies": {
+    "@parcel/transformer-pug": "^2.16.4",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "buffer": "^6.0.3",
+    "puppeteer-core": "^25.5.0",
+    "unplugin-vue-components": "^32.1.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "jamesread",
+  "license": "ISC",
+  "browserslist": [
+    "since 2022"
+  ]
+}

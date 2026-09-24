@@ -1,0 +1,8 @@
+build
+dist/
+res
+.cache
+node_modules
+**/*.swp
+**/*.swo
+.parcel-cache

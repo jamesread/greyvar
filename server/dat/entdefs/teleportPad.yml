@@ -1,0 +1,6 @@
+---
+title: teleportPad
+solid: false
+initialState: idle
+states:
+  idle: {}

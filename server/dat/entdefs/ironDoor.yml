@@ -1,0 +1,6 @@
+---
+title: ironDoor
+solid: true
+initialState: closed
+states:
+  closed: {}

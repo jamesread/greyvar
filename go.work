@@ -1,0 +1,9 @@
+go 1.25.0
+
+use (
+	./dat-editor
+	./datlib
+	./datlint
+	./server
+	./world-generator
+)

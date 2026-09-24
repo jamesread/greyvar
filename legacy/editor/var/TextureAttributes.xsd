@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/TextureAttributes" xmlns:tns="http://www.example.org/TextureAttributes" elementFormDefault="qualified">
+
+
+    <complexType name="texture">
+    	<attribute name="filename" type="string" use="required"></attribute>
+    	<attribute name="traversable" type="boolean" use="optional"></attribute>
+    </complexType>
+
+
+    <element name="textureAttributes" type="tns:textureAttributes"></element>
+    
+    <complexType name="textureAttributes">
+    	<sequence maxOccurs="unbounded" minOccurs="1">
+    		<element name="texture" type="tns:texture"></element>
+    	</sequence>
+    </complexType>
+
+    <element name="texture" type="tns:texture"></element>
+</schema>

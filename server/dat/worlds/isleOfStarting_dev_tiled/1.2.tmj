@@ -1,0 +1,338 @@
+{ "compressionlevel":-1,
+ "height":16,
+ "infinite":false,
+ "layers":[
+        {
+         "data":[67, 66, 86, 86, 86, 86, 86, 86, 86, 86, 86, 67, 66, 86, 67, 66,
+            106, 167, 106, 166, 167, 106, 106, 167, 166, 166, 167, 106, 106, 106, 167, 106,
+            106, 106, 167, 106, 106, 106, 165, 165, 106, 106, 106, 167, 106, 106, 106, 165,
+            106, 167, 106, 165, 106, 166, 167, 106, 166, 106, 106, 166, 106, 167, 106, 46,
+            166, 106, 106, 106, 106, 106, 106, 166, 106, 167, 106, 167, 106, 166, 106, 107,
+            106, 106, 167, 106, 166, 165, 166, 106, 106, 166, 165, 106, 106, 166, 106, 107,
+            106, 106, 166, 106, 106, 106, 106, 106, 106, 106, 106, 106, 106, 106, 166, 107,
+            165, 166, 106, 165, 106, 106, 106, 166, 106, 106, 106, 165, 106, 106, 106, 107,
+            167, 106, 166, 106, 167, 167, 166, 106, 167, 106, 106, 106, 106, 167, 106, 107,
+            106, 106, 106, 46, 47, 106, 106, 106, 167, 106, 165, 106, 106, 167, 166, 107,
+            165, 106, 106, 107, 125, 126, 47, 165, 166, 106, 106, 106, 166, 106, 166, 107,
+            126, 47, 106, 66, 86, 86, 67, 167, 167, 165, 106, 106, 106, 165, 106, 107,
+            0, 105, 106, 166, 167, 106, 106, 106, 106, 106, 167, 106, 165, 167, 106, 66,
+            0, 125, 126, 47, 167, 167, 167, 106, 46, 126, 47, 106, 46, 126, 126, 126,
+            0, 0, 0, 125, 126, 126, 126, 126, 127, 0, 125, 126, 127, 0, 0, 0,
+            1610612774, 2147483679, 2147483679, 2147483679, 2147483679, 2147483679, 2147483679, 2147483679, 0, 0, 0, 0, 0, 0, 0, 0],
+         "height":16,
+         "id":3,
+         "name":"biome",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":16,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "data":[49, 129, 129, 129, 129, 129, 129, 129, 129, 129, 129, 130, 102, 103, 103, 103,
+            110, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 122, 123, 123, 123,
+            110, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91,
+            110, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111,
+            130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111,
+            403, 403, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111,
+            92, 92, 92, 92, 92, 92, 93, 0, 0, 0, 0, 0, 0, 0, 0, 111,
+            112, 112, 112, 112, 112, 112, 113, 0, 0, 0, 0, 0, 0, 0, 0, 111,
+            112, 112, 112, 112, 112, 112, 113, 0, 0, 0, 0, 0, 0, 0, 0, 111,
+            112, 112, 112, 112, 112, 112, 72, 92, 93, 0, 0, 0, 0, 0, 0, 111,
+            112, 112, 112, 112, 112, 112, 112, 112, 113, 0, 0, 0, 0, 0, 0, 111,
+            112, 112, 112, 112, 112, 112, 112, 112, 72, 92, 92, 92, 92, 92, 92, 73,
+            112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+            112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112],
+         "height":16,
+         "id":5,
+         "name":"terrain",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":16,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":4,
+         "name":"Object Layer 1",
+         "objects":[
+                {
+                 "height":16,
+                 "id":1,
+                 "name":"",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"chest",
+                 "visible":true,
+                 "width":16,
+                 "x":152,
+                 "y":120
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }],
+ "nextlayerid":6,
+ "nextobjectid":2,
+ "orientation":"orthogonal",
+ "renderorder":"right-down",
+ "tiledversion":"1.12.2",
+ "tileheight":16,
+ "tilesets":[
+        {
+         "columns":38,
+         "firstgid":1,
+         "margin":0,
+         "name":"export",
+         "spacing":0,
+         "tilecount":38,
+         "tileheight":16,
+         "tiles":[
+                {
+                 "id":0,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/dirtHillsideDarkCornerInside.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":1,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/dirtHillsideDark.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":2,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/dirtHillsideCornerDark.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":3,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grass.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":4,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassTree1Tl.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":5,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassTree1Tr.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":6,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/dirtHillsideDarkGrass.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":7,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassWaterCorner.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":8,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassWaterTop.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":9,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassTree1Bl.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":10,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassTree1Br.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":11,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassWaterSide.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":12,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/water.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":13,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassWaterCornerBottom.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":14,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassFlowerRed.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":15,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassWaterCornerNocliff.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                },
+            
+                {
+                 "id":16,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/houseRoofCornerRed.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":17,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/houseRoofRed.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":18,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/houseSide.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":19,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/houseWindows.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":20,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/houseWallPlain.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":21,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/houseWindowsTop.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":22,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/houseCorner.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":23,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/houseBottom.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":24,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/houseDoor.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":25,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassPathEnd.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":26,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassPath.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":27,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassPathCorner.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":28,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/wallSideCornerTop.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":29,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassPathT.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":30,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/wallSideTop.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":31,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassFlowerPurple.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                },
+            
+                {
+                 "id":32,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/houseRoofCornerBlue.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":33,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/houseRoofBlue.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":34,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/grassWaterCornerInverse.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":35,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/houseRoofBottom.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":36,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/houseRoofBottomMiddle.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }, 
+                {
+                 "id":37,
+                 "image":"..\/..\/..\/..\/res\/img\/textures\/tiles\/wallTJunction.png",
+                 "imageheight":16,
+                 "imagewidth":16
+                }],
+         "tilewidth":16
+        }, 
+        {
+         "firstgid":39,
+         "source":"..\/..\/..\/..\/res\/img\/textures\/tilesets\/grass_terrains.tsx"
+        }],
+ "tilewidth":16,
+ "type":"map",
+ "version":"1.10",
+ "width":16
+}

@@ -1,0 +1,5 @@
+---
+title: flowers
+initialState: wiggle
+states:
+  wiggle: {}

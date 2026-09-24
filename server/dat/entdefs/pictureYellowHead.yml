@@ -1,0 +1,6 @@
+---
+title: pictureHead
+solid: true
+initialState: yellow
+states:
+  yellow: {}
