@@ -1,20 +1,16 @@
 package gridfiles
 
 import (
-	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/jamesread/greyvar/datlib/tiled"
 )
 
-func TestReadGridTMJ(t *testing.T) {
-	datDir := os.Getenv("GREYVAR_DAT_DIR")
-	if datDir == "" {
-		datDir = filepath.Clean("../../server/dat")
-	}
+// Fixtures live in worldfiles/testdata so the tests don't depend on live
+// world content under server/dat, which designers edit freely.
+const fixtureWorldDir = "../worldfiles/testdata/dat/worlds/tiledWorld_dev"
 
-	path := filepath.Join(datDir, "worlds/startWorldTmj/ow-p01-n01-o0000.tmj")
+func TestReadGridTMJ(t *testing.T) {
+	path := filepath.Join(fixtureWorldDir, "0.0.tmj")
 	grid, err := ReadGridTMJ(path)
 	if err != nil {
 		t.Fatalf("ReadGridTMJ: %v", err)
@@ -26,23 +22,6 @@ func TestReadGridTMJ(t *testing.T) {
 
 	if grid.Tiles[0][0] == nil || grid.Tiles[0][0].Texture == "" {
 		t.Fatalf("expected populated tile at 0,0")
-	}
-
-	grassTSX := filepath.Clean(filepath.Join(filepath.Dir(path), "../../../../res/img/textures/tilesets/grass.tsx"))
-	if _, err := os.Stat(grassTSX); err != nil {
-		// Missing external tilesets must not hard-fail the map load.
-		foundFallback := false
-		for _, pos := range grid.CellIterator() {
-			tile := grid.Tiles[pos.Row][pos.Col]
-			if tile != nil && tile.Texture == tiled.DefaultTexture {
-				foundFallback = true
-				break
-			}
-		}
-		if !foundFallback {
-			t.Fatalf("expected some tiles to use fallback texture %q when grass.tsx is missing", tiled.DefaultTexture)
-		}
-		return
 	}
 
 	if len(grid.Entities) == 0 {
@@ -98,17 +77,12 @@ func TestReadGridTMJ(t *testing.T) {
 	}
 
 	if !foundTV {
-		t.Fatalf("expected tv entity from gid 403")
+		t.Fatalf("expected tv entity from tile object gid")
 	}
 }
 
 func TestReadGridTMJSpawnPoints(t *testing.T) {
-	datDir := os.Getenv("GREYVAR_DAT_DIR")
-	if datDir == "" {
-		datDir = filepath.Clean("../../server/dat")
-	}
-
-	path := filepath.Join(datDir, "worlds/isleOfStarting_dev_tiled/1.1.tmj")
+	path := filepath.Join(fixtureWorldDir, "0.1.tmj")
 	grid, err := ReadGridTMJ(path)
 	if err != nil {
 		t.Fatalf("ReadGridTMJ: %v", err)
@@ -136,7 +110,10 @@ func TestReadGridTMJSpawnPoints(t *testing.T) {
 			}
 		}
 	}
-	if hiddenSpawn != nil && !hiddenSpawn.Hidden {
+	if hiddenSpawn == nil {
+		t.Fatalf("expected gameplay spawn tile on the markers layer")
+	}
+	if !hiddenSpawn.Hidden {
 		t.Fatalf("expected gameplay spawn tile to be hidden when placed on a layer")
 	}
 
@@ -172,12 +149,7 @@ func TestObjectVisibleDefaultsTrue(t *testing.T) {
 }
 
 func TestReadGridDispatch(t *testing.T) {
-	datDir := os.Getenv("GREYVAR_DAT_DIR")
-	if datDir == "" {
-		datDir = filepath.Clean("../../server/dat")
-	}
-
-	tmjPath := filepath.Join(datDir, "worlds/startWorldTmj/ow-p01-n01-o0000.tmj")
+	tmjPath := filepath.Join(fixtureWorldDir, "0.0.tmj")
 	if _, err := ReadGrid(tmjPath); err != nil {
 		t.Fatalf("ReadGrid tmj dispatch: %v", err)
 	}

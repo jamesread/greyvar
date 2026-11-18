@@ -1,0 +1,42 @@
+{
+ "type": "world",
+ "onlyShowAdjacentMaps": false,
+ "maps": [
+  {
+   "fileName": "0.0.tmj",
+   "width": 256,
+   "height": 256,
+   "x": 0,
+   "y": 0
+  },
+  {
+   "fileName": "0.1.tmj",
+   "width": 256,
+   "height": 256,
+   "x": 256,
+   "y": 0
+  }
+ ],
+ "properties": [
+  {
+   "name": "title",
+   "type": "string",
+   "value": "Tiled Fixture World"
+  },
+  {
+   "name": "author",
+   "type": "string",
+   "value": "test"
+  },
+  {
+   "name": "spawnGrid",
+   "type": "string",
+   "value": "0.0.tmj"
+  },
+  {
+   "name": "foo",
+   "type": "string",
+   "value": "bar"
+  }
+ ]
+}

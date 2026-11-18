@@ -18,11 +18,14 @@ type tmjDoc struct {
 }
 
 type tmjTilesetRef struct {
-	Source string `json:"source"`
+	FirstGID uint32 `json:"firstgid"`
+	Source   string `json:"source"`
 }
 
 type tmjLayer struct {
 	Type    string         `json:"type"`
+	Name    string         `json:"name"`
+	Data    []uint32       `json:"data"`
 	Objects []tmjMapObject `json:"objects"`
 }
 
@@ -138,9 +141,105 @@ func CheckTileset(path string) Check {
 	}
 	if err != nil {
 		check.AddError(err.Error())
+		return check
 	}
 
+	addStaleWangIssues(&check, path)
+
 	return check
+}
+
+// addStaleWangIssues warns about terrain (wang) tags on tiles that are fully
+// transparent in the tileset image, usually left behind by an image edit.
+func addStaleWangIssues(check *Check, path string) {
+	blank, err := blankTilesCached(path)
+	if err != nil || len(blank) == 0 {
+		return
+	}
+
+	sets, err := tiled.LoadWangSets(path)
+	if err != nil {
+		check.AddWarning(fmt.Sprintf("read wangsets: %v", err))
+		return
+	}
+
+	for _, ws := range sets {
+		var stale []int
+		for _, t := range ws.Tiles {
+			if blank[t.TileID] {
+				stale = append(stale, t.TileID)
+			}
+		}
+		if len(stale) > 0 {
+			sort.Ints(stale)
+			check.AddWarning(fmt.Sprintf("wangset %q tags tiles that are blank in the image: %v", ws.Name, stale))
+		}
+	}
+}
+
+var blankTilesByTileset = map[string]map[int]bool{}
+
+// blankTilesCached returns tiled.BlankTiles for a .tsx, caching per path.
+// Tilesets without a single atlas image yield no blank tiles.
+func blankTilesCached(path string) (map[int]bool, error) {
+	if blank, ok := blankTilesByTileset[path]; ok {
+		return blank, nil
+	}
+	blank, err := tiled.BlankTiles(path)
+	if err != nil {
+		blank = nil
+	}
+	blankTilesByTileset[path] = blank
+	return blank, err
+}
+
+// addBlankTileUseIssues warns when a map draws tiles that are fully
+// transparent in their tileset image (they render as nothing).
+func addBlankTileUseIssues(check *Check, mapDir string, doc tmjDoc) {
+	type tilesetRange struct {
+		first  uint32
+		source string
+		blank  map[int]bool
+	}
+
+	var ranges []tilesetRange
+	for _, ref := range doc.Tilesets {
+		source := strings.TrimSpace(ref.Source)
+		if source == "" || ref.FirstGID == 0 {
+			continue
+		}
+		resolved := filepath.Clean(filepath.Join(mapDir, filepath.FromSlash(source)))
+		blank, _ := blankTilesCached(resolved)
+		ranges = append(ranges, tilesetRange{first: ref.FirstGID, source: source, blank: blank})
+	}
+	if len(ranges) == 0 {
+		return
+	}
+	sort.Slice(ranges, func(i, j int) bool { return ranges[i].first < ranges[j].first })
+
+	for _, layer := range doc.Layers {
+		if layer.Type != "tilelayer" {
+			continue
+		}
+		counts := map[string]int{}
+		for _, raw := range layer.Data {
+			gid := tiled.DecodeGID(raw).ID
+			if gid == 0 {
+				continue
+			}
+			for i := len(ranges) - 1; i >= 0; i-- {
+				if gid >= ranges[i].first {
+					if ranges[i].blank[int(gid-ranges[i].first)] {
+						counts[ranges[i].source]++
+					}
+					break
+				}
+			}
+		}
+		for source, n := range counts {
+			check.AddWarning(fmt.Sprintf("layer %q draws %d cells with tiles that are blank in %s", layer.Name, n, filepath.Base(source)))
+		}
+	}
 }
 
 // CheckTMJFile loads one .tmj map and validates refs / entdefs.
@@ -170,6 +269,8 @@ func CheckTMJFile(path string, entdefNames map[string]struct{}) Check {
 			check.AddError(fmt.Sprintf("missing tileset %q", source))
 		}
 	}
+
+	addBlankTileUseIssues(&check, mapDir, doc)
 
 	for _, layer := range doc.Layers {
 		if layer.Type != "objectgroup" {

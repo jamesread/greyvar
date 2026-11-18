@@ -2,3 +2,4 @@
 **/*.swo
 /worldgen
 tmp/
+/world-generator

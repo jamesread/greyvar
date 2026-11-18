@@ -1,0 +1,56 @@
+{
+ "type": "world",
+ "maps": [
+  {
+   "fileName": "0.0.tmj",
+   "width": 256,
+   "height": 256,
+   "x": 0,
+   "y": 0
+  },
+  {
+   "fileName": "0.1.tmj",
+   "width": 256,
+   "height": 256,
+   "x": 256,
+   "y": 0
+  },
+  {
+   "fileName": "1.0.tmj",
+   "width": 256,
+   "height": 256,
+   "x": 0,
+   "y": 256
+  },
+  {
+   "fileName": "1.1.tmj",
+   "width": 256,
+   "height": 256,
+   "x": 256,
+   "y": 256
+  }
+ ],
+ "onlyShowAdjacentMaps": false,
+ "properties": [
+  {
+   "name": "author",
+   "type": "string",
+   "value": "world-generator"
+  },
+  {
+   "name": "title",
+   "type": "string",
+   "value": "generated"
+  },
+  {
+   "name": "spawnGrid",
+   "type": "string",
+   "value": "1.1.tmj"
+  },
+  {
+   "name": "seed",
+   "type": "string",
+   "value": "1347"
+  }
+ ]
+}

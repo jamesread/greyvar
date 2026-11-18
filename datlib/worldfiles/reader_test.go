@@ -5,15 +5,6 @@ import (
 	"testing"
 )
 
-func serverDatDir(t *testing.T) string {
-	t.Helper()
-	abs, err := filepath.Abs("../../server/dat")
-	if err != nil {
-		t.Fatalf("resolve server dat dir: %v", err)
-	}
-	return abs
-}
-
 func fixtureDatDir(t *testing.T) string {
 	t.Helper()
 	abs, err := filepath.Abs("testdata/dat")
@@ -45,9 +36,9 @@ func TestLoadWorldYAML(t *testing.T) {
 }
 
 func TestLoadWorldTiled(t *testing.T) {
-	t.Setenv("GREYVAR_DAT_DIR", serverDatDir(t))
+	t.Setenv("GREYVAR_DAT_DIR", fixtureDatDir(t))
 
-	world, err := LoadWorld("startWorldTmj")
+	world, err := LoadWorld("tiledWorld_dev")
 	if err != nil {
 		t.Fatalf("LoadWorld tiled: %v", err)
 	}
@@ -64,8 +55,12 @@ func TestLoadWorldTiled(t *testing.T) {
 		t.Fatalf("expected 2 loaded tmj grids, got %d", len(world.Grids))
 	}
 
-	if _, ok := world.Grids["ow-p01-n01-o0000.tmj"]; !ok {
-		t.Fatalf("expected ow-p01-n01-o0000.tmj grid")
+	if _, ok := world.Grids["0.1.tmj"]; !ok {
+		t.Fatalf("expected 0.1.tmj grid")
+	}
+
+	if world.SpawnGrid != "0.0.tmj" {
+		t.Fatalf("expected spawn grid 0.0.tmj, got %q", world.SpawnGrid)
 	}
 
 	if world.Definition.Properties["foo"] != "bar" {
@@ -74,7 +69,7 @@ func TestLoadWorldTiled(t *testing.T) {
 }
 
 func TestListWorldsIncludesTiledWorld(t *testing.T) {
-	t.Setenv("GREYVAR_DAT_DIR", serverDatDir(t))
+	t.Setenv("GREYVAR_DAT_DIR", fixtureDatDir(t))
 
 	worlds, err := ListWorlds()
 	if err != nil {
@@ -83,7 +78,7 @@ func TestListWorldsIncludesTiledWorld(t *testing.T) {
 
 	found := false
 	for _, summary := range worlds {
-		if summary.ID == "startWorldTmj" {
+		if summary.ID == "tiledWorld_dev" {
 			found = true
 			if summary.Format != "tiled-world" {
 				t.Fatalf("expected tiled-world format in summary")
@@ -95,6 +90,6 @@ func TestListWorldsIncludesTiledWorld(t *testing.T) {
 	}
 
 	if !found {
-		t.Fatalf("expected startWorldTmj in world list")
+		t.Fatalf("expected tiledWorld_dev in world list")
 	}
 }

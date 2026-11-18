@@ -644,18 +644,6 @@
    <wangtile tileid="100" wangid="0,1,0,1,0,1,0,1"/>
    <wangtile tileid="101" wangid="0,1,0,1,0,1,0,1"/>
    <wangtile tileid="102" wangid="0,1,0,1,0,1,0,1"/>
-   <wangtile tileid="103" wangid="0,7,0,7,0,7,0,7"/>
-   <wangtile tileid="104" wangid="0,7,0,7,0,7,0,7"/>
-   <wangtile tileid="105" wangid="0,7,0,7,0,7,0,7"/>
-   <wangtile tileid="106" wangid="0,7,0,7,0,7,0,7"/>
-   <wangtile tileid="115" wangid="0,7,0,7,0,7,0,7"/>
-   <wangtile tileid="116" wangid="0,7,0,7,0,7,0,7"/>
-   <wangtile tileid="117" wangid="0,7,0,7,0,7,0,7"/>
-   <wangtile tileid="118" wangid="0,7,0,7,0,7,0,7"/>
-   <wangtile tileid="121" wangid="0,7,0,7,0,7,0,7"/>
-   <wangtile tileid="122" wangid="0,7,0,7,0,7,0,7"/>
-   <wangtile tileid="123" wangid="0,7,0,7,0,7,0,7"/>
-   <wangtile tileid="124" wangid="0,7,0,7,0,7,0,7"/>
    <wangtile tileid="126" wangid="0,7,0,7,0,7,0,7"/>
    <wangtile tileid="127" wangid="0,7,0,7,0,7,0,7"/>
    <wangtile tileid="128" wangid="0,7,0,7,0,7,0,7"/>
@@ -665,8 +653,6 @@
    <wangtile tileid="132" wangid="0,4,0,5,0,4,0,4"/>
    <wangtile tileid="133" wangid="0,4,0,5,0,5,0,4"/>
    <wangtile tileid="134" wangid="0,4,0,4,0,5,0,4"/>
-   <wangtile tileid="140" wangid="0,7,0,7,0,7,0,7"/>
-   <wangtile tileid="142" wangid="0,7,0,7,0,7,0,7"/>
    <wangtile tileid="149" wangid="0,2,0,2,0,4,0,4"/>
    <wangtile tileid="151" wangid="0,4,0,4,0,2,0,2"/>
    <wangtile tileid="152" wangid="0,5,0,5,0,4,0,4"/>
