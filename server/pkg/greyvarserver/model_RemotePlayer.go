@@ -13,6 +13,8 @@ type InventoryItem struct {
 type RemotePlayer struct {
 	Connection      *websocket.Conn
 	Username        string
+	// key identifies this connection in serverInterface.remotePlayers.
+	key string
 	NeedsGridUpdate bool
 	Spawned         bool
 
@@ -29,6 +31,7 @@ type RemotePlayer struct {
 	KnownRecipes           map[string]bool
 	PendingDespawns        []int64
 	PendingConsoleMessages []string
+	PendingAppearanceChanges []*pb.EntityAppearanceChange
 
 	Inventory              []InventoryItem
 	PendingInventoryUpdate bool

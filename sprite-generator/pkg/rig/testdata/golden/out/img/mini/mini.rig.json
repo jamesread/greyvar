@@ -1,0 +1,151 @@
+{
+  "name": "mini",
+  "frameSize": 16,
+  "columns": 2,
+  "frameCount": 3,
+  "layers": [
+    {
+      "name": "body",
+      "default": "default",
+      "variants": [
+        "default"
+      ],
+      "sheets": {
+        "default": "img/mini/body_default.png"
+      },
+      "slots": [
+        "skin"
+      ]
+    },
+    {
+      "name": "hair",
+      "default": "short",
+      "variants": [
+        "short",
+        "long"
+      ],
+      "sheets": {
+        "long": "img/mini/hair_long.png",
+        "short": "img/mini/hair_short.png"
+      },
+      "slots": [
+        "hair"
+      ]
+    }
+  ],
+  "slotOrder": [
+    "skin",
+    "hair"
+  ],
+  "slots": {
+    "hair": [
+      "#402010",
+      "#603020"
+    ],
+    "skin": [
+      "#c08060",
+      "#e0a080"
+    ]
+  },
+  "palettes": {
+    "hair": {
+      "blonde": [
+        "#c0a040",
+        "#e0c060"
+      ],
+      "brown": [
+        "#402010",
+        "#603020"
+      ]
+    },
+    "skin": {
+      "dark": [
+        "#603020",
+        "#804030"
+      ],
+      "light": [
+        "#c08060",
+        "#e0a080"
+      ]
+    }
+  },
+  "defaults": {
+    "palettes": {
+      "hair": "brown",
+      "skin": "light"
+    },
+    "parts": {
+      "hair": "short"
+    }
+  },
+  "poses": [
+    {
+      "name": "stand",
+      "frame": 0,
+      "hand": [
+        12,
+        10
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe",
+      "frame": 1,
+      "hand": [
+        12,
+        11
+      ],
+      "itemZ": "behind"
+    },
+    {
+      "name": "walk",
+      "frame": 2,
+      "hand": null,
+      "itemZ": "front"
+    }
+  ],
+  "clips": {
+    "idle": [
+      {
+        "pose": "stand",
+        "frame": 0,
+        "ms": 800
+      },
+      {
+        "pose": "breathe",
+        "frame": 1,
+        "ms": 600
+      }
+    ],
+    "walk": [
+      {
+        "pose": "walk",
+        "frame": 2,
+        "ms": 100
+      },
+      {
+        "pose": "stand",
+        "frame": 0,
+        "ms": 100
+      }
+    ]
+  },
+  "idle": {
+    "base": "idle",
+    "variants": [
+      {
+        "clip": "walk",
+        "weight": 1
+      }
+    ],
+    "intervalMs": [
+      1000,
+      2000
+    ]
+  },
+  "states": {
+    "idle": "idle",
+    "walk": "walk"
+  },
+  "initialState": "idle"
+}

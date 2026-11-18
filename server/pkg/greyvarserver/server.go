@@ -1,7 +1,9 @@
 package greyvarserver;
 
 import (
+	"fmt"
 	"os"
+	"sync"
 	"net/http"
 	log "github.com/sirupsen/logrus"
 	"time"
@@ -11,6 +13,7 @@ import (
 	"github.com/jamesread/greyvar/datlib/gridfiles"
 	"github.com/jamesread/greyvar/datlib/itemdefs"
 	"github.com/jamesread/greyvar/datlib/recipes"
+	"github.com/jamesread/greyvar/datlib/rigs"
 	"github.com/jamesread/greyvar/datlib/tiled"
 	"github.com/jamesread/greyvar/server/pkg/worlds"
 	"github.com/fsnotify/fsnotify"
@@ -21,12 +24,20 @@ import (
 )
 
 type serverInterface struct {
+	// mu guards all game state below. The frame loop, websocket connection
+	// goroutines and the grid file watcher all touch it.
+	mu sync.Mutex
+
+	// remotePlayers is keyed by a per-connection id (see playerKey), not by
+	// username, so concurrent or reconnecting clients never overwrite each other.
 	remotePlayers map[string]*RemotePlayer;
 	entityInstances map[int64]*Entity;
 	entityDefinitions map[string]*entdefs.EntityDefinition
 	itemDefinitions map[string]*itemdefs.ItemDefinition
 	recipeDefinitions map[string]*recipes.RecipeDefinition
 	entityVisuals *tiled.EntityVisualCatalog
+	// playerRig is res/.../player.rig.json (layered player look); nil if missing.
+	playerRig *rigs.Rig
 	loadedWorlds map[string]*worlds.World;
 	defaultWorldId string;
 
@@ -93,6 +104,7 @@ func newServer() *serverInterface {
 	s.itemDefinitions = make(map[string]*itemdefs.ItemDefinition)
 	s.recipeDefinitions = make(map[string]*recipes.RecipeDefinition)
 	s.entityVisuals = loadEntityVisuals()
+	s.playerRig = loadPlayerRig()
 	blockingTileTextures = loadBlockingTileTextures()
 	s.loadServerEntdefs()
 	s.loadItemCatalog()
@@ -212,6 +224,9 @@ func (s *serverInterface) watchGridFile(filename string) {
 }
 
 func (s *serverInterface) migrateGridTiles() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	for _, rp := range s.remotePlayers {
 		rp.NeedsGridUpdate = true
 	}
@@ -229,11 +244,25 @@ func (s *serverInterface) gridById(worldId string, gridId string) *gridfiles.Gri
 func (s *serverInterface) mainLoop() {
 	for {
 		time.Sleep(100 * time.Millisecond)
+		s.mu.Lock()
 		s.frame();
+		s.mu.Unlock()
 	}
 }
 
+// playerKey returns the player's remotePlayers key, assigning one from its
+// entity id the first time so later entity changes cannot orphan it.
+func playerKey(rp *RemotePlayer) string {
+	if rp.key == "" {
+		rp.key = fmt.Sprintf("entity-%d", rp.Entity.ServerId)
+	}
+	return rp.key
+}
+
 func (s *serverInterface) onConnected(c *websocket.Conn) (*RemotePlayer) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	log.Info("Player connected");
 
 	world, err := s.ensureWorldLoaded(s.defaultWorldId)
@@ -251,22 +280,29 @@ func (s *serverInterface) onConnected(c *websocket.Conn) (*RemotePlayer) {
 		log.Fatalf("Spawn grid %v not found in world %v", spawnGridId, s.defaultWorldId)
 	}
 
+	entityId := s.nextEntityId()
+	username := fmt.Sprintf("player%d", entityId)
+
 	playerEntity := Entity {
 		X: spawnX,
 		Y: spawnY,
 		Definition: "player",
 		State: "idle",
 		ServerDebugAlias: "player",
-		ServerId: s.nextEntityId(),
+		ServerId: entityId,
 		GridId: spawnGridId,
 		WorldId: s.defaultWorldId,
+	}
+	if s.playerRig != nil {
+		look := s.playerRig.Default(username)
+		playerEntity.Appearance = &look
 	}
 
 	s.entityInstances[playerEntity.ServerId] = &playerEntity
 
 	rp := &RemotePlayer {
 		Connection: c,
-		Username: "bob",
+		Username: username,
 		NeedsGridUpdate: true,
 		Spawned: false,
 		Entity: &playerEntity,
@@ -298,37 +334,41 @@ func (s *serverInterface) onConnected(c *websocket.Conn) (*RemotePlayer) {
 
 	s.sendServerFrame(rp.currentFrame, rp)
 
-	s.remotePlayers[rp.Username] = rp;
+	s.remotePlayers[playerKey(rp)] = rp;
 
 	return rp
 }
 
-func (s *serverInterface) onDisconnected(c *websocket.Conn) {
-	for username, rp := range s.remotePlayers {
-		if rp.Connection == c {
-			oldGridId := rp.CurrentGridId
-			oldWorldId := rp.CurrentWorldId
+func (s *serverInterface) onDisconnected(rp *RemotePlayer) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
-			for _, other := range s.remotePlayers {
-				if other == rp {
-					continue
-				}
+	s.removePlayer(rp)
+}
 
-				if other.CurrentWorldId == oldWorldId && other.CurrentGridId == oldGridId {
-					if _, known := other.KnownEntities[rp.Entity.ServerId]; known {
-						other.PendingDespawns = append(other.PendingDespawns, rp.Entity.ServerId)
-						delete(other.KnownEntities, rp.Entity.ServerId)
-					}
-				}
-			}
+// removePlayer drops a player and its entity, and tells every client that can
+// see the entity to despawn it. Caller must hold s.mu.
+func (s *serverInterface) removePlayer(rp *RemotePlayer) {
+	key := playerKey(rp)
+	if s.remotePlayers[key] != rp {
+		log.Warnf("removePlayer: %v (%v) is not connected", rp.Username, key)
+		return
+	}
 
-			delete(s.entityInstances, rp.Entity.ServerId)
-			delete(s.remotePlayers, username)
-			return
+	delete(s.remotePlayers, key)
+	delete(s.entityInstances, rp.Entity.ServerId)
+
+	for _, other := range s.remotePlayers {
+		if _, known := other.KnownEntities[rp.Entity.ServerId]; known {
+			other.PendingDespawns = append(other.PendingDespawns, rp.Entity.ServerId)
+			delete(other.KnownEntities, rp.Entity.ServerId)
 		}
 	}
 
-	log.Warnf("Could not find remoteplayer to remove in onDisconnected")
+	log.WithFields(log.Fields{
+		"player":   rp.Username,
+		"entityId": rp.Entity.ServerId,
+	}).Info("Player disconnected")
 }
 
 func (server *serverInterface) handleConnection(w http.ResponseWriter, r *http.Request) {
@@ -365,10 +405,12 @@ func (server *serverInterface) handleConnection(w http.ResponseWriter, r *http.R
 			}).Info("MoveRequest received over websocket")
 		}
 
+		server.mu.Lock()
 		rp.pendingRequests = append(rp.pendingRequests, reqs)
+		server.mu.Unlock()
 	}
 
-	server.onDisconnected(client)
+	server.onDisconnected(rp)
 
 	log.Infof("Closing handler")
 }

@@ -12,6 +12,7 @@ message ClientRequests {
 	InteractRequest interactRequest = 5;
 	CraftRequest craftRequest = 6;
 	WorldReloadRequest worldReloadRequest = 7;
+	AppearanceRequest appearanceRequest = 8;
 }
 
 message MoveRequest {
@@ -45,4 +46,13 @@ message CraftRequest {
 // Reload a world from disk. Empty worldId reloads the player's current world.
 message WorldReloadRequest {
 	string worldId = 1;
+}
+
+// Change the requesting player's look. Only the given keys change; the server
+// validates names against the player rig and rejects unknown ones.
+message AppearanceRequest {
+	map<string, string> parts = 1;
+	map<string, string> palettes = 2;
+	// Set to change the held item; "-" clears it.
+	string heldItem = 3;
 }

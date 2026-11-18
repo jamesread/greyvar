@@ -13,6 +13,12 @@ This project uses **bd** (beads) for issue tracking. Run `bd prime` for full wor
 > source of truth; don't `bd import` during normal operation; don't
 > reach for third-party Dolt hosting before trying the default).
 
+## Sprites (players)
+
+Player art is a layered rig: edit `res/sprites/player/` (YAML + small part PNGs), then `make sprites`.
+Never hand-edit generated sheets, `player.rig.json`, or `server/dat/entdefs/player.tsx`.
+Recipes and safe-editing rules: [res/sprites/README.md](res/sprites/README.md).
+
 ## Quick Reference
 
 ```bash

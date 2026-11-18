@@ -1,4 +1,4 @@
-.PHONY: server webclient proto datlint dat-editor tidy test
+.PHONY: server webclient proto datlint dat-editor tidy test sprites sprites-check
 
 server:
 	$(MAKE) -C server
@@ -21,7 +21,17 @@ tidy:
 	cd dat-editor && go mod tidy
 	cd datlint && go mod tidy
 	cd world-generator && go mod tidy
+	cd sprite-generator && go mod tidy
 
-test:
+# Regenerate layered sprite sheets, rig.json and entdef .tsx from res/sprites/<rig>.
+sprites:
+	go run ./sprite-generator build res/sprites/player
+
+# Fail if a rig is invalid or its generated files are stale.
+sprites-check:
+	go run ./sprite-generator check res/sprites/player
+
+test: sprites-check
+	cd sprite-generator && go test ./...
 	cd datlib && go test ./...
 	cd server && go test ./...

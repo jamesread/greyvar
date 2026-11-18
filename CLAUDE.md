@@ -74,4 +74,7 @@ _Add a brief overview of your project architecture_
 
 ## Conventions & Patterns
 
-_Add your project-specific conventions here_
+- **Sprites (players):** Player art is a layered rig: edit `res/sprites/player/` (YAML + small part PNGs), then `make sprites`.
+  Never hand-edit generated sheets, `player.rig.json`, or `server/dat/entdefs/player.tsx`.
+  Recipes and safe-editing rules: [res/sprites/README.md](res/sprites/README.md).
+

@@ -20,7 +20,7 @@ func frameSpawnEntities(s *serverInterface, rp* RemotePlayer) {
 			spawn.EntityId = entinst.ServerId
 			spawn.X = entinst.X
 			spawn.Y = entinst.Y
-			spawn.PrimaryColor = 0xff0000ff;
+			spawn.Appearance = appearanceToPB(entinst.Appearance)
 
 			rp.currentFrame.EntitySpawns = append(rp.currentFrame.EntitySpawns, &spawn)
 

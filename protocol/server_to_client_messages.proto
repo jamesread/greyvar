@@ -20,6 +20,7 @@ message ServerUpdate {
 	InventoryUpdate inventoryUpdate = 14;
 	repeated ItemDefinition itemDefinitions = 15;
 	repeated RecipeDefinition recipeDefinitions = 16;
+	repeated EntityAppearanceChange entityAppearanceChanges = 17;
 }
 
 message EntityPosition {
@@ -42,6 +43,24 @@ message EntitySpawn {
 	uint32 primaryColor = 7;
 	string definition = 9;
 	string initialState = 10;
+	// Layered-rig look (players). Unset for entities without a rig.
+	Appearance appearance = 11;
+}
+
+// Look of a layered sprite rig (res/sprites/<rig>). Keys and values are names
+// from the rig's rig.json; unknown values fall back to the rig defaults.
+message Appearance {
+	// layer -> variant, e.g. hair -> short
+	map<string, string> parts = 1;
+	// colour slot -> palette, e.g. skin -> tan
+	map<string, string> palettes = 2;
+	// itemdef name drawn at the pose's hand anchor; empty for none
+	string heldItem = 3;
+}
+
+message EntityAppearanceChange {
+	int64 entityId = 1;
+	Appearance appearance = 2;
 }
 
 message EntityDefinition {
@@ -170,6 +189,10 @@ message ItemDefinition {
 	string title = 2;
 	int32 stackMax = 3;
 	string category = 4;
+	// Optional in-hand sprite (path under /res/) and the pixel that sits on the hand.
+	string heldSprite = 5;
+	int32 heldGripX = 6;
+	int32 heldGripY = 7;
 }
 
 message RecipeInput {

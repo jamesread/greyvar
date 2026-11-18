@@ -180,6 +180,14 @@ export default class GameState {
 
     manager.bringToTop('grid')
     manager.bringToTop('hud')
+    // world-load / teleports rebuild the grid scene, often from the console.
+    // Keep an open menu or console above it; otherwise it is drawn under the
+    // map, invisible but still swallowing keyboard input.
+    for (const key of ['menu', 'console']) {
+      if (manager.isActive(key)) {
+        manager.bringToTop(key)
+      }
+    }
 
     const splash = manager.getScene('splash')
     if (splash) {
@@ -233,11 +241,14 @@ export default class GameState {
       return
     }
 
-    if (this.gridScene.handleTransitionEntityPosition?.(entpos)) {
+    // Normalize first: proto3 omits zero-valued fields, so an entry at x=0 or
+    // y=0 (right/down edge transitions) would otherwise arrive as undefined.
+    const normalized = normalizeEntityPosition(entpos)
+
+    if (this.gridScene.handleTransitionEntityPosition?.(normalized)) {
       return
     }
 
-    const normalized = normalizeEntityPosition(entpos)
     this.gridScene.onEntityPosition(normalized)
   }
 
@@ -247,7 +258,11 @@ export default class GameState {
       return
     }
 
-    if (this.gridScene.isScrollTransitioning && id === this.localPlayerEntityId) {
+    if (this.gridScene.isScrollTransitioning) {
+      // Keep old-grid entities on screen until the scroll finishes.
+      if (id !== this.localPlayerEntityId) {
+        this.gridScene.queueTransitionDespawn(id)
+      }
       return
     }
 
@@ -286,7 +301,9 @@ export default class GameState {
       id: itemdef.id,
       title: itemdef.title ?? itemdef.id,
       stackMax: itemdef.stackMax ?? 99,
-      category: itemdef.category ?? ''
+      category: itemdef.category ?? '',
+      heldSprite: itemdef.heldSprite ?? '',
+      heldGrip: [itemdef.heldGripX ?? 0, itemdef.heldGripY ?? 0]
     })
   }
 

@@ -1,10 +1,14 @@
 import Phaser from 'phaser'
 import { initMovementInput, pollMovementInput, isMovementKeyDown } from '../MovementInput.js'
 import { pollInteractInput } from '../InteractInput.js'
+import LayeredSprite from '../sprites/LayeredSprite.js'
+import { preloadRig, getRig } from '../sprites/PlayerRig.js'
 import { TILE_SIZE, ENTITY_SIZE, isCollisionDebugEnabled, refreshCollisionDebugOverlay, tileCollisionRectsWorld, entityCollisionRectsWorld, isLegacyTileBlocked } from '../collisionDebug.js'
 
 const MOVE_DURATION_MS = 67
-const SCROLL_TRANSITION_MS = 380
+// Constant-speed screen scroll (1.5x the ALttP-ish ~1s per screen).
+const SCROLL_TRANSITION_MS_PER_SCREEN = 667
+const SCROLL_TRANSITION_MIN_MS = 267
 
 export default class GridScene extends Phaser.Scene {
   grid = null
@@ -14,8 +18,8 @@ export default class GridScene extends Phaser.Scene {
 
   isScrollTransitioning = false
   pendingTransitionSpawns = []
-  transitionPlayerScreenOffsetX = null
-  transitionPlayerScreenOffsetY = null
+  pendingTransitionDespawns = []
+  activeTransition = null
 
   constructor (grid) {
     super({ key: 'grid' })
@@ -30,6 +34,10 @@ export default class GridScene extends Phaser.Scene {
     for (const entdef of window.gameState.entdefs.entries()) {
       this.preloadEntdefSprite(entdef[1])
     }
+
+    // Players render from the layered rig (res/sprites/player); the entdef's
+    // composite sheet above is only a fallback if the rig fails to load.
+    preloadRig(this)
 
     this.load.atlas('water', 'img/textures/fluids/water.png', 'atlas/water.json')
 
@@ -249,6 +257,14 @@ export default class GridScene extends Phaser.Scene {
       return
     }
 
+    if (ent.definition === 'player') {
+      const rig = getRig(this)
+      if (rig != null) {
+        this.renderLayeredEntity(ent, rig)
+        return
+      }
+    }
+
     const spriteKey = this.spriteKeyForEntity(ent)
     if (!spriteKey || !this.textures.exists(spriteKey)) {
       this.preloadEntdefSprite(entdef)
@@ -261,9 +277,10 @@ export default class GridScene extends Phaser.Scene {
 
     const state = this.stateFramesForEntity(ent, entdef)
     const frame = state?.frames?.[0]
+    const pos = this.entityRenderPosition(ent)
     const img = frame != null
-      ? this.add.sprite(ent.x ?? 0, ent.y ?? 0, spriteKey, frame)
-      : this.add.sprite(ent.x ?? 0, ent.y ?? 0, spriteKey)
+      ? this.add.sprite(pos.x, pos.y, spriteKey, frame)
+      : this.add.sprite(pos.x, pos.y, spriteKey)
 
     this.createEntityAnimations(img, ent.definition)
 
@@ -279,6 +296,16 @@ export default class GridScene extends Phaser.Scene {
     ent.img = img
 
     this.layerEntities.add(ent.img)
+    this.ensureCameraFollow(ent)
+  }
+
+  renderLayeredEntity (ent, rig) {
+    const pos = this.entityRenderPosition(ent)
+    const state = ent.state || this.initialStateForEntity(ent)
+    const img = new LayeredSprite(this, pos.x, pos.y, rig, ent.appearance, state,
+      (itemId) => window.gameState?.itemDefinitions?.get(itemId))
+    ent.img = img
+    this.layerEntities.add(img)
     this.ensureCameraFollow(ent)
   }
 
@@ -459,6 +486,10 @@ export default class GridScene extends Phaser.Scene {
     }
   }
 
+  // ALttP-style screen scroll: the camera pans at a constant speed from where it
+  // is to exactly where it will rest on the new grid (about one screen), while
+  // the local player keeps walking a short way onto the new grid. Linear motion
+  // with no overshoot or end snap keeps it readable and comfortable.
   beginScrollTransition (newGrid, transition) {
     const deltaX = transition?.scrollDeltaX ?? 0
     const deltaY = transition?.scrollDeltaY ?? 0
@@ -473,11 +504,25 @@ export default class GridScene extends Phaser.Scene {
 
     this.isScrollTransitioning = true
     this.pendingTransitionSpawns = []
+    this.pendingTransitionDespawns = []
+
+    const localEnt = this.localPlayerEntity()
+    if (localEnt?.moveTween != null) {
+      localEnt.moveTween.stop()
+      localEnt.moveTween = null
+    }
+
     this.activeTransition = {
       newGrid,
       deltaX,
-      deltaY
+      deltaY,
+      // Old-grid coordinates. Predicted from the server's edge-entry rules and
+      // replaced by the authoritative position when it arrives.
+      playerTarget: this.predictTransitionEntry(localEnt, newGrid, deltaX, deltaY),
+      playerStart: null
     }
+
+    this.cameras.main.stopFollow()
 
     this.queueGridTextureLoads(newGrid)
 
@@ -491,63 +536,49 @@ export default class GridScene extends Phaser.Scene {
     return true
   }
 
-  freezeLocalPlayerForTransition () {
+  localPlayerEntity () {
     const localId = window.gameState?.localPlayerEntityId
-    const localEnt = localId != null ? this.entities[localId] : null
-    const img = localEnt?.img
-    if (img == null) {
-      return
-    }
-
-    if (localEnt.moveTween != null) {
-      localEnt.moveTween.stop()
-      localEnt.moveTween = null
-    }
-
-    const cam = this.cameras.main
-    this.transitionPlayerScreenOffsetX = img.x - cam.scrollX
-    this.transitionPlayerScreenOffsetY = img.y - cam.scrollY
-    this.pinLocalPlayerToScreen()
+    return localId != null ? this.entities[localId] ?? null : null
   }
 
-  pinLocalPlayerToScreen () {
-    if (this.transitionPlayerScreenOffsetX == null || this.transitionPlayerScreenOffsetY == null) {
-      return
+  // Mirrors server tryEdgeTransition: the player enters at the facing edge of the
+  // new grid, keeping their position on the other axis.
+  predictTransitionEntry (localEnt, newGrid, deltaX, deltaY) {
+    if (localEnt == null) {
+      return null
     }
 
-    const localId = window.gameState?.localPlayerEntityId
-    const img = localId != null ? this.entities[localId]?.img : null
-    if (img == null) {
-      return
+    const newW = newGrid.colCount * TILE_SIZE
+    const newH = newGrid.rowCount * TILE_SIZE
+    let localX = localEnt.x ?? localEnt.img?.x ?? 0
+    let localY = localEnt.y ?? localEnt.img?.y ?? 0
+
+    if (deltaX > 0) {
+      localX = 0
+    } else if (deltaX < 0) {
+      localX = newW - ENTITY_SIZE
     }
 
-    const cam = this.cameras.main
-    img.x = cam.scrollX + this.transitionPlayerScreenOffsetX
-    img.y = cam.scrollY + this.transitionPlayerScreenOffsetY
-  }
+    if (deltaY > 0) {
+      localY = 0
+    } else if (deltaY < 0) {
+      localY = newH - ENTITY_SIZE
+    }
 
-  clearTransitionPlayerPin () {
-    this.transitionPlayerScreenOffsetX = null
-    this.transitionPlayerScreenOffsetY = null
+    return { x: localX + deltaX, y: localY + deltaY }
   }
 
   runScrollTransition () {
-    const { newGrid, deltaX, deltaY } = this.activeTransition
-    const tileSize = 16
-    const currentW = this.grid.colCount * tileSize
-    const currentH = this.grid.rowCount * tileSize
-    const newW = newGrid.colCount * tileSize
-    const newH = newGrid.rowCount * tileSize
+    const t = this.activeTransition
+    const { newGrid, deltaX, deltaY } = t
+    const currentW = this.grid.colCount * TILE_SIZE
+    const currentH = this.grid.rowCount * TILE_SIZE
+    const newW = newGrid.colCount * TILE_SIZE
+    const newH = newGrid.rowCount * TILE_SIZE
     const cam = this.cameras.main
+    const zoom = cam.zoom || 1
 
     cam.stopFollow()
-    this.freezeLocalPlayerForTransition()
-
-    const minX = Math.min(0, deltaX)
-    const minY = Math.min(0, deltaY)
-    const maxX = Math.max(currentW, deltaX + newW)
-    const maxY = Math.max(currentH, deltaY + newH)
-    cam.setBounds(minX, minY, maxX - minX, maxY - minY)
 
     this.incomingLayer = this.add.layer()
     if (newGrid.layers?.length > 0) {
@@ -561,33 +592,89 @@ export default class GridScene extends Phaser.Scene {
     } else {
       this.renderGridIntoLayer(newGrid, deltaX, deltaY, this.incomingLayer)
     }
+    // Draw the incoming grid beneath entities so the player walks over it.
+    this.children.moveBelow(this.incomingLayer, this.layerEntities)
 
     this.snapCameraScroll()
     const startScrollX = cam.scrollX
     const startScrollY = cam.scrollY
-    const endScrollX = startScrollX + deltaX
-    const endScrollY = startScrollY + deltaY
-    const zoom = cam.zoom || 1
-    const progress = { t: 0 }
+
+    // Where the camera will rest once the new grid is live: the same
+    // centre-on-player + clamp-to-bounds that finishScrollTransition applies,
+    // expressed in old-grid coordinates. Ending exactly here avoids a snap.
+    const localImg = this.localPlayerEntity()?.img ?? null
+    const target = t.playerTarget ?? (localImg != null ? { x: localImg.x, y: localImg.y } : null)
+    cam.setBounds(deltaX, deltaY, newW, newH)
+    if (target != null) {
+      cam.centerOn(target.x, target.y)
+    } else {
+      cam.centerToBounds()
+    }
+    const endScrollX = Math.round(cam.scrollX * zoom) / zoom
+    const endScrollY = Math.round(cam.scrollY * zoom) / zoom
+
+    const minX = Math.min(0, deltaX)
+    const minY = Math.min(0, deltaY)
+    const maxX = Math.max(currentW, deltaX + newW)
+    const maxY = Math.max(currentH, deltaY + newH)
+    cam.setBounds(minX, minY, maxX - minX, maxY - minY)
+    cam.scrollX = startScrollX
+    cam.scrollY = startScrollY
+
+    if (localImg != null) {
+      t.playerStart = { x: localImg.x, y: localImg.y }
+      this.playWalkAnimation(localImg, 0, 0, Math.sign(deltaX), Math.sign(deltaY))
+      // Keep walking for the whole scroll (the walk otherwise times out to idle).
+      t.walkState = localImg.state
+    }
+
+    // Constant speed, scaled by how far the view actually travels relative to
+    // its own size, so every screen edge takes the same time to cross.
+    const viewW = cam.width / zoom
+    const viewH = cam.height / zoom
+    const screens = Math.max(
+      Math.abs(endScrollX - startScrollX) / viewW,
+      Math.abs(endScrollY - startScrollY) / viewH
+    )
+    const duration = Math.max(SCROLL_TRANSITION_MIN_MS, screens * SCROLL_TRANSITION_MS_PER_SCREEN)
+    const progress = { p: 0 }
 
     this.tweens.add({
       targets: progress,
-      t: 1,
-      duration: SCROLL_TRANSITION_MS,
-      ease: 'Cubic.easeInOut',
+      p: 1,
+      duration,
+      ease: 'Linear',
       onUpdate: () => {
-        const x = startScrollX + (endScrollX - startScrollX) * progress.t
-        const y = startScrollY + (endScrollY - startScrollY) * progress.t
+        const p = progress.p
+        const x = startScrollX + (endScrollX - startScrollX) * p
+        const y = startScrollY + (endScrollY - startScrollY) * p
         cam.scrollX = Math.round(x * zoom) / zoom
         cam.scrollY = Math.round(y * zoom) / zoom
-        this.pinLocalPlayerToScreen()
+        this.stepTransitionPlayer(p)
       },
       onComplete: () => {
-        cam.scrollX = Math.round(endScrollX * zoom) / zoom
-        cam.scrollY = Math.round(endScrollY * zoom) / zoom
+        cam.scrollX = endScrollX
+        cam.scrollY = endScrollY
+        this.stepTransitionPlayer(1)
         this.finishScrollTransition()
       }
     })
+  }
+
+  // The player walks from where they stood to their entry point on the new grid
+  // over the course of the scroll (typically about one tile).
+  stepTransitionPlayer (p) {
+    const t = this.activeTransition
+    const img = this.localPlayerEntity()?.img
+    if (t == null || img == null || t.playerStart == null || t.playerTarget == null) {
+      return
+    }
+
+    img.x = Math.round(t.playerStart.x + (t.playerTarget.x - t.playerStart.x) * p)
+    img.y = Math.round(t.playerStart.y + (t.playerTarget.y - t.playerStart.y) * p)
+    if (t.walkState != null) {
+      img.playState?.(t.walkState)
+    }
   }
 
   finishScrollTransition () {
@@ -600,14 +687,20 @@ export default class GridScene extends Phaser.Scene {
 
     this.layerGrid.removeAll(true)
 
+    // Old-grid entities stay visible while they scroll off screen; drop them
+    // now, before any new-grid spawns that might reuse an id.
+    for (const id of this.pendingTransitionDespawns) {
+      this.onEntityDespawn(id)
+    }
+    this.pendingTransitionDespawns = []
+
     for (const ent of Object.values(this.entities)) {
+      delete ent.transitionIncoming
       if (ent.img != null) {
         ent.img.x = ent.x
         ent.img.y = ent.y
       }
     }
-
-    this.clearTransitionPlayerPin()
 
     this.grid = newGrid
     window.gameState.grid = newGrid
@@ -622,8 +715,7 @@ export default class GridScene extends Phaser.Scene {
     }
     this.pendingTransitionSpawns = []
 
-    const localId = window.gameState.localPlayerEntityId
-    const localEnt = localId != null ? this.entities[localId] : null
+    const localEnt = this.localPlayerEntity()
     if (localEnt?.img != null) {
       const cam = this.cameras.main
       cam.centerOn(localEnt.img.x, localEnt.img.y)
@@ -636,8 +728,44 @@ export default class GridScene extends Phaser.Scene {
     }
   }
 
+  // Where an entity's sprite sits right now. New-grid entities spawned during a
+  // scroll are drawn offset into the old grid's frame so they slide in with
+  // their map.
+  entityRenderPosition (ent) {
+    const t = this.activeTransition
+    if (t != null && ent.transitionIncoming) {
+      return { x: (ent.x ?? 0) + t.deltaX, y: (ent.y ?? 0) + t.deltaY }
+    }
+    return { x: ent.x ?? 0, y: ent.y ?? 0 }
+  }
+
   queueTransitionSpawn (ent) {
-    this.pendingTransitionSpawns.push(ent)
+    // Ids already on screen (the local player, or an old-grid entity still
+    // scrolling out) are reconciled once the transition completes.
+    if (this.entities[ent.entityId] != null) {
+      this.pendingTransitionSpawns.push(ent)
+      return
+    }
+
+    if (ent.state == null) {
+      ent.state = this.initialStateForEntity(ent)
+    }
+    ent.transitionIncoming = true
+    this.entities[ent.entityId] = ent
+
+    if (this.canRenderEntity()) {
+      this.renderEntity(ent)
+    } else {
+      this.load.once('complete', () => this.renderEntity(ent))
+    }
+  }
+
+  queueTransitionDespawn (entityId) {
+    if (this.entities[entityId]?.transitionIncoming) {
+      this.onEntityDespawn(entityId)
+      return
+    }
+    this.pendingTransitionDespawns.push(entityId)
   }
 
   handleTransitionEntityPosition (entpos) {
@@ -646,8 +774,23 @@ export default class GridScene extends Phaser.Scene {
     }
 
     const localId = window.gameState.localPlayerEntityId
-    if (localId == null || entpos.entityId !== localId) {
+    if (localId == null) {
       return false
+    }
+
+    if (entpos.entityId !== localId) {
+      const other = this.entities[entpos.entityId]
+      if (!other?.transitionIncoming) {
+        return false
+      }
+
+      other.x = entpos.x
+      other.y = entpos.y
+      if (other.img != null) {
+        const pos = this.entityRenderPosition(other)
+        other.img.setPosition(pos.x, pos.y)
+      }
+      return true
     }
 
     const ent = this.entities[localId]
@@ -655,21 +798,30 @@ export default class GridScene extends Phaser.Scene {
       return false
     }
 
+    // Server position is in new-grid coordinates; the walk-in target is in the
+    // old grid's frame until the transition completes.
     ent.x = entpos.x
     ent.y = entpos.y
+    this.activeTransition.playerTarget = {
+      x: entpos.x + this.activeTransition.deltaX,
+      y: entpos.y + this.activeTransition.deltaY
+    }
 
     if (ent.moveTween != null) {
       ent.moveTween.stop()
       ent.moveTween = null
     }
 
-    if (this.transitionPlayerScreenOffsetX == null) {
-      this.freezeLocalPlayerForTransition()
-    } else {
-      this.pinLocalPlayerToScreen()
-    }
-
     return true
+  }
+
+  onEntityAppearance ({ entityId, appearance }) {
+    const ent = this.entities[entityId]
+    if (ent == null) {
+      return
+    }
+    ent.appearance = appearance
+    ent.img?.setAppearance?.(appearance)
   }
 
   renderConnectionResponse(r) {
@@ -685,6 +837,10 @@ export default class GridScene extends Phaser.Scene {
     if (existing != null) {
       existing.definition = ent.definition ?? existing.definition
       existing.state = ent.state ?? existing.state
+      if (ent.appearance != null) {
+        existing.appearance = ent.appearance
+        existing.img?.setAppearance?.(ent.appearance)
+      }
       existing.x = ent.x ?? existing.x
       existing.y = ent.y ?? existing.y
       if (existing.img != null) {
@@ -735,6 +891,11 @@ export default class GridScene extends Phaser.Scene {
       state = 'walkUp'
     }
 
+    if (state != null && img.playState != null) {
+      img.playState(state)
+      return
+    }
+
     if (state != null) {
       const animKey = this.animKeyForEntity('player', state)
       // Don't restart mid-stride on every MoveRequest (~67ms) or the clip
@@ -756,6 +917,11 @@ export default class GridScene extends Phaser.Scene {
     const ent = this.entities[localId]
     const img = ent?.img
     if (img == null || ent.definition !== 'player') {
+      return
+    }
+
+    if (img.playState != null) {
+      img.playState('idle')
       return
     }
 
@@ -828,7 +994,9 @@ export default class GridScene extends Phaser.Scene {
   }
 
   onEntityChange(ec) {
-    console.log('entchange', ec)
+    if (!String(ec.newState).startsWith('bump')) {
+      console.log('entchange', ec)
+    }
 
     let ent = this.entities[ec.entityId]
 
@@ -838,9 +1006,14 @@ export default class GridScene extends Phaser.Scene {
     }
 
     if (ec.newState) {
-      ent.state = ec.newState
+      // Bumps are momentary events; keep the entity's real state for re-renders.
+      if (!String(ec.newState).startsWith('bump')) {
+        ent.state = ec.newState
+      }
       const animKey = this.animKeyForEntity(ent.definition, ec.newState)
-      if (ent.img?.anims?.exists(animKey)) {
+      if (ent.img?.playState != null) {
+        ent.img.playState(ec.newState)
+      } else if (ent.img?.anims?.exists(animKey)) {
         ent.img.play(animKey)
       } else {
         const entdef = window.gameState.entdefs.get(ent.definition)

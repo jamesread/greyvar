@@ -1,0 +1,221 @@
+# Generated once by `spritegen import`; now the source of truth. Edit freely.
+poses:
+  # Idle, facing down. The head (head+hair) stays still; only arms/torso
+  # change, so the idle never "re-draws" the face. Arms rest at the sides
+  # (body/shirt idle_1); idle_0's arms-out pose is only used by the shrug.
+  - name: down_stand
+    parts: {pants: idle_0, body: idle_1, shirt: idle_1, head: idle_0, hair: idle_0}
+    hand: [11, 11]
+  - name: down_breathe
+    parts: {pants: idle_0, body: idle_1, shirt: idle_1, head: idle_0, hair: idle_0}
+    offsets: {head: [0, 1], hair: [0, 1]}
+    hand: [11, 11]
+  # Shrug: shoulders up, then palms out.
+  # Directional idles: the walk frame with feet together, plus a 1px head dip
+  # breathe. Used when the player stops after walking left/right/up.
+  - name: left_breathe
+    parts: {pants: walkLeft_legs1, body: walkLeft_1, shirt: walkLeft_1, head: walkLeft_1, hair: walkLeft_1}
+    offsets: {head: [0, 1], hair: [0, 1]}
+    hand: [6, 8]
+  - name: right_breathe
+    parts: {pants: walkRight_legs1, body: walkRight_1, shirt: walkRight_1, head: walkRight_1, hair: walkRight_1}
+    offsets: {head: [0, 1], hair: [0, 1]}
+    hand: [9, 8]
+  - name: up_breathe
+    parts: {pants: walkUp_0, body: walkUp_0, shirt: walkUp_0, hair: walkUp_0}
+    offsets: {hair: [0, 1]}
+    hand: [8, 11]
+    itemZ: behind
+  - name: down_shrugUp
+    parts: {pants: idle_0, body: idle_2, shirt: idle_2, head: idle_0, hair: idle_0}
+    hand: [11, 11]
+  - name: down_shrugOut
+    parts: {pants: idle_0, body: idle_0, shirt: idle_0, head: idle_0, hair: idle_0}
+    hand: [12, 11]
+  - name: down_blink
+    parts: {pants: idle_0, body: idle_1, shirt: idle_1, head: down_blink, hair: idle_0}
+    hand: [11, 11]
+  - name: down_glanceLeft
+    parts: {pants: idle_0, body: idle_1, shirt: idle_1, head: down_glanceLeft, hair: idle_0}
+    hand: [11, 11]
+  - name: down_glanceRight
+    parts: {pants: idle_0, body: idle_1, shirt: idle_1, head: down_glanceRight, hair: idle_0}
+    hand: [11, 11]
+  # Walk cycles (4 frames each).
+  - name: walkLeft_0
+    parts: {pants: walkLeft_legs0, body: walkLeft_0, shirt: walkLeft_0, head: walkLeft_0, hair: walkLeft_0}
+    hand: [7, 11]
+  - name: walkLeft_1
+    parts: {pants: walkLeft_legs1, body: walkLeft_1, shirt: walkLeft_1, head: walkLeft_1, hair: walkLeft_1}
+    hand: [6, 8]
+  - name: walkLeft_2
+    parts: {pants: walkLeft_legs2, body: walkLeft_2, shirt: walkLeft_2, head: walkLeft_2, hair: walkLeft_2}
+    hand: [6, 11]
+  - name: walkLeft_3
+    parts: {pants: walkLeft_legs3, body: walkLeft_3, shirt: walkLeft_3, head: walkLeft_3, hair: walkLeft_3}
+    hand: [6, 9]
+  - name: walkRight_0
+    parts: {pants: walkRight_legs0, body: walkRight_0, shirt: walkRight_0, head: walkRight_0, hair: walkRight_0}
+    hand: [10, 12]
+  - name: walkRight_1
+    parts: {pants: walkRight_legs1, body: walkRight_1, shirt: walkRight_1, head: walkRight_1, hair: walkRight_1}
+    hand: [9, 8]
+  - name: walkRight_2
+    parts: {pants: walkRight_legs2, body: walkRight_2, shirt: walkRight_2, head: walkRight_2, hair: walkRight_2}
+    hand: [9, 8]
+  - name: walkRight_3
+    parts: {pants: walkRight_legs3, body: walkRight_3, shirt: walkRight_3, head: walkRight_3, hair: walkRight_3}
+    offsets: {body: [1, 0], shirt: [1, 0], head: [1, 0], hair: [1, 0]}  # walkRight_3 torso art sits 1px left
+    hand: [11, 9]
+  - name: walkUp_0
+    parts: {pants: walkUp_0, body: walkUp_0, shirt: walkUp_0, hair: walkUp_0}
+    hand: [8, 11]
+    itemZ: behind
+  - name: walkUp_1
+    parts: {pants: walkUp_1, body: walkUp_1, shirt: walkUp_1, hair: walkUp_1}
+    hand: [10, 9]
+    itemZ: behind
+  - name: walkUp_2
+    parts: {pants: walkUp_2, body: walkUp_2, shirt: walkUp_2, hair: walkUp_2}
+    hand: [11, 11]
+    itemZ: behind
+  - name: walkUp_3
+    parts: {pants: walkUp_3, body: walkUp_3, shirt: walkUp_3, hair: walkUp_3}
+    hand: [10, 12]
+    itemZ: behind
+  # Walk down: idle upper body (steady head) over an authored leg cycle:
+  # stand, left foot up, stand, right foot up.
+  - name: walkDown_0
+    parts: {pants: idle_0, body: idle_1, shirt: idle_1, head: idle_0, hair: idle_0}
+    hand: [11, 11]
+  - name: walkDown_1
+    parts: {pants: walkDown_stepL, body: walkDown_armsL, shirt: idle_1, head: idle_0, hair: idle_0}
+    hand: [11, 10]
+  - name: walkDown_2
+    parts: {pants: idle_0, body: idle_1, shirt: idle_1, head: idle_0, hair: idle_0}
+    hand: [11, 11]
+  - name: walkDown_3
+    parts: {pants: walkDown_stepR, body: walkDown_armsR, shirt: idle_1, head: idle_0, hair: idle_0}
+    hand: [11, 12]
+  # Diagonals reuse the horizontal walk, like classic Zelda. They are separate
+  # poses so real diagonal art can be dropped in by changing parts only.
+  - name: walkUpLeft_0
+    parts: {pants: walkLeft_legs0, body: walkLeft_0, shirt: walkLeft_0, head: walkLeft_0, hair: walkLeft_0}
+    hand: [7, 11]
+  - name: walkUpLeft_1
+    parts: {pants: walkLeft_legs1, body: walkLeft_1, shirt: walkLeft_1, head: walkLeft_1, hair: walkLeft_1}
+    hand: [6, 8]
+  - name: walkUpLeft_2
+    parts: {pants: walkLeft_legs2, body: walkLeft_2, shirt: walkLeft_2, head: walkLeft_2, hair: walkLeft_2}
+    hand: [6, 11]
+  - name: walkUpLeft_3
+    parts: {pants: walkLeft_legs3, body: walkLeft_3, shirt: walkLeft_3, head: walkLeft_3, hair: walkLeft_3}
+    hand: [6, 9]
+  - name: walkUpRight_0
+    parts: {pants: walkRight_legs0, body: walkRight_0, shirt: walkRight_0, head: walkRight_0, hair: walkRight_0}
+    hand: [10, 12]
+  - name: walkUpRight_1
+    parts: {pants: walkRight_legs1, body: walkRight_1, shirt: walkRight_1, head: walkRight_1, hair: walkRight_1}
+    hand: [9, 8]
+  - name: walkUpRight_2
+    parts: {pants: walkRight_legs2, body: walkRight_2, shirt: walkRight_2, head: walkRight_2, hair: walkRight_2}
+    hand: [9, 8]
+  - name: walkUpRight_3
+    parts: {pants: walkRight_legs3, body: walkRight_3, shirt: walkRight_3, head: walkRight_3, hair: walkRight_3}
+    offsets: {body: [1, 0], shirt: [1, 0], head: [1, 0], hair: [1, 0]}  # walkRight_3 torso art sits 1px left
+    hand: [11, 9]
+  - name: walkDownLeft_0
+    parts: {pants: walkLeft_legs0, body: walkLeft_0, shirt: walkLeft_0, head: walkLeft_0, hair: walkLeft_0}
+    hand: [7, 11]
+  - name: walkDownLeft_1
+    parts: {pants: walkLeft_legs1, body: walkLeft_1, shirt: walkLeft_1, head: walkLeft_1, hair: walkLeft_1}
+    hand: [6, 8]
+  - name: walkDownLeft_2
+    parts: {pants: walkLeft_legs2, body: walkLeft_2, shirt: walkLeft_2, head: walkLeft_2, hair: walkLeft_2}
+    hand: [6, 11]
+  - name: walkDownLeft_3
+    parts: {pants: walkLeft_legs3, body: walkLeft_3, shirt: walkLeft_3, head: walkLeft_3, hair: walkLeft_3}
+    hand: [6, 9]
+  - name: walkDownRight_0
+    parts: {pants: walkRight_legs0, body: walkRight_0, shirt: walkRight_0, head: walkRight_0, hair: walkRight_0}
+    hand: [10, 12]
+  - name: walkDownRight_1
+    parts: {pants: walkRight_legs1, body: walkRight_1, shirt: walkRight_1, head: walkRight_1, hair: walkRight_1}
+    hand: [9, 8]
+  - name: walkDownRight_2
+    parts: {pants: walkRight_legs2, body: walkRight_2, shirt: walkRight_2, head: walkRight_2, hair: walkRight_2}
+    hand: [9, 8]
+  - name: walkDownRight_3
+    parts: {pants: walkRight_legs3, body: walkRight_3, shirt: walkRight_3, head: walkRight_3, hair: walkRight_3}
+    offsets: {body: [1, 0], shirt: [1, 0], head: [1, 0], hair: [1, 0]}  # walkRight_3 torso art sits 1px left
+    hand: [11, 9]
+
+  # Bump/push into a wall (Zelda-style): walk parts leaning into the wall.
+  # Horizontal pushes shift the whole body 1px toward the wall; vertical pushes
+  # hunch (head+hair dip 1px) since the frame has no headroom.
+  - name: bumpLeft_lean1
+    parts: {pants: walkLeft_legs1, body: walkLeft_1, shirt: walkLeft_1, head: walkLeft_1, hair: walkLeft_1}
+    offsets: {pants: [-1, 0], body: [-1, 0], shirt: [-1, 0], head: [-1, 0], hair: [-1, 0]}
+    hand: [5, 8]
+  - name: bumpLeft_lean2
+    parts: {pants: walkLeft_legs3, body: walkLeft_3, shirt: walkLeft_3, head: walkLeft_3, hair: walkLeft_3}
+    offsets: {pants: [-1, 0], body: [-1, 0], shirt: [-1, 0], head: [-1, 0], hair: [-1, 0]}
+    hand: [5, 9]
+  - name: bumpRight_lean1
+    parts: {pants: walkRight_legs1, body: walkRight_1, shirt: walkRight_1, head: walkRight_1, hair: walkRight_1}
+    offsets: {pants: [1, 0], body: [1, 0], shirt: [1, 0], head: [1, 0], hair: [1, 0]}
+    hand: [10, 8]
+  - name: bumpRight_lean2
+    parts: {pants: walkRight_legs3, body: walkRight_3, shirt: walkRight_3, head: walkRight_3, hair: walkRight_3}
+    offsets: {pants: [1, 0], body: [2, 0], shirt: [2, 0], head: [2, 0], hair: [2, 0]}  # walkRight_3 torso art sits 1px left
+    hand: [12, 9]
+  - name: bumpUp_lean1
+    parts: {pants: walkUp_1, body: walkUp_1, shirt: walkUp_1, hair: walkUp_1}
+    offsets: {hair: [0, 1]}
+    hand: [10, 9]
+    itemZ: behind
+  - name: bumpUp_lean2
+    parts: {pants: walkUp_3, body: walkUp_3, shirt: walkUp_3, hair: walkUp_3}
+    offsets: {hair: [0, 1]}
+    hand: [10, 12]
+    itemZ: behind
+  - name: bumpDown_lean1
+    parts: {pants: walkDown_stepL, body: walkDown_armsL, shirt: idle_1, head: idle_0, hair: idle_0}
+    offsets: {head: [0, 1], hair: [0, 1]}
+    hand: [11, 10]
+  - name: bumpDown_lean2
+    parts: {pants: walkDown_stepR, body: walkDown_armsR, shirt: idle_1, head: idle_0, hair: idle_0}
+    offsets: {head: [0, 1], hair: [0, 1]}
+    hand: [11, 12]
+  - name: bumpUpLeft_lean1
+    parts: {pants: walkLeft_legs1, body: walkLeft_1, shirt: walkLeft_1, head: walkLeft_1, hair: walkLeft_1}
+    offsets: {pants: [-1, 0], body: [-1, 0], shirt: [-1, 0], head: [-1, 1], hair: [-1, 1]}
+    hand: [5, 8]
+  - name: bumpUpLeft_lean2
+    parts: {pants: walkLeft_legs3, body: walkLeft_3, shirt: walkLeft_3, head: walkLeft_3, hair: walkLeft_3}
+    offsets: {pants: [-1, 0], body: [-1, 0], shirt: [-1, 0], head: [-1, 1], hair: [-1, 1]}
+    hand: [5, 9]
+  - name: bumpUpRight_lean1
+    parts: {pants: walkRight_legs1, body: walkRight_1, shirt: walkRight_1, head: walkRight_1, hair: walkRight_1}
+    offsets: {pants: [1, 0], body: [1, 0], shirt: [1, 0], head: [1, 1], hair: [1, 1]}
+    hand: [10, 8]
+  - name: bumpUpRight_lean2
+    parts: {pants: walkRight_legs3, body: walkRight_3, shirt: walkRight_3, head: walkRight_3, hair: walkRight_3}
+    offsets: {pants: [1, 0], body: [2, 0], shirt: [2, 0], head: [2, 1], hair: [2, 1]}  # walkRight_3 torso art sits 1px left
+    hand: [12, 9]
+  - name: bumpDownLeft_lean1
+    parts: {pants: walkLeft_legs1, body: walkLeft_1, shirt: walkLeft_1, head: walkLeft_1, hair: walkLeft_1}
+    offsets: {pants: [-1, 0], body: [-1, 0], shirt: [-1, 0], head: [-1, 1], hair: [-1, 1]}
+    hand: [5, 8]
+  - name: bumpDownLeft_lean2
+    parts: {pants: walkLeft_legs3, body: walkLeft_3, shirt: walkLeft_3, head: walkLeft_3, hair: walkLeft_3}
+    offsets: {pants: [-1, 0], body: [-1, 0], shirt: [-1, 0], head: [-1, 1], hair: [-1, 1]}
+    hand: [5, 9]
+  - name: bumpDownRight_lean1
+    parts: {pants: walkRight_legs1, body: walkRight_1, shirt: walkRight_1, head: walkRight_1, hair: walkRight_1}
+    offsets: {pants: [1, 0], body: [1, 0], shirt: [1, 0], head: [1, 1], hair: [1, 1]}
+    hand: [10, 8]
+  - name: bumpDownRight_lean2
+    parts: {pants: walkRight_legs3, body: walkRight_3, shirt: walkRight_3, head: walkRight_3, hair: walkRight_3}
+    offsets: {pants: [1, 0], body: [2, 0], shirt: [2, 0], head: [2, 1], hair: [2, 1]}  # walkRight_3 torso art sits 1px left
+    hand: [12, 9]

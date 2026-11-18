@@ -21,9 +21,14 @@ func (s *serverInterface) frame() {
 }
 
 func (s *serverInterface) processPlayerRequests() {
+	// Allocate every frame before processing anyone's requests: a request can
+	// queue updates for other players (e.g. a bump), which must not be wiped
+	// when the loop reaches them.
 	for _, p := range s.remotePlayers {
 		p.currentFrame = &pb.ServerUpdate{}
+	}
 
+	for _, p := range s.remotePlayers {
 
 		for len(p.pendingRequests) > 0 {
 			req := p.pendingRequests[0]
@@ -52,6 +57,10 @@ func (s *serverInterface) processPlayerRequests() {
 			if req.WorldReloadRequest != nil {
 				processWorldReloadRequest(s, p, req.WorldReloadRequest)
 			}
+
+			if req.AppearanceRequest != nil {
+				processAppearanceRequest(s, p, req.AppearanceRequest)
+			}
 		}
 
 	}
@@ -65,6 +74,7 @@ func (s *serverInterface) createServerUpdates() {
 		frameGridUpdates(s, p)
 		frameSpawnEntities(s, p)
 		frameEntityPositions(s, p);
+		frameAppearanceChanges(s, p)
 		frameConsoleMessages(s, p)
 		frameHudMessages(s, p)
 		frameInventoryUpdates(s, p)

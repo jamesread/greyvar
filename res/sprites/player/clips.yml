@@ -1,0 +1,161 @@
+# Generated once by `spritegen import`; now the source of truth. Edit freely.
+clips:
+  idle:
+    - {pose: down_stand, ms: 1400}
+    - {pose: down_breathe, ms: 900}
+  # Facing idles (no random variants; those are front-facing only). The client
+  # picks idle<Facing>, then idle<Left|Right> for diagonals, else idle.
+  idleLeft:
+    - {pose: walkLeft_1, ms: 1400}
+    - {pose: left_breathe, ms: 900}
+  idleRight:
+    - {pose: walkRight_1, ms: 1400}
+    - {pose: right_breathe, ms: 900}
+  idleUp:
+    - {pose: walkUp_0, ms: 1400}
+    - {pose: up_breathe, ms: 900}
+  idle_shrug:
+    - {pose: down_shrugUp, ms: 120}
+    - {pose: down_shrugOut, ms: 550}
+    - {pose: down_shrugUp, ms: 120}
+    - {pose: down_stand, ms: 300}
+  idle_blink:
+    - {pose: down_blink, ms: 130}
+    - {pose: down_stand, ms: 200}
+  idle_glance:
+    - {pose: down_glanceLeft, ms: 900}
+    - {pose: down_stand, ms: 250}
+    - {pose: down_glanceRight, ms: 900}
+    - {pose: down_stand, ms: 200}
+  walkDown:
+    - pose: walkDown_0
+      ms: 100
+    - pose: walkDown_1
+      ms: 100
+    - pose: walkDown_2
+      ms: 100
+    - pose: walkDown_3
+      ms: 100
+  walkDownLeft:
+    - pose: walkDownLeft_0
+      ms: 100
+    - pose: walkDownLeft_1
+      ms: 100
+    - pose: walkDownLeft_2
+      ms: 100
+    - pose: walkDownLeft_3
+      ms: 100
+  walkDownRight:
+    - pose: walkDownRight_0
+      ms: 100
+    - pose: walkDownRight_1
+      ms: 100
+    - pose: walkDownRight_2
+      ms: 100
+    - pose: walkDownRight_3
+      ms: 100
+  walkLeft:
+    - pose: walkLeft_0
+      ms: 100
+    - pose: walkLeft_1
+      ms: 100
+    - pose: walkLeft_2
+      ms: 100
+    - pose: walkLeft_3
+      ms: 100
+  walkRight:
+    - pose: walkRight_0
+      ms: 100
+    - pose: walkRight_1
+      ms: 100
+    - pose: walkRight_2
+      ms: 100
+    - pose: walkRight_3
+      ms: 100
+  walkUp:
+    - pose: walkUp_0
+      ms: 100
+    - pose: walkUp_1
+      ms: 100
+    - pose: walkUp_2
+      ms: 100
+    - pose: walkUp_3
+      ms: 100
+  walkUpLeft:
+    - pose: walkUpLeft_0
+      ms: 100
+    - pose: walkUpLeft_1
+      ms: 100
+    - pose: walkUpLeft_2
+      ms: 100
+    - pose: walkUpLeft_3
+      ms: 100
+  walkUpRight:
+    - pose: walkUpRight_0
+      ms: 100
+    - pose: walkUpRight_1
+      ms: 100
+    - pose: walkUpRight_2
+      ms: 100
+    - pose: walkUpRight_3
+      ms: 100
+  # Pushing against something solid: lean in, ease back, slower than walking.
+  bumpLeft:
+    - {pose: bumpLeft_lean1, ms: 180}
+    - {pose: walkLeft_0, ms: 110}
+    - {pose: bumpLeft_lean2, ms: 180}
+    - {pose: walkLeft_0, ms: 110}
+  bumpRight:
+    - {pose: bumpRight_lean1, ms: 180}
+    - {pose: walkRight_0, ms: 110}
+    - {pose: bumpRight_lean2, ms: 180}
+    - {pose: walkRight_0, ms: 110}
+  bumpUp:
+    - {pose: bumpUp_lean1, ms: 180}
+    - {pose: walkUp_0, ms: 110}
+    - {pose: bumpUp_lean2, ms: 180}
+    - {pose: walkUp_0, ms: 110}
+  bumpDown:
+    - {pose: bumpDown_lean1, ms: 180}
+    - {pose: walkDown_0, ms: 110}
+    - {pose: bumpDown_lean2, ms: 180}
+    - {pose: walkDown_0, ms: 110}
+  bumpUpLeft:
+    - {pose: bumpUpLeft_lean1, ms: 180}
+    - {pose: walkUpLeft_0, ms: 110}
+    - {pose: bumpUpLeft_lean2, ms: 180}
+    - {pose: walkUpLeft_0, ms: 110}
+  bumpUpRight:
+    - {pose: bumpUpRight_lean1, ms: 180}
+    - {pose: walkUpRight_0, ms: 110}
+    - {pose: bumpUpRight_lean2, ms: 180}
+    - {pose: walkUpRight_0, ms: 110}
+  bumpDownLeft:
+    - {pose: bumpDownLeft_lean1, ms: 180}
+    - {pose: walkDownLeft_0, ms: 110}
+    - {pose: bumpDownLeft_lean2, ms: 180}
+    - {pose: walkDownLeft_0, ms: 110}
+  bumpDownRight:
+    - {pose: bumpDownRight_lean1, ms: 180}
+    - {pose: walkDownRight_0, ms: 110}
+    - {pose: bumpDownRight_lean2, ms: 180}
+    - {pose: walkDownRight_0, ms: 110}
+idle:
+  base: idle
+  # One of these plays once every intervalMs (random in range), then back to base.
+  variants:
+    - {clip: idle_blink, weight: 4}
+    - {clip: idle_glance, weight: 2}
+    - {clip: idle_shrug, weight: 1}
+  intervalMs: [4000, 9000]
+states:
+  idle: idle
+  walkDown: walkDown
+  walkDownLeft: walkDownLeft
+  walkDownRight: walkDownRight
+  walkLeft: walkLeft
+  walkRight: walkRight
+  walkUp: walkUp
+  walkUpLeft: walkUpLeft
+  walkUpRight: walkUpRight
+initialState: idle

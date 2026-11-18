@@ -34,12 +34,18 @@ func frameItemDefinitions(s *serverInterface, p *RemotePlayer) {
 		if p.KnownItemdefs[id] {
 			continue
 		}
-		p.currentFrame.ItemDefinitions = append(p.currentFrame.ItemDefinitions, &pb.ItemDefinition{
+		def := &pb.ItemDefinition{
 			Id:       item.ID,
 			Title:    item.Title,
 			StackMax: item.StackMax,
 			Category: item.Category,
-		})
+		}
+		if item.Held != nil {
+			def.HeldSprite = item.Held.Sprite
+			def.HeldGripX = item.Held.Grip[0]
+			def.HeldGripY = item.Held.Grip[1]
+		}
+		p.currentFrame.ItemDefinitions = append(p.currentFrame.ItemDefinitions, def)
 		p.KnownItemdefs[id] = true
 	}
 }

@@ -1,6 +1,8 @@
 import { dumpMovementDebug, dumpGameStatus } from '../movementDebug.js'
 import { sceneSnapshot } from '../sceneDebug.js'
 import { toggleCollisionDebug } from '../collisionDebug.js'
+import { getRig } from '../sprites/PlayerRig.js'
+import { parseAppearanceArgs, describeAppearanceOptions } from '../sprites/appearance.js'
 
 export function registerDefaultCommands (gameConsole) {
   gameConsole
@@ -119,6 +121,28 @@ export function registerDefaultCommands (gameConsole) {
     }, {
       description: 'Load a world and teleport to its spawn grid',
       usage: '<worldId>'
+    })
+    .registerCommand('appearance', (args) => {
+      const scene = window.gameState?.gridScene
+      const rig = scene != null ? getRig(scene) : null
+      if (rig == null) {
+        return 'player rig not loaded yet'
+      }
+      if (args.length === 0) {
+        return ['Usage: appearance key=value ...', ...describeAppearanceOptions(rig)]
+      }
+      const { request, errors } = parseAppearanceArgs(rig, args)
+      if (errors.length > 0) {
+        return errors
+      }
+      if (!window.serverConnection?.isOk) {
+        return 'not connected to server'
+      }
+      window.serverConnection.sendAppearanceRequest(request)
+      return 'requesting appearance change...'
+    }, {
+      description: 'Change your look, e.g. appearance hair=blonde shirt=green held=key (no args lists options)',
+      usage: '[key=value...]'
     })
     .registerCommand('world-reload', (args) => {
       if (!window.serverConnection?.isOk) {

@@ -1,5 +1,7 @@
 package greyvarserver
 
+import "github.com/jamesread/greyvar/datlib/rigs"
+
 type Entity struct {
 	ServerId int64
 
@@ -19,4 +21,7 @@ type Entity struct {
 	WorldId string
 
 	ServerDebugAlias string
+
+	// Appearance is the layered-rig look (players only); nil otherwise.
+	Appearance *rigs.Appearance
 }

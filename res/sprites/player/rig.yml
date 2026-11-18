@@ -1,0 +1,82 @@
+# Generated once by `spritegen import`; now the source of truth. Edit freely.
+name: player
+frameSize: 16
+columns: 8
+layers:
+  - name: pants
+    variants: []
+  - name: body
+    variants: []
+  - name: shirt
+    variants: []
+  - name: head
+    variants: []
+  - name: hair
+    variants:
+      - short
+      - long
+slots:
+  hair:
+    - '#3e282b'
+    - '#4e2c29'
+    - '#613a41'
+  pants:
+    - '#2b2429'
+    - '#2b2628'
+    - '#48323b'
+  shirt:
+    - '#3b1a34'
+    - '#851667'
+    - '#a61684'
+    - '#c42f95'
+  skin:
+    - '#935968'
+    - '#eba5a0'
+    - '#f3aea6'
+    - '#f3cebe'
+slotOrder:
+  - skin
+  - hair
+  - shirt
+  - pants
+fixed:
+  - '#151215'
+  - '#1f1a1f'
+palettes:
+  # Each palette replaces its slot's key ramp, dark -> light, same length.
+  skin:
+    rose: ['#935968', '#eba5a0', '#f3aea6', '#f3cebe']
+    peach: ['#a8695a', '#f0b48c', '#f6c29c', '#fde0c4']
+    tan: ['#7a4a32', '#b97a54', '#c98b62', '#e0a982']
+    brown: ['#4f2e22', '#8a5638', '#9a6442', '#b8835e']
+    deep: ['#2e1a14', '#5c3a2a', '#6a4532', '#8a6248']
+  hair:
+    brown: ['#3e282b', '#4e2c29', '#613a41']
+    black: ['#1c1a24', '#2a2733', '#3d3a4a']
+    blonde: ['#a07434', '#d6a94a', '#f0d27a']
+    red: ['#6e2418', '#a83a22', '#d4602e']
+    grey: ['#5a5a62', '#8a8a94', '#bdbdc6']
+  shirt:
+    magenta: ['#3b1a34', '#851667', '#a61684', '#c42f95']
+    blue: ['#1a2440', '#1f4a8a', '#2a64b8', '#4a8ad8']
+    green: ['#183a24', '#26703a', '#33904a', '#58b868']
+    red: ['#3a1416', '#8a1e22', '#b02a2a', '#d84a40']
+    yellow: ['#4a3a14', '#a8801e', '#d0a82a', '#ecd060']
+  pants:
+    charcoal: ['#221e26', '#3a3540', '#544c5a']
+    denim: ['#1e2a44', '#2a3a5e', '#40567e']
+    khaki: ['#5a4a30', '#7a6844', '#98865c']
+    brown: ['#3a2418', '#4e3222', '#6a4630']
+defaults:
+  palettes:
+    hair: brown
+    pants: charcoal
+    shirt: magenta
+    skin: rose
+  parts:
+    hair: short
+outputs:
+  sheetsDir: ../../img/textures/entities/player
+  composite: ../../img/textures/entities/player/composite.png
+  tsx: ../../../server/dat/entdefs/player.tsx
+  webRoot: ../..

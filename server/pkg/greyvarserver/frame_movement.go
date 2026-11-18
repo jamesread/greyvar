@@ -68,6 +68,7 @@ func processMoveRequest(s *serverInterface, rp *RemotePlayer, mr *pb.MoveRequest
 	if !ok {
 		log.WithFields(fields).Info("MoveRequest blocked")
 		rp.TimeOfLastMoveRequest = s.frameTime
+		s.broadcastBump(rp, mr.X, mr.Y)
 		s.processEntityInteractions(rp)
 		return
 	}

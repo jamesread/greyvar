@@ -145,6 +145,10 @@ export default class ServerConnection {
     for (const entchange of receivedMessage.entityStateChanges ?? []) {
       window.gameState.gridScene.onEntityChange(normalizeEntityStateChange(entchange))
     }
+
+    for (const change of receivedMessage.entityAppearanceChanges ?? []) {
+      window.gameState.gridScene.onEntityAppearance(normalizeEntityStateChange(change))
+    }
   }
 
   sendInteractRequest (entityId) {
@@ -198,6 +202,11 @@ export default class ServerConnection {
       request.worldReloadRequest.worldId = String(worldId)
     }
     this.sendClientRequest(request)
+  }
+
+  /** @param {{parts?: object, palettes?: object, heldItem?: string}} req */
+  sendAppearanceRequest (req) {
+    this.sendClientRequest({ appearanceRequest: req })
   }
 
   disconnect () {
