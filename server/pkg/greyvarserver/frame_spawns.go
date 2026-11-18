@@ -39,11 +39,8 @@ func frameSpawnPlayer(s *serverInterface, rp *RemotePlayer) {
 		playerJoin.Username = rp.Username
 		playerJoin.EntityId = rp.Entity.ServerId
 
-		for _, player := range s.remotePlayers {
-			if player.CurrentWorldId == rp.CurrentWorldId && player.CurrentGridId == rp.CurrentGridId {
-				player.currentFrame.PlayerJoined = &playerJoin;
-			}
-		}
+		// Only the joining client needs its entity id; others see this player via spawns.
+		rp.currentFrame.PlayerJoined = &playerJoin
 
 		rp.Spawned = true
 	}

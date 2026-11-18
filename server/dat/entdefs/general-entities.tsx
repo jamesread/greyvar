@@ -6,6 +6,12 @@
    <property name="collision_type" value="pickup"/>
   </properties>
  </tile>
+ <tile id="1" type="shard">
+  <properties>
+   <property name="collision_type" value="pickup"/>
+   <property name="item_id" value="shard"/>
+  </properties>
+ </tile>
  <tile id="2" type="bottle">
   <properties>
    <property name="collision_type" value="pickup"/>

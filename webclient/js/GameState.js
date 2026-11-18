@@ -10,6 +10,8 @@ export default class GameState {
   grid = null
   pendingSpawns = []
   inventory = []
+  itemDefinitions = new Map()
+  recipeDefinitions = []
 
   hackHasLoadedLogo = false
   localPlayerEntityId = null
@@ -22,7 +24,8 @@ export default class GameState {
   addMessage (m) {}
 
   onNewGrid (g) {
-    this.applyGrid(g, { resetLocalPlayer: true })
+    // Keep localPlayerEntityId across teleports; playerJoined is only sent once on connect.
+    this.applyGrid(g, { resetLocalPlayer: false })
   }
 
   onGridTransition (g) {
@@ -198,7 +201,9 @@ export default class GameState {
   onPlayerJoined (plj) {
     console.log('player joined:', plj.username)
 
-    if (plj.entityId != null) {
+    // playerJoined is sent when we connect; other players' joins must not
+    // replace our local entity id or movement/camera attach to the wrong player.
+    if (plj.entityId != null && this.localPlayerEntityId == null) {
       this.localPlayerEntityId = entityId(plj.entityId)
     }
   }
@@ -208,12 +213,6 @@ export default class GameState {
 
     if (normalized.entityId == null) {
       return
-    }
-
-    if (normalized.definition === 'player') {
-      if (this.localPlayerEntityId == null || normalized.entityId > this.localPlayerEntityId) {
-        this.localPlayerEntityId = normalized.entityId
-      }
     }
 
     if (this.gridScene?.isScrollTransitioning) {
@@ -276,5 +275,42 @@ export default class GameState {
       count: item.count ?? 1
     })) : []
     logGreyvar('inventory update', { items: this.inventory })
+  }
+
+  onItemDefinition (itemdef) {
+    if (itemdef?.id == null) {
+      return
+    }
+
+    this.itemDefinitions.set(itemdef.id, {
+      id: itemdef.id,
+      title: itemdef.title ?? itemdef.id,
+      stackMax: itemdef.stackMax ?? 99,
+      category: itemdef.category ?? ''
+    })
+  }
+
+  onRecipeDefinition (recipe) {
+    if (recipe?.id == null) {
+      return
+    }
+
+    const existing = this.recipeDefinitions.find((r) => r.id === recipe.id)
+    if (existing != null) {
+      return
+    }
+
+    this.recipeDefinitions.push({
+      id: recipe.id,
+      title: recipe.title ?? recipe.id,
+      inputs: (recipe.inputs ?? []).map((input) => ({
+        item: input.item ?? '',
+        count: input.count ?? 1
+      })),
+      outputs: (recipe.outputs ?? []).map((output) => ({
+        item: output.item ?? '',
+        count: output.count ?? 1
+      }))
+    })
   }
 }

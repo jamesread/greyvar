@@ -1,4 +1,12 @@
 import { MENU_THEME } from './MenuTheme.js'
+import {
+  createMenuBorderPanel,
+  drawMenuBorderFallback,
+  layoutMenuBorderPanel,
+  menuBorderReady,
+  preloadMenuBorder
+} from './menuBorder.js'
+import { openCraftingMenu, openInventoryMenu, registerInventoryMenus } from './inventoryMenus.js'
 
 const DEFAULT_MENU_ID = 'main'
 
@@ -111,8 +119,20 @@ export default class MenuSystem {
 
   ensureSceneRunning () {
     const mgr = this.game.scene
-    if (!mgr.getScene(this.sceneKey)) {
+    const menuScene = mgr.getScene(this.sceneKey)
+    if (menuScene == null) {
       return
+    }
+
+    if (!menuBorderReady(menuScene) && !menuScene.load.isLoading()) {
+      menuScene.load.setBaseURL('/res/')
+      preloadMenuBorder(menuScene.load)
+      menuScene.load.once('complete', () => {
+        if (this.isOpen()) {
+          this.render()
+        }
+      })
+      menuScene.load.start()
     }
 
     if (!mgr.isActive(this.sceneKey)) {
@@ -305,7 +325,10 @@ export default class MenuSystem {
     overlay.setInteractive()
     overlay.on('pointerdown', () => this.close())
 
-    const panelGfx = scene.add.graphics()
+    const panelBorder = menuBorderReady(scene)
+      ? createMenuBorderPanel(scene, 0, 0, 10, 10)
+      : null
+    const panelGfx = panelBorder == null ? scene.add.graphics() : null
     const title = scene.add.text(0, 0, menu.title, {
       fontFamily: MENU_THEME.fontFamily,
       fontSize: '28px',
@@ -344,7 +367,8 @@ export default class MenuSystem {
       itemRows.push(this.makeItem(scene, item, ctx, itemRows.length))
     }
 
-    root.add([overlay, panelGfx, title])
+    const panelLayer = panelBorder ?? panelGfx
+    root.add([overlay, panelLayer, title])
     if (subtitle != null) {
       root.add(subtitle)
     }
@@ -366,13 +390,11 @@ export default class MenuSystem {
       overlay.setPosition(0, 0)
       overlay.setSize(width, height)
 
-      panelGfx.clear()
-      panelGfx.fillStyle(MENU_THEME.panel, 1)
-      panelGfx.fillRoundedRect(panelX, panelY, panelW, panelH, 8)
-      panelGfx.lineStyle(2, MENU_THEME.panelBorderDark, 1)
-      panelGfx.strokeRoundedRect(panelX, panelY, panelW, panelH, 8)
-      panelGfx.lineStyle(1, MENU_THEME.panelBorder, 0.9)
-      panelGfx.strokeRoundedRect(panelX + 3, panelY + 3, panelW - 6, panelH - 6, 6)
+      if (panelBorder != null) {
+        layoutMenuBorderPanel(panelBorder, panelX, panelY, panelW, panelH)
+      } else if (panelGfx != null) {
+        drawMenuBorderFallback(panelGfx, panelX, panelY, panelW, panelH, MENU_THEME)
+      }
 
       title.setPosition(width / 2, panelY + pad + 4)
       if (subtitle != null) {
@@ -470,6 +492,8 @@ export default class MenuSystem {
 }
 
 export function registerDefaultMenus (menuSystem) {
+  registerInventoryMenus(menuSystem)
+
   menuSystem.registerMenu({
     id: 'main',
     title: 'Menu',
@@ -479,6 +503,16 @@ export function registerDefaultMenus (menuSystem) {
         id: 'continue',
         label: 'Continue',
         action: ({ menuSystem: ms }) => ms.close()
+      },
+      {
+        id: 'inventory',
+        label: 'Inventory',
+        action: () => openInventoryMenu()
+      },
+      {
+        id: 'crafting',
+        label: 'Crafting',
+        action: () => openCraftingMenu()
       },
       {
         id: 'fullscreen',

@@ -15,4 +15,5 @@ canvas {
   margin: 0 auto;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  touch-action: none;
 }

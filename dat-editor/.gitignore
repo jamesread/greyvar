@@ -1,0 +1,7 @@
+service/dat-editor-service
+greyvar-dat-editor
+frontend/dist/
+frontend/node_modules/
+service/gen/
+frontend/gen/
+service/tmp/

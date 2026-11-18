@@ -4,60 +4,90 @@ Web-based editor for Greyvar **entity definitions** (`entdefs`) and **tile defin
 
 Replaces the entdef/tiledef portions of the legacy Java desktop editor with:
 
-- **Go API server** — reads/writes `server/dat/` via datlib
-- **Vite frontend** — list, create, edit, delete definitions with texture previews
+- **Go API service** — Connect RPC over datlib
+- **Vue frontend** — list, create, edit, delete definitions with texture previews
 
 Grid and world editing are out of scope.
+
+## Layout
+
+| Directory | Purpose |
+|-----------|---------|
+| `service/` | Go Connect RPC API |
+| `frontend/` | Vue + Vite web UI |
+| `protocol/` | Protobuf definitions (`buf generate`) |
 
 ## Prerequisites
 
 - Go 1.21+
-- Node.js 18+ (for Vite dev server)
+- Node.js 18+
+- [buf](https://buf.build/docs/installation) CLI
 - Clone [jamesread/greyvar](https://github.com/jamesread/greyvar) (monorepo)
 
-## Run locally
-
-Terminal 1 — API on `:8080`:
+## Quick start
 
 ```bash
 cd dat-editor
-make server
-# or: GREYVAR_DAT_DIR=../server/dat GREYVAR_RES=../res go run .
+make setup
 ```
 
-Terminal 2 — Vite on `https://localhost:5175` (proxies `/api` and `/res`):
+Terminal 1 — API on `:8080` (or `$PORT`):
 
 ```bash
-cd dat-editor
-make web
+make dev-service
 ```
 
-Open https://localhost:5175/ and accept the self-signed cert.
+Terminal 2 — Vite on `http://localhost:5175`:
 
-## Environment
+```bash
+make dev-frontend
+```
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `GREYVAR_DAT_DIR` | `../server/dat` | entdefs + tiledefs root |
-| `GREYVAR_RES` | `../res` | texture files for previews |
-| `-addr` | `:8080` | API listen address |
+Open http://localhost:5175/
+
+## Configuration
+
+`service/config.yaml`:
+
+| Key | Default | Purpose |
+|-----|---------|---------|
+| `listen` | `:8080` | API listen address |
+| `siteTitle` | Greyvar Dat Editor | UI title |
+| `datDir` | _(empty)_ | entdefs + tiledefs root |
+| `resDir` | _(empty)_ | texture files for previews |
+
+Environment overrides:
+
+| Variable | Purpose |
+|----------|---------|
+| `PORT` | listen port (takes precedence over `listen`) |
+| `GREYVAR_DAT_DIR` | dat directory |
+| `GREYVAR_RES` | res directory |
+| `DEDITOR_CONFIG_FILE` | alternate config path |
+| `-configdir` | directory containing `config.yaml` |
+
+`make dev-service` sets `GREYVAR_DAT_DIR` and `GREYVAR_RES` from the monorepo layout by default.
 
 ## API
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/health` | dat/res paths |
-| GET/POST | `/api/entdefs` | list / create |
-| GET/PUT/DELETE | `/api/entdefs/{name}` | read / update / delete |
-| GET/POST | `/api/tiledefs` | list / create |
-| GET/PUT/DELETE | `/api/tiledefs/{name}` | read / update / delete |
-| GET | `/api/textures/entities` | PNG list |
-| GET | `/api/textures/tiles` | PNG list |
-| GET | `/res/*` | static textures |
+Connect RPC service: `deditor.v1.DatEditorService`
+
+| RPC | Description |
+|-----|-------------|
+| `Init` | version, paths |
+| `ListEntdefs` / `GetEntdef` / `CreateEntdef` / `UpdateEntdef` / `DeleteEntdef` | entity definitions |
+| `ListTiledefs` / `GetTiledef` / `CreateTiledef` / `UpdateTiledef` / `DeleteTiledef` | tile definitions |
+| `ListTextures` | PNG list (`kind`: `entities` or `tiles`) |
+
+Also served:
+
+- `GET /metrics` — Prometheus metrics
+- `GET /res/*` — static textures
 
 ## Build
 
 ```bash
-make build   # greyvar-dat-editor binary + web/dist/
-make tidy    # go mod tidy
+make build    # generate protos, service binary, frontend/dist
+make test     # service + frontend tests
+make generate # buf generate only
 ```

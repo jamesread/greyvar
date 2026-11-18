@@ -40,6 +40,18 @@ func (s *serverInterface) processPlayerRequests() {
 			if req.WorldLoadRequest != nil {
 				processWorldLoadRequest(s, p, req.WorldLoadRequest)
 			}
+
+			if req.InteractRequest != nil {
+				processInteractRequest(s, p, req.InteractRequest)
+			}
+
+			if req.CraftRequest != nil {
+				processCraftRequest(s, p, req.CraftRequest)
+			}
+
+			if req.WorldReloadRequest != nil {
+				processWorldReloadRequest(s, p, req.WorldReloadRequest)
+			}
 		}
 
 	}
@@ -56,6 +68,8 @@ func (s *serverInterface) createServerUpdates() {
 		frameConsoleMessages(s, p)
 		frameHudMessages(s, p)
 		frameInventoryUpdates(s, p)
+		frameItemDefinitions(s, p)
+		frameRecipeDefinitions(s, p)
 	}
 }
 

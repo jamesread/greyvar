@@ -1,0 +1,8 @@
+id: craft_gem
+title: Craft Gem
+inputs:
+  - item: shard
+    count: 2
+outputs:
+  - item: gem
+    count: 1

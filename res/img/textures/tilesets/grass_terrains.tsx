@@ -221,12 +221,16 @@
  <tile id="128" probability="0.01"/>
  <tile id="198">
   <objectgroup draworder="index" id="2">
-   <object id="1" x="2" y="0" width="14" height="16"/>
+   <object id="2" x="15.8125" y="0.0625">
+    <polygon points="0,0 -15.8125,15.9375 0.1875,15.9375 0.1875,-0.0625"/>
+   </object>
   </objectgroup>
  </tile>
  <tile id="199">
   <objectgroup draworder="index" id="2">
-   <object id="1" x="0" y="0" width="15" height="16"/>
+   <object id="3" x="5.6875" y="3.0625">
+    <polygon points="0,0 10.3125,12.875 -5.6875,12.9375 -5.6875,-3.0625"/>
+   </object>
   </objectgroup>
  </tile>
  <tile id="108"/>
@@ -282,7 +286,11 @@
  <tile id="150"/>
  <tile id="151"/>
  <tile id="152"/>
- <tile id="153"/>
+ <tile id="153">
+  <objectgroup draworder="index" id="2">
+   <object id="3" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
  <tile id="154"/>
  <tile id="155"/>
  <tile id="156"/>
@@ -548,7 +556,7 @@
  <tile id="398"/>
  <tile id="399"/>
  <wangsets>
-  <wangset name="grass_terains" type="corner" tile="-1">
+  <wangset name="terrains" type="corner" tile="-1">
    <wangcolor name="mud" color="#ff0000" tile="-1" probability="1"/>
    <wangcolor name="high" color="#107841" tile="-1" probability="1"/>
    <wangcolor name="wall" color="#919191" tile="-1" probability="1"/>

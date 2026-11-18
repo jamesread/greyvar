@@ -1,0 +1,6 @@
+---
+title: shard
+itemId: shard
+initialState: shardlike
+states:
+  shardlike: {}

@@ -2,5 +2,8 @@
 title: pot
 solid: true
 initialState: potlike
+loot:
+  - item: shard
+    count: 1
 states:
   potlike: {}

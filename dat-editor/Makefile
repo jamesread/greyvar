@@ -1,20 +1,41 @@
-.PHONY: server web dev build tidy
+.PHONY: all generate build build-service build-frontend test lint install setup dev-service dev-frontend clean
 
-DAT_DIR ?= ../server/dat
-RES_DIR ?= ../res
+DAT_DIR ?= $(abspath ../server/dat)
+RES_DIR ?= $(abspath ../res)
 
-server:
-	GREYVAR_DAT_DIR=$(DAT_DIR) GREYVAR_RES=$(RES_DIR) go run .
+all: build
 
-web:
-	cd web && npm install && npm run dev
+generate:
+	cd protocol/proto && buf generate --template ../buf.gen.yaml
 
-dev:
-	@echo "Run 'make server' and 'make web' in separate terminals"
+build: generate build-service build-frontend
 
-build:
-	go build -o greyvar-dat-editor .
-	cd web && npm install && npm run build
+build-service:
+	GREYVAR_DAT_DIR=$(DAT_DIR) GREYVAR_RES=$(RES_DIR) $(MAKE) -wC service build
 
-tidy:
-	go mod tidy
+build-frontend:
+	$(MAKE) -wC frontend build
+
+test: generate
+	$(MAKE) -wC service test
+	$(MAKE) -wC frontend test
+
+lint:
+	$(MAKE) -wC service lint
+	$(MAKE) -wC frontend lint
+
+install:
+	cd service && go mod download
+	cd frontend && npm install
+
+setup: install generate
+	@echo "Setup complete. Run 'make dev-service' and 'make dev-frontend'."
+
+dev-service:
+	GREYVAR_DAT_DIR=$(DAT_DIR) GREYVAR_RES=$(RES_DIR) $(MAKE) -wC service run
+
+dev-frontend:
+	$(MAKE) -wC frontend run
+
+clean:
+	rm -rf service/dat-editor-service frontend/dist frontend/gen service/gen

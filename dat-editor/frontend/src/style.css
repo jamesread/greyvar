@@ -1,0 +1,136 @@
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.meta {
+  margin: 0;
+  padding: 0 1rem 0.5rem;
+  color: #667;
+  font-size: 0.9rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1rem 1rem;
+}
+
+.tab {
+  border: 1px solid #c8d0d8;
+  background: #f4f6f8;
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: #3f3f3f;
+  color: #fff;
+  border-color: #3f3f3f;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1rem;
+  padding: 0 1rem 1rem;
+  flex: 1;
+}
+
+.def-sidebar,
+.editor-panel {
+  border: 1px solid #d8dee6;
+  border-radius: 6px;
+  background: #fff;
+}
+
+/* femtocrank styles all <aside> as a hidden mobile nav drawer */
+.def-sidebar {
+  position: static;
+  visibility: visible;
+  left: auto;
+  height: auto;
+  min-width: 0;
+  width: auto;
+  box-shadow: none;
+}
+
+.def-sidebar-header,
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e8edf2;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list-item {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid #eef2f6;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.list-item.active {
+  background: #eef4ff;
+}
+
+.list-item small {
+  color: #667;
+}
+
+.panel-body {
+  padding: 1rem;
+}
+
+.form-span-2 {
+  grid-column: span 2;
+}
+
+.states-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.states-table th,
+.states-table td {
+  border-bottom: 1px solid #e8edf2;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.preview-row img {
+  max-width: 96px;
+  max-height: 96px;
+  image-rendering: pixelated;
+}
+
+.hint,
+.status {
+  color: #667;
+  font-size: 0.9rem;
+}
+
+.error {
+  color: #a33;
+  margin-top: 0.75rem;
+}
+
+.empty {
+  color: #667;
+  padding: 1rem 0;
+}

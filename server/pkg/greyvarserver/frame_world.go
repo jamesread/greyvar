@@ -26,6 +26,106 @@ func processWorldListRequest(s *serverInterface, rp *RemotePlayer) {
 	rp.currentFrame.WorldListResponse = response
 }
 
+func processWorldReloadRequest(s *serverInterface, rp *RemotePlayer, req *pb.WorldReloadRequest) {
+	worldId := req.GetWorldId()
+	if worldId == "" {
+		worldId = rp.CurrentWorldId
+	}
+	if worldId == "" {
+		rp.PendingConsoleMessages = append(rp.PendingConsoleMessages, "world-reload failed: world id required")
+		return
+	}
+
+	if err := s.reloadWorld(worldId); err != nil {
+		rp.PendingConsoleMessages = append(rp.PendingConsoleMessages, "world-reload failed: "+err.Error())
+		log.WithFields(log.Fields{
+			"player": rp.Username,
+			"world":  worldId,
+			"error":  err.Error(),
+		}).Warn("world-reload failed")
+		return
+	}
+
+	for _, player := range s.remotePlayers {
+		if player.CurrentWorldId != worldId {
+			continue
+		}
+		if err := s.loadPlayerWorld(player, worldId); err != nil {
+			player.PendingConsoleMessages = append(player.PendingConsoleMessages,
+				"world-reload failed: "+err.Error())
+			continue
+		}
+		player.PendingConsoleMessages = append(player.PendingConsoleMessages,
+			"reloaded world "+worldId+" (grid "+player.CurrentGridId+")")
+	}
+}
+
+func (s *serverInterface) reloadWorld(worldId string) error {
+	if worldId == "" {
+		return errSpawnGridMissing
+	}
+
+	s.purgeWorldEntities(worldId)
+	delete(s.loadedWorlds, worldId)
+
+	_, err := s.ensureWorldLoaded(worldId)
+	if err != nil {
+		return err
+	}
+
+	log.WithFields(log.Fields{
+		"world": worldId,
+	}).Info("Reloaded world from disk")
+
+	return nil
+}
+
+func (s *serverInterface) purgeWorldEntities(worldId string) {
+	toDespawn := make([]int64, 0)
+	for id, ent := range s.entityInstances {
+		if ent == nil || ent.WorldId != worldId || s.isPlayerEntity(ent) {
+			continue
+		}
+		toDespawn = append(toDespawn, id)
+	}
+
+	for _, id := range toDespawn {
+		delete(s.entityInstances, id)
+		for _, rp := range s.remotePlayers {
+			if _, known := rp.KnownEntities[id]; known {
+				rp.PendingDespawns = append(rp.PendingDespawns, id)
+				delete(rp.KnownEntities, id)
+			}
+			if rp.ActiveEntityIds != nil {
+				delete(rp.ActiveEntityIds, id)
+			}
+		}
+	}
+}
+
+func (s *serverInterface) mountWorld(world *worlds.World) {
+	if world == nil {
+		return
+	}
+
+	s.loadedWorlds[world.ID] = world
+	for gridId, grid := range world.Grids {
+		s.instantiateGridEntities(world.ID, gridId, grid)
+	}
+}
+
+func (s *serverInterface) isPlayerEntity(ent *Entity) bool {
+	if ent == nil {
+		return false
+	}
+	for _, rp := range s.remotePlayers {
+		if rp.Entity != nil && rp.Entity.ServerId == ent.ServerId {
+			return true
+		}
+	}
+	return false
+}
+
 func processWorldLoadRequest(s *serverInterface, rp *RemotePlayer, req *pb.WorldLoadRequest) {
 	worldId := req.GetWorldId()
 	if worldId == "" {

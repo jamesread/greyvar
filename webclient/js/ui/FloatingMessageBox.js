@@ -1,3 +1,11 @@
+import {
+  createMenuBorderPanel,
+  drawMenuBorderFallback,
+  layoutMenuBorderPanel,
+  menuBorderReady
+} from '../menu/menuBorder.js'
+import { MENU_THEME } from '../menu/MenuTheme.js'
+
 /**
  * Reusable floating message box for world-anchored prompts (signs, pickups, etc.).
  * Drawn in a HUD/overlay scene with scrollFactor 0; positions from world→screen.
@@ -30,7 +38,10 @@ export function createFloatingMessageBox (scene, style = {}) {
   root.setDepth(opts.depth)
   root.setVisible(false)
 
-  const bg = scene.add.graphics()
+  const borderPanel = menuBorderReady(scene)
+    ? createMenuBorderPanel(scene, 0, 0, 10, 10)
+    : null
+  const bg = borderPanel == null ? scene.add.graphics() : null
   const label = scene.add.text(0, 0, '', {
     fontFamily: opts.fontFamily,
     fontSize: opts.fontSize,
@@ -40,7 +51,8 @@ export function createFloatingMessageBox (scene, style = {}) {
   })
   label.setOrigin(0, 0)
 
-  root.add([bg, label])
+  const panelLayer = borderPanel ?? bg
+  root.add([panelLayer, label])
 
   /** @type {null | { text: string, entityId?: number|null, worldX?: number|null, worldY?: number|null }} */
   let active = null
@@ -55,9 +67,15 @@ export function createFloatingMessageBox (scene, style = {}) {
 
   function redrawBackground () {
     const { tw, th, w, h } = measure()
-    bg.clear()
-    bg.fillStyle(opts.backgroundColor, opts.backgroundAlpha)
-    bg.fillRoundedRect(0, 0, w, h, opts.cornerRadius)
+    if (borderPanel != null) {
+      layoutMenuBorderPanel(borderPanel, 0, 0, w, h)
+    } else if (bg != null) {
+      bg.clear()
+      drawMenuBorderFallback(bg, 0, 0, w, h, {
+        ...MENU_THEME,
+        panel: opts.backgroundColor
+      })
+    }
     label.setPosition(opts.paddingX, opts.paddingY)
     return { w, h, tw, th }
   }
@@ -65,7 +83,9 @@ export function createFloatingMessageBox (scene, style = {}) {
   function hide () {
     active = null
     label.setText('')
-    bg.clear()
+    if (bg != null) {
+      bg.clear()
+    }
     root.setVisible(false)
   }
 

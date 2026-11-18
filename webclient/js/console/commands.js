@@ -120,6 +120,21 @@ export function registerDefaultCommands (gameConsole) {
       description: 'Load a world and teleport to its spawn grid',
       usage: '<worldId>'
     })
+    .registerCommand('world-reload', (args) => {
+      if (!window.serverConnection?.isOk) {
+        return 'not connected to server'
+      }
+
+      const worldId = args[0]
+      window.serverConnection.sendWorldReloadRequest(worldId)
+      if (worldId != null && worldId !== '') {
+        return `requesting world reload: ${worldId}...`
+      }
+      return 'requesting reload of current world...'
+    }, {
+      description: 'Reload a world from disk and return players to its spawn',
+      usage: '[worldId]'
+    })
     .registerCommand('debug collision', () => toggleCollisionDebug(), {
       description: 'Toggle collision overlay (red=blocking rects/tiles, blue=player bounds)',
       usage: ''

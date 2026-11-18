@@ -25,6 +25,8 @@ type RemotePlayer struct {
 
 	KnownEntities          map[int64]*Entity
 	KnownEntdefs           map[string]bool
+	KnownItemdefs          map[string]bool
+	KnownRecipes           map[string]bool
 	PendingDespawns        []int64
 	PendingConsoleMessages []string
 

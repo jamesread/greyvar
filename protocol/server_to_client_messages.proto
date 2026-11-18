@@ -18,6 +18,8 @@ message ServerUpdate {
 	ConsoleMessage consoleMessage = 12;
 	HudMessage hudMessage = 13;
 	InventoryUpdate inventoryUpdate = 14;
+	repeated ItemDefinition itemDefinitions = 15;
+	repeated RecipeDefinition recipeDefinitions = 16;
 }
 
 message EntityPosition {
@@ -161,6 +163,30 @@ message InventoryItem {
 
 message InventoryUpdate {
 	repeated InventoryItem items = 1;
+}
+
+message ItemDefinition {
+	string id = 1;
+	string title = 2;
+	int32 stackMax = 3;
+	string category = 4;
+}
+
+message RecipeInput {
+	string item = 1;
+	int32 count = 2;
+}
+
+message RecipeOutput {
+	string item = 1;
+	int32 count = 2;
+}
+
+message RecipeDefinition {
+	string id = 1;
+	string title = 2;
+	repeated RecipeInput inputs = 3;
+	repeated RecipeOutput outputs = 4;
 }
 
 message NoResponse {}

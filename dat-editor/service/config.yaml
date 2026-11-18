@@ -1,0 +1,5 @@
+configVersion: 1
+listen: ":8080"
+siteTitle: Greyvar Dat Editor
+datDir: ""
+resDir: ""

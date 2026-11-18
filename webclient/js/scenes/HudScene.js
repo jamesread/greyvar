@@ -1,6 +1,11 @@
 import Phaser from 'phaser'
 import { initMovementInput } from '../MovementInput.js'
+import { initInteractInput } from '../InteractInput.js'
+import { initHudShortcutButtons } from '../HudShortcutButtons.js'
+import { initMenuShortcuts } from '../MenuShortcuts.js'
+import { initTouchControls } from '../TouchControls.js'
 import { createFloatingMessageBox } from '../ui/FloatingMessageBox.js'
+import { preloadMenuBorder } from '../menu/menuBorder.js'
 
 export default class HudScene extends Phaser.Scene {
   constructor () {
@@ -10,10 +15,15 @@ export default class HudScene extends Phaser.Scene {
   preload () {
     this.load.setBaseURL('/res/')
     this.load.image('menu', 'img/textures/hud/menu.png')
+    preloadMenuBorder(this.load)
   }
 
   create () {
     initMovementInput(this)
+    initInteractInput(this)
+    initTouchControls(this)
+    initHudShortcutButtons(this)
+    initMenuShortcuts(this)
 
     const btnMenu = this.add.image(60, 60, 'menu')
     btnMenu.setScrollFactor(0)

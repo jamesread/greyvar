@@ -1,4 +1,10 @@
 import Phaser from 'phaser'
+import {
+  createMenuBorderPanel,
+  layoutMenuBorderPanel,
+  menuBorderReady,
+  preloadMenuBorder
+} from '../menu/menuBorder.js'
 import { logGreyvar, sceneSnapshot } from '../sceneDebug.js'
 
 const COLORS = {
@@ -27,6 +33,7 @@ export default class SplashScene extends Phaser.Scene {
   preload () {
     this.load.setBaseURL('/res/')
     this.load.image('logo', 'img/logo32.png')
+    preloadMenuBorder(this.load)
     window.backgroundMusic?.queueLoad(this)
   }
 
@@ -36,7 +43,11 @@ export default class SplashScene extends Phaser.Scene {
     sceneSnapshot('SplashScene.create')
 
     this.bg = this.add.graphics()
-    this.panel = this.add.graphics()
+    this.panelShadow = this.add.graphics()
+    this.panelBorder = menuBorderReady(this)
+      ? createMenuBorderPanel(this, 0, 0, 10, 10)
+      : null
+    this.panel = this.panelBorder == null ? this.add.graphics() : null
     this.decor = this.add.graphics()
 
     this.logo = this.textures.exists('logo')
@@ -173,17 +184,24 @@ export default class SplashScene extends Phaser.Scene {
   }
 
   redrawPanel (x, y, w, h) {
+    this.panelShadow.clear()
+    this.panelShadow.fillStyle(0x000000, 0.35)
+    this.panelShadow.fillRoundedRect(x + 6, y + 8, w, h, 16)
+
+    if (this.panelBorder != null) {
+      layoutMenuBorderPanel(this.panelBorder, x, y, w, h)
+      return
+    }
+
+    if (this.panel == null) {
+      return
+    }
+
     this.panel.clear()
-
-    this.panel.fillStyle(0x000000, 0.35)
-    this.panel.fillRoundedRect(x + 6, y + 8, w, h, 16)
-
     this.panel.fillStyle(COLORS.panel, 0.96)
     this.panel.fillRoundedRect(x, y, w, h, 16)
-
     this.panel.lineStyle(3, COLORS.panelBorderDark, 1)
     this.panel.strokeRoundedRect(x + 2, y + 2, w - 4, h - 4, 14)
-
     this.panel.lineStyle(2, COLORS.panelBorder, 1)
     this.panel.strokeRoundedRect(x, y, w, h, 16)
   }

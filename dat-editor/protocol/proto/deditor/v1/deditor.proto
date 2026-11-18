@@ -1,0 +1,132 @@
+syntax = "proto3";
+
+package deditor.v1;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/jamesread/greyvar/dat-editor/service/gen/deditor/v1;deditorv1";
+
+// Dat editor API for Greyvar entity and tile definitions.
+service DatEditorService {
+  rpc Init(google.protobuf.Empty) returns (InitResponse);
+  rpc ListEntdefs(google.protobuf.Empty) returns (ListEntdefsResponse);
+  rpc GetEntdef(GetEntdefRequest) returns (Entdef);
+  rpc CreateEntdef(CreateEntdefRequest) returns (NameResponse);
+  rpc UpdateEntdef(UpdateEntdefRequest) returns (NameResponse);
+  rpc DeleteEntdef(DeleteEntdefRequest) returns (DeleteResponse);
+  rpc ListTiledefs(google.protobuf.Empty) returns (ListTiledefsResponse);
+  rpc GetTiledef(GetTiledefRequest) returns (Tiledef);
+  rpc CreateTiledef(CreateTiledefRequest) returns (NameResponse);
+  rpc UpdateTiledef(UpdateTiledefRequest) returns (NameResponse);
+  rpc DeleteTiledef(DeleteTiledefRequest) returns (DeleteResponse);
+  rpc ListTextures(ListTexturesRequest) returns (ListTexturesResponse);
+}
+
+message InitResponse {
+  string version = 1;
+  string site_title = 2;
+  string dat_dir = 3;
+  string res_dir = 4;
+}
+
+message EntdefSummary {
+  string name = 1;
+  string title = 2;
+  string initial_state = 3;
+  bool solid = 4;
+  int32 state_count = 5;
+}
+
+message EntityState {
+  string name = 1;
+}
+
+message Entdef {
+  string name = 1;
+  string title = 2;
+  string initial_state = 3;
+  bool solid = 4;
+  map<string, EntityState> states = 5;
+}
+
+message ListEntdefsResponse {
+  repeated EntdefSummary items = 1;
+}
+
+message GetEntdefRequest {
+  string name = 1;
+}
+
+message CreateEntdefRequest {
+  string name = 1;
+  string title = 2;
+  string initial_state = 3;
+  bool solid = 4;
+  map<string, EntityState> states = 5;
+}
+
+message UpdateEntdefRequest {
+  string name = 1;
+  string title = 2;
+  string initial_state = 3;
+  bool solid = 4;
+  map<string, EntityState> states = 5;
+}
+
+message TiledefSummary {
+  string name = 1;
+  string texture = 2;
+  bool traversable = 3;
+  bool has_file = 4;
+}
+
+message Tiledef {
+  string name = 1;
+  string texture = 2;
+  bool traversable = 3;
+  bool has_file = 4;
+}
+
+message ListTiledefsResponse {
+  repeated TiledefSummary items = 1;
+}
+
+message GetTiledefRequest {
+  string name = 1;
+}
+
+message CreateTiledefRequest {
+  string name = 1;
+  string texture = 2;
+  bool traversable = 3;
+}
+
+message UpdateTiledefRequest {
+  string name = 1;
+  string texture = 2;
+  bool traversable = 3;
+}
+
+message ListTexturesRequest {
+  string kind = 1;
+}
+
+message ListTexturesResponse {
+  repeated string filenames = 1;
+}
+
+message NameResponse {
+  string name = 1;
+}
+
+message DeleteEntdefRequest {
+  string name = 1;
+}
+
+message DeleteTiledefRequest {
+  string name = 1;
+}
+
+message DeleteResponse {
+  string deleted = 1;
+}

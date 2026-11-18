@@ -118,6 +118,14 @@ export default class ServerConnection {
       window.gameState.onInventoryUpdate?.(receivedMessage.inventoryUpdate)
     }
 
+    for (const itemdef of receivedMessage.itemDefinitions ?? []) {
+      window.gameState.onItemDefinition?.(itemdef)
+    }
+
+    for (const recipe of receivedMessage.recipeDefinitions ?? []) {
+      window.gameState.onRecipeDefinition?.(recipe)
+    }
+
     if (receivedMessage.playerJoined != null) {
       window.gameState.onPlayerJoined(receivedMessage.playerJoined)
     }
@@ -137,6 +145,26 @@ export default class ServerConnection {
     for (const entchange of receivedMessage.entityStateChanges ?? []) {
       window.gameState.gridScene.onEntityChange(normalizeEntityStateChange(entchange))
     }
+  }
+
+  sendInteractRequest (entityId) {
+    if (entityId == null) {
+      return
+    }
+
+    this.sendClientRequest({
+      interactRequest: { entityId: Number(entityId) }
+    })
+  }
+
+  sendCraftRequest (recipeId) {
+    if (recipeId == null || recipeId === '') {
+      return
+    }
+
+    this.sendClientRequest({
+      craftRequest: { recipeId: String(recipeId) }
+    })
   }
 
   sendMoveRequest (vec) {
@@ -162,6 +190,14 @@ export default class ServerConnection {
     this.sendClientRequest({
       worldLoadRequest: { worldId }
     })
+  }
+
+  sendWorldReloadRequest (worldId) {
+    const request = { worldReloadRequest: {} }
+    if (worldId != null && worldId !== '') {
+      request.worldReloadRequest.worldId = String(worldId)
+    }
+    this.sendClientRequest(request)
   }
 
   disconnect () {

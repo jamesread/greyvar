@@ -9,6 +9,8 @@ import (
 	"github.com/jamesread/golure/pkg/dirs"
 	"github.com/jamesread/greyvar/datlib/entdefs"
 	"github.com/jamesread/greyvar/datlib/gridfiles"
+	"github.com/jamesread/greyvar/datlib/itemdefs"
+	"github.com/jamesread/greyvar/datlib/recipes"
 	"github.com/jamesread/greyvar/datlib/tiled"
 	"github.com/jamesread/greyvar/server/pkg/worlds"
 	"github.com/fsnotify/fsnotify"
@@ -22,6 +24,8 @@ type serverInterface struct {
 	remotePlayers map[string]*RemotePlayer;
 	entityInstances map[int64]*Entity;
 	entityDefinitions map[string]*entdefs.EntityDefinition
+	itemDefinitions map[string]*itemdefs.ItemDefinition
+	recipeDefinitions map[string]*recipes.RecipeDefinition
 	entityVisuals *tiled.EntityVisualCatalog
 	loadedWorlds map[string]*worlds.World;
 	defaultWorldId string;
@@ -86,9 +90,12 @@ func newServer() *serverInterface {
 	s := &serverInterface{};
 	s.entityInstances = make(map[int64]*Entity)
 	s.entityDefinitions = make(map[string]*entdefs.EntityDefinition)
+	s.itemDefinitions = make(map[string]*itemdefs.ItemDefinition)
+	s.recipeDefinitions = make(map[string]*recipes.RecipeDefinition)
 	s.entityVisuals = loadEntityVisuals()
 	blockingTileTextures = loadBlockingTileTextures()
 	s.loadServerEntdefs()
+	s.loadItemCatalog()
 	s.remotePlayers = make(map[string]*RemotePlayer);
 
 	s.defaultWorldId = defaultWorldId()
@@ -267,6 +274,8 @@ func (s *serverInterface) onConnected(c *websocket.Conn) (*RemotePlayer) {
 		CurrentWorldId: s.defaultWorldId,
 		KnownEntities: make(map[int64]*Entity),
 		KnownEntdefs: make(map[string]bool),
+		KnownItemdefs: make(map[string]bool),
+		KnownRecipes: make(map[string]bool),
 		TimeOfLastMoveRequest: s.frameTime,
 	}
 
@@ -280,6 +289,12 @@ func (s *serverInterface) onConnected(c *websocket.Conn) (*RemotePlayer) {
 	rp.NeedsGridUpdate = false
 	rp.currentFrame = connectionFrame
 	frameNewEntdefs(s, rp)
+	frameItemDefinitions(s, rp)
+	frameRecipeDefinitions(s, rp)
+	if len(rp.Inventory) > 0 {
+		rp.PendingInventoryUpdate = true
+		frameInventoryUpdates(s, rp)
+	}
 
 	s.sendServerFrame(rp.currentFrame, rp)
 

@@ -9,6 +9,9 @@ message ClientRequests {
 	MoveRequest moveRequest = 2;
 	WorldListRequest worldListRequest = 3;
 	WorldLoadRequest worldLoadRequest = 4;
+	InteractRequest interactRequest = 5;
+	CraftRequest craftRequest = 6;
+	WorldReloadRequest worldReloadRequest = 7;
 }
 
 message MoveRequest {
@@ -27,5 +30,19 @@ message RegistrationRequest {
 message WorldListRequest {}
 
 message WorldLoadRequest {
+	string worldId = 1;
+}
+
+// Mine, break, or otherwise harvest a world entity (e.g. pot).
+message InteractRequest {
+	int64 entityId = 1;
+}
+
+message CraftRequest {
+	string recipeId = 1;
+}
+
+// Reload a world from disk. Empty worldId reloads the player's current world.
+message WorldReloadRequest {
 	string worldId = 1;
 }

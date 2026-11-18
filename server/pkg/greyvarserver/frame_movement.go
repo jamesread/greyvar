@@ -405,25 +405,16 @@ func (s *serverInterface) onEntityContactLeave(rp *RemotePlayer, ent *Entity) {
 func (s *serverInterface) pickupEntity(rp *RemotePlayer, ent *Entity) {
 	log.Infof("Pickup %s id=%d by %s", ent.Definition, ent.ServerId, rp.Username)
 
-	rp.addInventoryItem(ent.Definition, 1)
+	itemID := s.resolvePickupItemID(ent)
+	rp.addInventoryItem(itemID, 1)
 	rp.PendingInventoryUpdate = true
 
-	label := ent.Definition
+	label := itemTitle(s, itemID)
 	text := "Picked up " + label
 	rp.PendingHudMessage = &text
 	rp.PendingHudEntityId = ent.ServerId
 
-	// Despawn for all players who know this entity.
-	delete(s.entityInstances, ent.ServerId)
-	for _, other := range s.remotePlayers {
-		if _, known := other.KnownEntities[ent.ServerId]; known {
-			other.PendingDespawns = append(other.PendingDespawns, ent.ServerId)
-			delete(other.KnownEntities, ent.ServerId)
-		}
-		if other.ActiveEntityIds != nil {
-			delete(other.ActiveEntityIds, ent.ServerId)
-		}
-	}
+	s.despawnEntity(ent.ServerId)
 }
 
 func (s *serverInterface) updateTouchHud(rp *RemotePlayer, nearest *entityContact) {

@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import { getTouchMovementDirection, isTouchMovementActive } from './TouchControls.js'
 
 let keyboard = null
 let cursors = null
@@ -77,6 +78,12 @@ export function pollMovementInput () {
   }
 
   if (x === 0 && y === 0) {
+    const touch = getTouchMovementDirection()
+    x = touch.x
+    y = touch.y
+  }
+
+  if (x === 0 && y === 0) {
     return
   }
 
@@ -102,6 +109,7 @@ export function isMovementKeyDown () {
     wasd.A.isDown ||
     wasd.D.isDown ||
     wasd.W.isDown ||
-    wasd.S.isDown
+    wasd.S.isDown ||
+    isTouchMovementActive()
   )
 }

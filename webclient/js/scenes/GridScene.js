@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import { initMovementInput, pollMovementInput, isMovementKeyDown } from '../MovementInput.js'
+import { pollInteractInput } from '../InteractInput.js'
 import { TILE_SIZE, ENTITY_SIZE, isCollisionDebugEnabled, refreshCollisionDebugOverlay, tileCollisionRectsWorld, entityCollisionRectsWorld, isLegacyTileBlocked } from '../collisionDebug.js'
 
 const MOVE_DURATION_MS = 67
@@ -13,6 +14,8 @@ export default class GridScene extends Phaser.Scene {
 
   isScrollTransitioning = false
   pendingTransitionSpawns = []
+  transitionPlayerScreenOffsetX = null
+  transitionPlayerScreenOffsetY = null
 
   constructor (grid) {
     super({ key: 'grid' })
@@ -178,6 +181,7 @@ export default class GridScene extends Phaser.Scene {
     }
 
     pollMovementInput()
+    pollInteractInput()
     this.updateLocalPlayerIdleAnimation()
     this.updateGamepad()
 
@@ -293,6 +297,8 @@ export default class GridScene extends Phaser.Scene {
       return
     }
 
+    cam.centerOn(ent.img.x, ent.img.y)
+    this.snapCameraScroll()
     cam.startFollow(ent.img, true, 0.15, 0.15)
     this.playerFollowTarget = ent.img
   }
@@ -485,6 +491,46 @@ export default class GridScene extends Phaser.Scene {
     return true
   }
 
+  freezeLocalPlayerForTransition () {
+    const localId = window.gameState?.localPlayerEntityId
+    const localEnt = localId != null ? this.entities[localId] : null
+    const img = localEnt?.img
+    if (img == null) {
+      return
+    }
+
+    if (localEnt.moveTween != null) {
+      localEnt.moveTween.stop()
+      localEnt.moveTween = null
+    }
+
+    const cam = this.cameras.main
+    this.transitionPlayerScreenOffsetX = img.x - cam.scrollX
+    this.transitionPlayerScreenOffsetY = img.y - cam.scrollY
+    this.pinLocalPlayerToScreen()
+  }
+
+  pinLocalPlayerToScreen () {
+    if (this.transitionPlayerScreenOffsetX == null || this.transitionPlayerScreenOffsetY == null) {
+      return
+    }
+
+    const localId = window.gameState?.localPlayerEntityId
+    const img = localId != null ? this.entities[localId]?.img : null
+    if (img == null) {
+      return
+    }
+
+    const cam = this.cameras.main
+    img.x = cam.scrollX + this.transitionPlayerScreenOffsetX
+    img.y = cam.scrollY + this.transitionPlayerScreenOffsetY
+  }
+
+  clearTransitionPlayerPin () {
+    this.transitionPlayerScreenOffsetX = null
+    this.transitionPlayerScreenOffsetY = null
+  }
+
   runScrollTransition () {
     const { newGrid, deltaX, deltaY } = this.activeTransition
     const tileSize = 16
@@ -495,6 +541,7 @@ export default class GridScene extends Phaser.Scene {
     const cam = this.cameras.main
 
     cam.stopFollow()
+    this.freezeLocalPlayerForTransition()
 
     const minX = Math.min(0, deltaX)
     const minY = Math.min(0, deltaY)
@@ -533,6 +580,7 @@ export default class GridScene extends Phaser.Scene {
         const y = startScrollY + (endScrollY - startScrollY) * progress.t
         cam.scrollX = Math.round(x * zoom) / zoom
         cam.scrollY = Math.round(y * zoom) / zoom
+        this.pinLocalPlayerToScreen()
       },
       onComplete: () => {
         cam.scrollX = Math.round(endScrollX * zoom) / zoom
@@ -543,7 +591,7 @@ export default class GridScene extends Phaser.Scene {
   }
 
   finishScrollTransition () {
-    const { newGrid, deltaX, deltaY } = this.activeTransition
+    const { newGrid } = this.activeTransition
 
     if (this.incomingLayer != null) {
       this.incomingLayer.destroy(true)
@@ -554,10 +602,12 @@ export default class GridScene extends Phaser.Scene {
 
     for (const ent of Object.values(this.entities)) {
       if (ent.img != null) {
-        ent.img.x -= deltaX
-        ent.img.y -= deltaY
+        ent.img.x = ent.x
+        ent.img.y = ent.y
       }
     }
+
+    this.clearTransitionPlayerPin()
 
     this.grid = newGrid
     window.gameState.grid = newGrid
@@ -575,6 +625,9 @@ export default class GridScene extends Phaser.Scene {
     const localId = window.gameState.localPlayerEntityId
     const localEnt = localId != null ? this.entities[localId] : null
     if (localEnt?.img != null) {
+      const cam = this.cameras.main
+      cam.centerOn(localEnt.img.x, localEnt.img.y)
+      this.snapCameraScroll()
       this.ensureCameraFollow(localEnt)
     }
 
@@ -602,7 +655,6 @@ export default class GridScene extends Phaser.Scene {
       return false
     }
 
-    const { deltaX, deltaY } = this.activeTransition
     ent.x = entpos.x
     ent.y = entpos.y
 
@@ -611,16 +663,11 @@ export default class GridScene extends Phaser.Scene {
       ent.moveTween = null
     }
 
-    ent.moveTween = this.tweens.add({
-      targets: ent.img,
-      x: entpos.x + deltaX,
-      y: entpos.y + deltaY,
-      duration: SCROLL_TRANSITION_MS,
-      ease: 'Cubic.easeInOut',
-      onComplete: () => {
-        ent.moveTween = null
-      }
-    })
+    if (this.transitionPlayerScreenOffsetX == null) {
+      this.freezeLocalPlayerForTransition()
+    } else {
+      this.pinLocalPlayerToScreen()
+    }
 
     return true
   }
@@ -633,6 +680,22 @@ export default class GridScene extends Phaser.Scene {
     if (ent.state == null) {
       ent.state = this.initialStateForEntity(ent)
     }
+
+    const existing = this.entities[ent.entityId]
+    if (existing != null) {
+      existing.definition = ent.definition ?? existing.definition
+      existing.state = ent.state ?? existing.state
+      existing.x = ent.x ?? existing.x
+      existing.y = ent.y ?? existing.y
+      if (existing.img != null) {
+        existing.img.x = existing.x
+        existing.img.y = existing.y
+        return
+      }
+      this.renderEntity(existing)
+      return
+    }
+
     this.entities[ent.entityId] = ent
     this.renderEntity(ent)
     if (isCollisionDebugEnabled()) {
