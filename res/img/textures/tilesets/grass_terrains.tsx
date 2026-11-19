@@ -1,12 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.12.2" name="grass_terains" tilewidth="16" tileheight="16" tilecount="400" columns="20">
- <image source="grass_terrains.png" width="320" height="320"/>
+<tileset version="1.10" tiledversion="1.12.2" name="grass_terains" tilewidth="16" tileheight="16" tilecount="560" columns="20">
+ <image source="grass_terrains.png" width="320" height="448"/>
  <tile id="0"/>
  <tile id="1"/>
  <tile id="2"/>
  <tile id="3"/>
- <tile id="4"/>
- <tile id="5"/>
+ <tile id="4">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+   <property name="needs_water_below" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="400" duration="300"/>
+   <frame tileid="401" duration="300"/>
+   <frame tileid="402" duration="300"/>
+   <frame tileid="403" duration="300"/>
+   <frame tileid="404" duration="300"/>
+   <frame tileid="405" duration="300"/>
+   <frame tileid="406" duration="300"/>
+   <frame tileid="407" duration="300"/>
+  </animation>
+ </tile>
+ <tile id="5">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+   <property name="needs_water_below" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="408" duration="300"/>
+   <frame tileid="409" duration="300"/>
+   <frame tileid="410" duration="300"/>
+   <frame tileid="411" duration="300"/>
+   <frame tileid="412" duration="300"/>
+   <frame tileid="413" duration="300"/>
+   <frame tileid="414" duration="300"/>
+   <frame tileid="415" duration="300"/>
+  </animation>
+ </tile>
  <tile id="6"/>
  <tile id="7"/>
  <tile id="8"/>
@@ -41,8 +71,38 @@
  <tile id="21"/>
  <tile id="22"/>
  <tile id="23"/>
- <tile id="24"/>
- <tile id="25"/>
+ <tile id="24">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+   <property name="needs_water_below" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="416" duration="300"/>
+   <frame tileid="417" duration="300"/>
+   <frame tileid="418" duration="300"/>
+   <frame tileid="419" duration="300"/>
+   <frame tileid="420" duration="300"/>
+   <frame tileid="421" duration="300"/>
+   <frame tileid="422" duration="300"/>
+   <frame tileid="423" duration="300"/>
+  </animation>
+ </tile>
+ <tile id="25">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+   <property name="needs_water_below" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="424" duration="300"/>
+   <frame tileid="425" duration="300"/>
+   <frame tileid="426" duration="300"/>
+   <frame tileid="427" duration="300"/>
+   <frame tileid="428" duration="300"/>
+   <frame tileid="429" duration="300"/>
+   <frame tileid="430" duration="300"/>
+   <frame tileid="431" duration="300"/>
+  </animation>
+ </tile>
  <tile id="26"/>
  <tile id="27"/>
  <tile id="28"/>
@@ -80,9 +140,54 @@
  <tile id="40"/>
  <tile id="41"/>
  <tile id="42"/>
- <tile id="43"/>
- <tile id="44"/>
- <tile id="45"/>
+ <tile id="43">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+   <property name="needs_water_below" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="432" duration="300"/>
+   <frame tileid="433" duration="300"/>
+   <frame tileid="434" duration="300"/>
+   <frame tileid="435" duration="300"/>
+   <frame tileid="436" duration="300"/>
+   <frame tileid="437" duration="300"/>
+   <frame tileid="438" duration="300"/>
+   <frame tileid="439" duration="300"/>
+  </animation>
+ </tile>
+ <tile id="44">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+   <property name="needs_water_below" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="440" duration="300"/>
+   <frame tileid="441" duration="300"/>
+   <frame tileid="442" duration="300"/>
+   <frame tileid="443" duration="300"/>
+   <frame tileid="444" duration="300"/>
+   <frame tileid="445" duration="300"/>
+   <frame tileid="446" duration="300"/>
+   <frame tileid="447" duration="300"/>
+  </animation>
+ </tile>
+ <tile id="45">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+   <property name="needs_water_below" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="448" duration="300"/>
+   <frame tileid="449" duration="300"/>
+   <frame tileid="450" duration="300"/>
+   <frame tileid="451" duration="300"/>
+   <frame tileid="452" duration="300"/>
+   <frame tileid="453" duration="300"/>
+   <frame tileid="454" duration="300"/>
+   <frame tileid="455" duration="300"/>
+  </animation>
+ </tile>
  <tile id="46"/>
  <tile id="47"/>
  <tile id="48"/>
@@ -132,9 +237,39 @@
    <object id="1" x="0" y="0" width="10" height="16"/>
   </objectgroup>
  </tile>
- <tile id="63"/>
+ <tile id="63">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+   <property name="needs_water_below" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="456" duration="300"/>
+   <frame tileid="457" duration="300"/>
+   <frame tileid="458" duration="300"/>
+   <frame tileid="459" duration="300"/>
+   <frame tileid="460" duration="300"/>
+   <frame tileid="461" duration="300"/>
+   <frame tileid="462" duration="300"/>
+   <frame tileid="463" duration="300"/>
+  </animation>
+ </tile>
  <tile id="64"/>
- <tile id="65"/>
+ <tile id="65">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+   <property name="needs_water_below" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="464" duration="300"/>
+   <frame tileid="465" duration="300"/>
+   <frame tileid="466" duration="300"/>
+   <frame tileid="467" duration="300"/>
+   <frame tileid="468" duration="300"/>
+   <frame tileid="469" duration="300"/>
+   <frame tileid="470" duration="300"/>
+   <frame tileid="471" duration="300"/>
+  </animation>
+ </tile>
  <tile id="66" probability="0.05"/>
  <tile id="67" probability="0.05"/>
  <tile id="68" probability="0.05"/>
@@ -168,9 +303,54 @@
  <tile id="80"/>
  <tile id="81"/>
  <tile id="82"/>
- <tile id="83"/>
- <tile id="84"/>
- <tile id="85"/>
+ <tile id="83">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+   <property name="needs_water_below" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="472" duration="300"/>
+   <frame tileid="473" duration="300"/>
+   <frame tileid="474" duration="300"/>
+   <frame tileid="475" duration="300"/>
+   <frame tileid="476" duration="300"/>
+   <frame tileid="477" duration="300"/>
+   <frame tileid="478" duration="300"/>
+   <frame tileid="479" duration="300"/>
+  </animation>
+ </tile>
+ <tile id="84">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+   <property name="needs_water_below" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="480" duration="300"/>
+   <frame tileid="481" duration="300"/>
+   <frame tileid="482" duration="300"/>
+   <frame tileid="483" duration="300"/>
+   <frame tileid="484" duration="300"/>
+   <frame tileid="485" duration="300"/>
+   <frame tileid="486" duration="300"/>
+   <frame tileid="487" duration="300"/>
+  </animation>
+ </tile>
+ <tile id="85">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+   <property name="needs_water_below" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="488" duration="300"/>
+   <frame tileid="489" duration="300"/>
+   <frame tileid="490" duration="300"/>
+   <frame tileid="491" duration="300"/>
+   <frame tileid="492" duration="300"/>
+   <frame tileid="493" duration="300"/>
+   <frame tileid="494" duration="300"/>
+   <frame tileid="495" duration="300"/>
+  </animation>
+ </tile>
  <tile id="86"/>
  <tile id="87"/>
  <tile id="88"/>
@@ -216,9 +396,9 @@
  <tile id="100"/>
  <tile id="101"/>
  <tile id="102"/>
- <tile id="126" probability="0.01"/>
- <tile id="127" probability="0.01"/>
- <tile id="128" probability="0.01"/>
+ <tile id="126" probability="0"/>
+ <tile id="127" probability="0"/>
+ <tile id="128" probability="0"/>
  <tile id="198">
   <objectgroup draworder="index" id="2">
    <object id="2" x="15.8125" y="0.0625">
@@ -262,12 +442,68 @@
  <tile id="103" probability="0.05"/>
  <tile id="104" probability="0.05"/>
  <tile id="105" probability="0.05"/>
- <tile id="129"/>
- <tile id="130"/>
- <tile id="131"/>
- <tile id="132"/>
- <tile id="133"/>
- <tile id="134"/>
+ <tile id="129">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="6" width="4.09091" height="10"/>
+   <object id="2" x="6" y="6" width="10" height="3.90909"/>
+  </objectgroup>
+ </tile>
+ <tile id="130">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="6" width="16" height="4.09091"/>
+  </objectgroup>
+ </tile>
+ <tile id="131">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="6" width="10" height="4"/>
+   <object id="2" x="5.90909" y="10.1818" width="4.09091" height="5.81818"/>
+  </objectgroup>
+ </tile>
+ <tile id="132">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="496" duration="300"/>
+   <frame tileid="497" duration="300"/>
+   <frame tileid="498" duration="300"/>
+   <frame tileid="499" duration="300"/>
+   <frame tileid="500" duration="300"/>
+   <frame tileid="501" duration="300"/>
+   <frame tileid="502" duration="300"/>
+   <frame tileid="503" duration="300"/>
+  </animation>
+ </tile>
+ <tile id="133">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="504" duration="300"/>
+   <frame tileid="505" duration="300"/>
+   <frame tileid="506" duration="300"/>
+   <frame tileid="507" duration="300"/>
+   <frame tileid="508" duration="300"/>
+   <frame tileid="509" duration="300"/>
+   <frame tileid="510" duration="300"/>
+   <frame tileid="511" duration="300"/>
+  </animation>
+ </tile>
+ <tile id="134">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="512" duration="300"/>
+   <frame tileid="513" duration="300"/>
+   <frame tileid="514" duration="300"/>
+   <frame tileid="515" duration="300"/>
+   <frame tileid="516" duration="300"/>
+   <frame tileid="517" duration="300"/>
+   <frame tileid="518" duration="300"/>
+   <frame tileid="519" duration="300"/>
+  </animation>
+ </tile>
  <tile id="135"/>
  <tile id="136"/>
  <tile id="137"/>
@@ -282,16 +518,55 @@
  <tile id="146"/>
  <tile id="147"/>
  <tile id="148"/>
- <tile id="149"/>
+ <tile id="149">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="0" width="4" height="16"/>
+  </objectgroup>
+ </tile>
  <tile id="150"/>
- <tile id="151"/>
- <tile id="152"/>
+ <tile id="151">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="5.72727" y="0" width="4.27273" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="152">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="520" duration="300"/>
+   <frame tileid="521" duration="300"/>
+   <frame tileid="522" duration="300"/>
+   <frame tileid="523" duration="300"/>
+   <frame tileid="524" duration="300"/>
+   <frame tileid="525" duration="300"/>
+   <frame tileid="526" duration="300"/>
+   <frame tileid="527" duration="300"/>
+  </animation>
+ </tile>
  <tile id="153">
+  <properties>
+   <property name="water" type="bool" value="true"/>
+  </properties>
   <objectgroup draworder="index" id="2">
    <object id="3" x="0" y="0" width="16" height="16"/>
   </objectgroup>
  </tile>
- <tile id="154"/>
+ <tile id="154">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="528" duration="300"/>
+   <frame tileid="529" duration="300"/>
+   <frame tileid="530" duration="300"/>
+   <frame tileid="531" duration="300"/>
+   <frame tileid="532" duration="300"/>
+   <frame tileid="533" duration="300"/>
+   <frame tileid="534" duration="300"/>
+   <frame tileid="535" duration="300"/>
+  </animation>
+ </tile>
  <tile id="155"/>
  <tile id="156"/>
  <tile id="157"/>
@@ -306,12 +581,68 @@
  <tile id="166"/>
  <tile id="167"/>
  <tile id="168"/>
- <tile id="169"/>
- <tile id="170"/>
- <tile id="171"/>
- <tile id="172"/>
- <tile id="173"/>
- <tile id="174"/>
+ <tile id="169">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="6" width="10" height="10"/>
+   <object id="2" x="6" y="0" width="4" height="6"/>
+  </objectgroup>
+ </tile>
+ <tile id="170">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="5.90909" width="16" height="10.0909"/>
+  </objectgroup>
+ </tile>
+ <tile id="171">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6.18182" y="0" width="3.81818" height="6.72727"/>
+   <object id="2" x="0" y="6" width="10" height="9.90909"/>
+  </objectgroup>
+ </tile>
+ <tile id="172">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="536" duration="300"/>
+   <frame tileid="537" duration="300"/>
+   <frame tileid="538" duration="300"/>
+   <frame tileid="539" duration="300"/>
+   <frame tileid="540" duration="300"/>
+   <frame tileid="541" duration="300"/>
+   <frame tileid="542" duration="300"/>
+   <frame tileid="543" duration="300"/>
+  </animation>
+ </tile>
+ <tile id="173">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="544" duration="300"/>
+   <frame tileid="545" duration="300"/>
+   <frame tileid="546" duration="300"/>
+   <frame tileid="547" duration="300"/>
+   <frame tileid="548" duration="300"/>
+   <frame tileid="549" duration="300"/>
+   <frame tileid="550" duration="300"/>
+   <frame tileid="551" duration="300"/>
+  </animation>
+ </tile>
+ <tile id="174">
+  <properties>
+   <property name="synced" type="bool" value="true"/>
+  </properties>
+  <animation>
+   <frame tileid="552" duration="300"/>
+   <frame tileid="553" duration="300"/>
+   <frame tileid="554" duration="300"/>
+   <frame tileid="555" duration="300"/>
+   <frame tileid="556" duration="300"/>
+   <frame tileid="557" duration="300"/>
+   <frame tileid="558" duration="300"/>
+   <frame tileid="559" duration="300"/>
+  </animation>
+ </tile>
  <tile id="175"/>
  <tile id="176"/>
  <tile id="177"/>
@@ -329,9 +660,25 @@
  <tile id="189"/>
  <tile id="190"/>
  <tile id="191"/>
- <tile id="192"/>
- <tile id="193"/>
- <tile id="194"/>
+ <tile id="192">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="5.90909" y="5.81818" width="10.0909" height="10.1818"/>
+   <object id="2" x="8" y="8" width="8" height="8"/>
+  </objectgroup>
+ </tile>
+ <tile id="193">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="5.90909" width="16" height="10.0909"/>
+   <object id="2" x="8" y="8" width="8" height="8"/>
+   <object id="3" x="0" y="8" width="8" height="8"/>
+  </objectgroup>
+ </tile>
+ <tile id="194">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="6" width="9.72727" height="10"/>
+   <object id="2" x="0" y="8" width="8" height="8"/>
+  </objectgroup>
+ </tile>
  <tile id="195"/>
  <tile id="196"/>
  <tile id="197"/>
@@ -349,9 +696,21 @@
  <tile id="209"/>
  <tile id="210"/>
  <tile id="211"/>
- <tile id="212"/>
+ <tile id="212">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="5.72727" y="0" width="4.27273" height="16"/>
+   <object id="2" x="8" y="0" width="8" height="8"/>
+   <object id="3" x="8" y="8" width="8" height="8"/>
+  </objectgroup>
+ </tile>
  <tile id="213"/>
- <tile id="214"/>
+ <tile id="214">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="0" width="4" height="16"/>
+   <object id="2" x="0" y="0" width="8" height="8"/>
+   <object id="3" x="0" y="8" width="8" height="8"/>
+  </objectgroup>
+ </tile>
  <tile id="215"/>
  <tile id="216"/>
  <tile id="217"/>
@@ -387,9 +746,27 @@
  <tile id="229"/>
  <tile id="230"/>
  <tile id="231"/>
- <tile id="232"/>
- <tile id="233"/>
- <tile id="234"/>
+ <tile id="232">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6.09091" y="0" width="3.90909" height="10.0909"/>
+   <object id="2" x="10.1818" y="6.18182" width="5.81818" height="3.81818"/>
+   <object id="3" x="8" y="0" width="8" height="8"/>
+  </objectgroup>
+ </tile>
+ <tile id="233">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="6" width="16" height="4.09091"/>
+   <object id="2" x="0" y="0" width="8" height="8"/>
+   <object id="3" x="8" y="0" width="8" height="8"/>
+  </objectgroup>
+ </tile>
+ <tile id="234">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="5.90909" y="0" width="3.90909" height="9.81818"/>
+   <object id="2" x="0" y="6" width="5.63636" height="3.81818"/>
+   <object id="3" x="0" y="0" width="8" height="8"/>
+  </objectgroup>
+ </tile>
  <tile id="235"/>
  <tile id="236"/>
  <tile id="237"/>
@@ -404,9 +781,31 @@
  <tile id="246"/>
  <tile id="247"/>
  <tile id="248"/>
- <tile id="249"/>
- <tile id="250"/>
- <tile id="251"/>
+ <tile id="249">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="6" width="4.09091" height="10"/>
+   <object id="2" x="6" y="6" width="10" height="3.90909"/>
+   <object id="3" x="0" y="0" width="8" height="8"/>
+   <object id="4" x="8" y="0" width="8" height="8"/>
+   <object id="5" x="0" y="8" width="8" height="8"/>
+  </objectgroup>
+ </tile>
+ <tile id="250">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="6" width="16" height="4.09091"/>
+   <object id="2" x="0" y="0" width="8" height="8"/>
+   <object id="3" x="8" y="0" width="8" height="8"/>
+  </objectgroup>
+ </tile>
+ <tile id="251">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="6" width="10" height="4"/>
+   <object id="2" x="5.90909" y="10.1818" width="4.09091" height="5.81818"/>
+   <object id="3" x="0" y="0" width="8" height="8"/>
+   <object id="4" x="8" y="0" width="8" height="8"/>
+   <object id="5" x="8" y="8" width="8" height="8"/>
+  </objectgroup>
+ </tile>
  <tile id="252"/>
  <tile id="253"/>
  <tile id="254"/>
@@ -424,9 +823,21 @@
  <tile id="266"/>
  <tile id="267"/>
  <tile id="268"/>
- <tile id="269"/>
+ <tile id="269">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="0" width="4" height="16"/>
+   <object id="2" x="0" y="0" width="8" height="8"/>
+   <object id="3" x="0" y="8" width="8" height="8"/>
+  </objectgroup>
+ </tile>
  <tile id="270"/>
- <tile id="271"/>
+ <tile id="271">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="5.72727" y="0" width="4.27273" height="16"/>
+   <object id="2" x="8" y="0" width="8" height="8"/>
+   <object id="3" x="8" y="8" width="8" height="8"/>
+  </objectgroup>
+ </tile>
  <tile id="272"/>
  <tile id="273"/>
  <tile id="274"/>
@@ -444,9 +855,31 @@
  <tile id="286"/>
  <tile id="287"/>
  <tile id="288"/>
- <tile id="289"/>
- <tile id="290"/>
- <tile id="291"/>
+ <tile id="289">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="6" width="10" height="10"/>
+   <object id="2" x="6" y="0" width="4" height="6"/>
+   <object id="3" x="0" y="0" width="8" height="8"/>
+   <object id="4" x="8" y="8" width="8" height="8"/>
+   <object id="5" x="0" y="8" width="8" height="8"/>
+  </objectgroup>
+ </tile>
+ <tile id="290">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="5.90909" width="16" height="10.0909"/>
+   <object id="2" x="8" y="8" width="8" height="8"/>
+   <object id="3" x="0" y="8" width="8" height="8"/>
+  </objectgroup>
+ </tile>
+ <tile id="291">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6.18182" y="0" width="3.81818" height="6.72727"/>
+   <object id="2" x="0" y="6" width="10" height="9.90909"/>
+   <object id="3" x="8" y="0" width="8" height="8"/>
+   <object id="4" x="8" y="8" width="8" height="8"/>
+   <object id="5" x="0" y="8" width="8" height="8"/>
+  </objectgroup>
+ </tile>
  <tile id="292"/>
  <tile id="293"/>
  <tile id="294"/>

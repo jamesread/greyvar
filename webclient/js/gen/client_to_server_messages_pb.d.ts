@@ -153,6 +153,22 @@ export declare type InteractRequest = Message<"greyvarproto.InteractRequest"> & 
    * @generated from field: int64 entityId = 1;
    */
   entityId: bigint;
+
+  /**
+   * The cell the player faces. Used when the entity (if any) has nothing to
+   * do: plant held seeds, harvest a ripe crop.
+   *
+   * @generated from field: greyvarproto.CellTarget cell = 2;
+   */
+  cell?: CellTarget | undefined;
+
+  /**
+   * The way the player faces (Up, DownLeft, ...): other players see the
+   * matching use animation (EntityStateChange "use<Facing>").
+   *
+   * @generated from field: string facing = 3;
+   */
+  facing: string;
 };
 
 /**
@@ -160,6 +176,27 @@ export declare type InteractRequest = Message<"greyvarproto.InteractRequest"> & 
  * Use `create(InteractRequestSchema)` to create a new message.
  */
 export declare const InteractRequestSchema: GenMessage<InteractRequest>;
+
+/**
+ * @generated from message greyvarproto.CellTarget
+ */
+export declare type CellTarget = Message<"greyvarproto.CellTarget"> & {
+  /**
+   * @generated from field: uint32 row = 1;
+   */
+  row: number;
+
+  /**
+   * @generated from field: uint32 col = 2;
+   */
+  col: number;
+};
+
+/**
+ * Describes the message greyvarproto.CellTarget.
+ * Use `create(CellTargetSchema)` to create a new message.
+ */
+export declare const CellTargetSchema: GenMessage<CellTarget>;
 
 /**
  * @generated from message greyvarproto.CraftRequest

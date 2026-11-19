@@ -2,10 +2,18 @@ import Phaser from 'phaser'
 import { initMovementInput, pollMovementInput, isMovementKeyDown } from '../MovementInput.js'
 import { pollInteractInput } from '../InteractInput.js'
 import LayeredSprite from '../sprites/LayeredSprite.js'
+import { facingFromState } from '../sprites/facing.js'
+import Tile from '../Tile.js'
+import { updateDebugPos } from '../debugPos.js'
+import { saveAppearance } from '../sprites/appearanceStore.js'
+import { indexTileAnimations, phaserTileAnimConfig, tileAnimKey, tileAnimStartFrame, syncedStartFrame } from '../tileAnimations.js'
 import { preloadRig, getRig } from '../sprites/PlayerRig.js'
 import { TILE_SIZE, ENTITY_SIZE, isCollisionDebugEnabled, refreshCollisionDebugOverlay, tileCollisionRectsWorld, entityCollisionRectsWorld, isLegacyTileBlocked } from '../collisionDebug.js'
 
 const MOVE_DURATION_MS = 67
+// Warp (teleport / world load) fade through black: quick out, slightly softer in.
+export const WARP_FADE_OUT_MS = 120
+export const WARP_FADE_IN_MS = 160
 // Constant-speed screen scroll (1.5x the ALttP-ish ~1s per screen).
 const SCROLL_TRANSITION_MS_PER_SCREEN = 667
 const SCROLL_TRANSITION_MIN_MS = 267
@@ -39,7 +47,6 @@ export default class GridScene extends Phaser.Scene {
     // composite sheet above is only a fallback if the rig fails to load.
     preloadRig(this)
 
-    this.load.atlas('water', 'img/textures/fluids/water.png', 'atlas/water.json')
 
     this.layerGrid = this.add.layer()
     this.layerEntities = this.add.layer()
@@ -61,10 +68,12 @@ export default class GridScene extends Phaser.Scene {
       return
     }
 
-    const frameSize = entdef.name === 'player' ? 16 : 15
+    // Tile size comes from the entity's tileset; older servers send none,
+    // when the player sheet is 16px and the rest 15px.
+    const legacy = entdef.name === 'player' ? 16 : 15
     this.load.spritesheet(textureKey, 'img/textures/entities/' + entdef.texture, {
-      frameWidth: frameSize,
-      frameHeight: frameSize
+      frameWidth: entdef.tileWidth || legacy,
+      frameHeight: entdef.tileHeight || legacy
     })
   }
 
@@ -72,13 +81,6 @@ export default class GridScene extends Phaser.Scene {
     console.log('[Greyvar] GridScene.create()', {
       tileCount: this.grid?.allTiles?.()?.length,
       entdefCount: window.gameState.entdefs.size
-    })
-
-    this.anims.create({
-      key: 'water',
-      frames: this.anims.generateFrameNames('water', { prefix: '', end: 2}),
-      repeat: -1,
-      duration: 1500,
     })
 
     this.pointer = this.input.activePointer
@@ -91,9 +93,31 @@ export default class GridScene extends Phaser.Scene {
     initMovementInput(this)
     this.input.keyboard.enabled = true
 
+    if (window.gameState?.fadeInNextGrid) {
+      window.gameState.fadeInNextGrid = false
+      this.cameras.main.fadeIn(WARP_FADE_IN_MS, 0, 0, 0)
+    }
+
     if (isCollisionDebugEnabled()) {
       refreshCollisionDebugOverlay()
     }
+  }
+
+  /** Fade this map to black, freeze input, then call done (once). */
+  fadeOutForWarp (done) {
+    this.isWarping = true
+    let finished = false
+    const finish = () => {
+      if (!finished) {
+        finished = true
+        done()
+      }
+    }
+    const cam = this.cameras.main
+    cam.once('camerafadeoutcomplete', finish)
+    cam.fadeOut(WARP_FADE_OUT_MS, 0, 0, 0)
+    // Never strand the player on a black screen if the camera event is lost.
+    setTimeout(finish, WARP_FADE_OUT_MS + 200)
   }
 
   canRenderEntity () {
@@ -184,7 +208,10 @@ export default class GridScene extends Phaser.Scene {
   }
 
   update() {
-    if (this.isScrollTransitioning) {
+    this.updateSyncedTiles()
+    updateDebugPos(this)
+
+    if (this.isScrollTransitioning || this.isWarping) {
       return
     }
 
@@ -203,7 +230,7 @@ export default class GridScene extends Phaser.Scene {
       const localId = window.gameState?.localPlayerEntityId
       const ent = localId != null ? this.entities[localId] : null
       if (ent?.img != null) {
-        this.collisionDebugPlayerOutline.setPosition(ent.img.x, ent.img.y)
+        this.updateCollisionDebugPlayerOutline(ent.img.x, ent.img.y)
       }
     }
   }
@@ -287,7 +314,11 @@ export default class GridScene extends Phaser.Scene {
     img.setOrigin(0)
     const stateName = state?.name ?? this.initialStateForEntity(ent)
     const animKey = this.animKeyForEntity(ent.definition, stateName)
-    if (img.anims?.exists(animKey) || this.anims?.exists(animKey)) {
+    if (state?.once && state.frames?.length > 0) {
+      // Spawned already in a one-shot state (chest opened before we arrived):
+      // show where the transition ends instead of replaying it.
+      img.setFrame(state.frames[state.frames.length - 1])
+    } else if (img.anims?.exists(animKey) || this.anims?.exists(animKey)) {
       img.play(animKey)
     } else if (frame != null) {
       img.setFrame(frame)
@@ -369,9 +400,9 @@ export default class GridScene extends Phaser.Scene {
       const anim = {
         key: animKey,
         frames,
-        // Walk must loop: moves arrive every ~67ms and would otherwise restart
-        // a one-shot clip on frame 0 forever (looks static).
-        repeat: -1
+        // Loop by default (walk cycles, idles). Transition states from tiles
+        // with loop=false (a chest opening) play once and hold the last frame.
+        repeat: state.once ? 0 : -1
       }
       if (!hasHolds) {
         anim.frameRate = defaultFrameRate
@@ -382,16 +413,64 @@ export default class GridScene extends Phaser.Scene {
   }
 
   renderGrid() {
+    // name -> { layer, cells: Map("row,col" -> GameObject) } so server-owned
+    // layers (crops) can be patched one cell at a time by TileChange messages.
+    this.gridLayers = new Map()
     if (this.grid.layers?.length > 0) {
       for (const layerDef of this.grid.layers) {
-        const phaserLayer = this.add.layer()
-        this.layerGrid.add(phaserLayer)
-        this.renderTiles(layerDef.tiles, { offsetX: 0, offsetY: 0, layer: phaserLayer })
+        const entry = this.ensureGridLayer(layerDef.name)
+        for (const tile of layerDef.tiles ?? []) {
+          this.renderTileInto(entry, tile)
+        }
       }
       return
     }
 
     this.renderGridIntoLayer(this.grid, 0, 0, this.layerGrid)
+  }
+
+  ensureGridLayer (name) {
+    let entry = this.gridLayers.get(name)
+    if (entry == null) {
+      const layer = this.add.layer()
+      this.layerGrid.add(layer)
+      entry = { layer, cells: new Map() }
+      this.gridLayers.set(name, entry)
+    }
+    return entry
+  }
+
+  renderTileInto (entry, tile) {
+    const before = entry.layer.list.length
+    this.renderTile(tile, { offsetX: 0, offsetY: 0, layer: entry.layer })
+    if (entry.layer.list.length > before) {
+      entry.cells.set(`${tile.row},${tile.col}`, entry.layer.list[entry.layer.list.length - 1])
+    }
+  }
+
+  /** Server TileChange: replace (or clear) one cell of a named layer. */
+  onTileChange (change) {
+    if (this.isScrollTransitioning || this.gridLayers == null) {
+      this.pendingTileChanges = [...(this.pendingTileChanges ?? []), change]
+      return
+    }
+    const entry = this.ensureGridLayer(change.layer)
+    const key = `${change.row ?? 0},${change.col ?? 0}`
+    entry.cells.get(key)?.destroy()
+    entry.cells.delete(key)
+    if (change.tile != null) {
+      const tile = new Tile()
+      tile.fromNet({ ...change.tile, row: change.row ?? 0, col: change.col ?? 0 })
+      this.renderTileInto(entry, tile)
+    }
+  }
+
+  flushPendingTileChanges () {
+    const pending = this.pendingTileChanges ?? []
+    this.pendingTileChanges = []
+    for (const change of pending) {
+      this.onTileChange(change)
+    }
   }
 
   renderGridIntoLayer (grid, offsetX, offsetY, layer) {
@@ -418,13 +497,7 @@ export default class GridScene extends Phaser.Scene {
     const flipped = !!(tile.textureHorizontalFlip || tile.textureVerticalFlip)
     const useCenter = rotated || flipped
 
-    if (tile.textureName == 'water.png') {
-      const water = this.add.sprite(cellX, cellY, 'water')
-        .setOrigin(0)
-        .setVertexRoundMode('off')
-        .play('water')
-      this.applyTileSeamBleed(water, tileSize)
-      layer.add(water)
+    if (this.renderAnimatedTile(tile, cellX, cellY, useCenter, layer)) {
       return
     }
 
@@ -449,6 +522,65 @@ export default class GridScene extends Phaser.Scene {
     layer.add(img)
   }
 
+  // Tiles with a Tiled <animation> become looping sprites. Returns false for
+  // static tiles so renderTile draws a plain image.
+  renderAnimatedTile (tile, cellX, cellY, useCenter, layer) {
+    if (!tile.atlasKey || tile.frameIndex == null || tile.still) {
+      return false
+    }
+    const anim = this.tileAnimations?.get(tileAnimKey(tile.atlasKey, tile.frameIndex))
+    if (anim == null || !this.textures.exists(tile.atlasKey)) {
+      return false
+    }
+    const key = tileAnimKey(tile.atlasKey, tile.frameIndex)
+    if (!this.anims.exists(key)) {
+      this.anims.create(phaserTileAnimConfig(anim))
+    }
+
+    const tileSize = 16
+    const sprite = useCenter
+      ? this.add.sprite(cellX + tileSize / 2, cellY + tileSize / 2, tile.atlasKey, tile.frameIndex)
+      : this.add.sprite(cellX, cellY, tile.atlasKey, tile.frameIndex).setOrigin(0)
+    sprite.setVertexRoundMode('off')
+    this.applyTileSeamBleed(sprite, tileSize)
+    sprite.angle = tile.textureRotation
+    sprite.flipX = tile.textureHorizontalFlip
+    sprite.flipY = tile.textureVerticalFlip
+    if (anim.synced) {
+      // Driven by one scene clock (updateSyncedTiles), not per-sprite timers,
+      // so every cell (and every map) shows the same frame: water flows.
+      sprite.setFrame(anim.frames[syncedStartFrame(anim, Date.now())])
+      this.syncedTiles = this.syncedTiles ?? []
+      this.syncedTiles.push({ sprite, anim })
+    } else {
+      sprite.play({ key, startFrame: tileAnimStartFrame(tile.row, tile.col, anim.frames.length) })
+    }
+    layer.add(sprite)
+    return true
+  }
+
+  updateSyncedTiles () {
+    if (!this.syncedTiles?.length) {
+      return
+    }
+    const now = Date.now()
+    const frameFor = new Map()
+    this.syncedTiles = this.syncedTiles.filter(({ sprite, anim }) => {
+      if (!sprite.active) {
+        return false // destroyed with its layer
+      }
+      let frame = frameFor.get(anim)
+      if (frame === undefined) {
+        frame = anim.frames[syncedStartFrame(anim, now)]
+        frameFor.set(anim, frame)
+      }
+      if (sprite.frame?.name !== frame) {
+        sprite.setFrame(frame)
+      }
+      return true
+    })
+  }
+
   preloadTilesets() {
     this.queueGridTextureLoads(this.grid)
   }
@@ -458,6 +590,10 @@ export default class GridScene extends Phaser.Scene {
   }
 
   queueGridTextureLoads (grid) {
+    // Animated tiles from every grid seen (incoming scroll grids included);
+    // keys are per atlas, so grids sharing a tileset share animations.
+    this.tileAnimations = indexTileAnimations(grid.tilesets, this.tileAnimations)
+
     for (const tileset of grid.tilesets ?? []) {
       if (!tileset.key || !tileset.image || this.textures.exists(tileset.key)) {
         continue
@@ -526,7 +662,10 @@ export default class GridScene extends Phaser.Scene {
 
     this.queueGridTextureLoads(newGrid)
 
-    if (this.load.isLoading()) {
+    // isLoading() is only true once start() runs, so also check the queue:
+    // a tileset first seen on the incoming grid would otherwise never load
+    // and render as Phaser's missing texture.
+    if (this.load.list.size > 0 || this.load.isLoading()) {
       this.load.once('complete', () => this.runScrollTransition())
       this.load.start()
       return true
@@ -706,8 +845,9 @@ export default class GridScene extends Phaser.Scene {
     window.gameState.grid = newGrid
     this.renderGrid()
     this.configureCamera()
-
     this.isScrollTransitioning = false
+    this.flushPendingTileChanges()
+
     this.activeTransition = null
 
     for (const ent of this.pendingTransitionSpawns) {
@@ -816,6 +956,9 @@ export default class GridScene extends Phaser.Scene {
   }
 
   onEntityAppearance ({ entityId, appearance }) {
+    if (entityId === window.gameState?.localPlayerEntityId) {
+      saveAppearance(appearance)
+    }
     const ent = this.entities[entityId]
     if (ent == null) {
       return
@@ -1005,6 +1148,12 @@ export default class GridScene extends Phaser.Scene {
       return
     }
 
+    // Another player pressed the action key: a one-off use animation.
+    if (String(ec.newState).startsWith('use') && ent.img?.playUse != null) {
+      ent.img.playUse(facingFromState(ec.newState) ?? 'Down')
+      return
+    }
+
     if (ec.newState) {
       // Bumps are momentary events; keep the entity's real state for re-renders.
       if (!String(ec.newState).startsWith('bump')) {
@@ -1037,7 +1186,9 @@ export default class GridScene extends Phaser.Scene {
 
     for (let row = 0; row < this.grid.rowCount; row++) {
       for (let col = 0; col < this.grid.colCount; col++) {
-        const tile = this.grid.topTileAt(row, col)
+        // What the server collides with, not just the top tile drawn
+        // (generated cliff faces and flowers sit above the real terrain).
+        const tile = this.grid.collisionTileAt(row, col)
         if (tile == null) {
           continue
         }
@@ -1092,11 +1243,12 @@ export default class GridScene extends Phaser.Scene {
     const localId = window.gameState?.localPlayerEntityId
     const localEnt = localId != null ? this.entities[localId] : null
     if (localEnt?.img != null) {
+      const [hx, hy, hw, hh] = this.playerHitbox()
       this.collisionDebugPlayerOutline = this.add.rectangle(
-        localEnt.img.x,
-        localEnt.img.y,
-        ENTITY_SIZE,
-        ENTITY_SIZE
+        localEnt.img.x + hx,
+        localEnt.img.y + hy,
+        hw,
+        hh
       ).setOrigin(0).setStrokeStyle(1, 0x3399ff, 1).setFillStyle(0x3399ff, 0.12)
       this.layerCollisionDebug.add(this.collisionDebugPlayerOutline)
     }
@@ -1116,7 +1268,14 @@ export default class GridScene extends Phaser.Scene {
 
   updateCollisionDebugPlayerOutline (x, y) {
     if (this.collisionDebugPlayerOutline != null) {
-      this.collisionDebugPlayerOutline.setPosition(x, y)
+      const [hx, hy] = this.playerHitbox()
+      this.collisionDebugPlayerOutline.setPosition(x + hx, y + hy)
     }
+  }
+
+  /** Player collision box [x, y, w, h] within its cell (rig.yml `hitbox`). */
+  playerHitbox () {
+    const hb = getRig(this)?.hitbox
+    return Array.isArray(hb) && hb.length === 4 ? hb : [0, 0, ENTITY_SIZE, ENTITY_SIZE]
   }
 }

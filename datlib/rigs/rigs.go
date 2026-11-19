@@ -18,6 +18,8 @@ import (
 type Rig struct {
 	Name      string                         `json:"name"`
 	Layers    []Layer                        `json:"layers"`
+	// Hitbox is the collision box [x, y, w, h] within the 16px frame.
+	Hitbox [4]int32 `json:"hitbox"`
 	SlotOrder []string                       `json:"slotOrder"`
 	Palettes  map[string]map[string][]string `json:"palettes"`
 	Defaults  struct {

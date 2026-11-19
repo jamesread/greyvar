@@ -2,7 +2,7 @@
   "name": "player",
   "frameSize": 16,
   "columns": 8,
-  "frameCount": 58,
+  "frameCount": 64,
   "layers": [
     {
       "name": "pants",
@@ -40,6 +40,7 @@
         "default": "img/textures/entities/player/shirt_default.png"
       },
       "slots": [
+        "skin",
         "shirt"
       ]
     },
@@ -750,6 +751,60 @@
         9
       ],
       "itemZ": "front"
+    },
+    {
+      "name": "useRight_half",
+      "frame": 58,
+      "hand": [
+        13,
+        10
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "useRight_reach",
+      "frame": 59,
+      "hand": [
+        14,
+        9
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "useLeft_half",
+      "frame": 60,
+      "hand": [
+        2,
+        10
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "useLeft_reach",
+      "frame": 61,
+      "hand": [
+        1,
+        9
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "useDown_reach",
+      "frame": 62,
+      "hand": [
+        10,
+        10
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "useUp_reach",
+      "frame": 63,
+      "hand": [
+        8,
+        9
+      ],
+      "itemZ": "behind"
     }
   ],
   "clips": {
@@ -1033,6 +1088,64 @@
         "ms": 300
       }
     ],
+    "useDown": [
+      {
+        "pose": "useDown_reach",
+        "frame": 62,
+        "ms": 260
+      },
+      {
+        "pose": "down_stand",
+        "frame": 0,
+        "ms": 80
+      }
+    ],
+    "useLeft": [
+      {
+        "pose": "useLeft_half",
+        "frame": 60,
+        "ms": 60
+      },
+      {
+        "pose": "useLeft_reach",
+        "frame": 61,
+        "ms": 200
+      },
+      {
+        "pose": "useLeft_half",
+        "frame": 60,
+        "ms": 80
+      }
+    ],
+    "useRight": [
+      {
+        "pose": "useRight_half",
+        "frame": 58,
+        "ms": 60
+      },
+      {
+        "pose": "useRight_reach",
+        "frame": 59,
+        "ms": 200
+      },
+      {
+        "pose": "useRight_half",
+        "frame": 58,
+        "ms": 80
+      }
+    ],
+    "useUp": [
+      {
+        "pose": "useUp_reach",
+        "frame": 63,
+        "ms": 260
+      },
+      {
+        "pose": "walkUp_0",
+        "frame": 18,
+        "ms": 80
+      }
+    ],
     "walkDown": [
       {
         "pose": "walkDown_0",
@@ -1242,5 +1355,11 @@
     "walkUpLeft": "walkUpLeft",
     "walkUpRight": "walkUpRight"
   },
-  "initialState": "idle"
+  "initialState": "idle",
+  "hitbox": [
+    4,
+    0,
+    8,
+    16
+  ]
 }

@@ -59,12 +59,12 @@
                         {
                          "name":"teleport_destination",
                          "type":"string",
-                         "value":"0.0.tmj"
+                         "value":"1.1.tmj"
                         }, 
                         {
                          "name":"teleport_world",
                          "type":"string",
-                         "value":"isleOfDebug_dev_tiled"
+                         "value":"isleOfStarting_dev_tiled"
                         }],
                  "rotation":0,
                  "type":"teleportPad",
@@ -72,6 +72,199 @@
                  "width":15,
                  "x":209.333333333333,
                  "y":160.333333333333
+                }, 
+                {
+                 "gid":104,
+                 "height":15,
+                 "id":3,
+                 "name":"",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"msg",
+                         "type":"string",
+                         "value":"Something rattles inside one of these pots..."
+                        }],
+                 "rotation":0,
+                 "type":"signpost",
+                 "visible":true,
+                 "width":15,
+                 "x":16,
+                 "y":48.5
+                }, 
+                {
+                 "gid":114,
+                 "height":15,
+                 "id":4,
+                 "name":"",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"pot",
+                 "visible":true,
+                 "width":15,
+                 "x":80,
+                 "y":48.5
+                }, 
+                {
+                 "gid":114,
+                 "height":15,
+                 "id":5,
+                 "name":"",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"pot",
+                 "visible":true,
+                 "width":15,
+                 "x":16,
+                 "y":80.5
+                }, 
+                {
+                 "gid":114,
+                 "height":15,
+                 "id":6,
+                 "name":"",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"loot",
+                         "type":"string",
+                         "value":"rusty_key"
+                        }],
+                 "rotation":0,
+                 "type":"pot",
+                 "visible":true,
+                 "width":15,
+                 "x":32,
+                 "y":144.5
+                }, 
+                {
+                 "gid":101,
+                 "height":15,
+                 "id":7,
+                 "name":"",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"requires",
+                         "type":"string",
+                         "value":"rusty_key"
+                        }, 
+                        {
+                         "name":"loot",
+                         "type":"string",
+                         "value":"note"
+                        }, 
+                        {
+                         "name":"msg",
+                         "type":"string",
+                         "value":"A scrawled note: \"The levers, left to right: RIGHT, LEFT, RIGHT.\""
+                        }, 
+                        {
+                         "name":"locked_msg",
+                         "type":"string",
+                         "value":"The chest is locked. There is a rusty keyhole."
+                        }],
+                 "rotation":0,
+                 "type":"chest",
+                 "visible":true,
+                 "width":15,
+                 "x":128,
+                 "y":160.5
+                }, 
+                {
+                 "gid":104,
+                 "height":15,
+                 "id":8,
+                 "name":"",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"msg",
+                         "type":"string",
+                         "value":"Three levers. The cell door will not budge."
+                        }],
+                 "rotation":0,
+                 "type":"signpost",
+                 "visible":true,
+                 "width":15,
+                 "x":224,
+                 "y":48.5
+                }, 
+                {
+                 "gid":121,
+                 "height":15,
+                 "id":9,
+                 "name":"",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"sw2"
+                        }],
+                 "rotation":0,
+                 "type":"wallSwitch",
+                 "visible":true,
+                 "width":15,
+                 "x":176,
+                 "y":48.5
+                }, 
+                {
+                 "gid":121,
+                 "height":15,
+                 "id":10,
+                 "name":"",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"sw1"
+                        }],
+                 "rotation":0,
+                 "type":"wallSwitch",
+                 "visible":true,
+                 "width":15,
+                 "x":160,
+                 "y":48.5
+                }, 
+                {
+                 "gid":121,
+                 "height":15,
+                 "id":11,
+                 "name":"",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"sw3"
+                        }],
+                 "rotation":0,
+                 "type":"wallSwitch",
+                 "visible":true,
+                 "width":15,
+                 "x":208,
+                 "y":48.5
+                }, 
+                {
+                 "gid":123,
+                 "height":16,
+                 "id":12,
+                 "name":"",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"open_when",
+                         "type":"string",
+                         "value":"sw1=flickedRight, sw2=flickedLeft, sw3=flickedRight"
+                        }],
+                 "rotation":0,
+                 "type":"cellDoor",
+                 "visible":true,
+                 "width":16,
+                 "x":208,
+                 "y":128.5
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -80,7 +273,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":3,
+ "nextobjectid":13,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.2",
@@ -229,6 +422,14 @@
         {
          "firstgid":91,
          "source":"..\/..\/entdefs\/general-entities.tsx"
+        }, 
+        {
+         "firstgid":121,
+         "source":"..\/..\/entdefs\/wallSwitch.tsx"
+        }, 
+        {
+         "firstgid":123,
+         "source":"..\/..\/entdefs\/cellDoor.tsx"
         }],
  "tilewidth":16,
  "type":"map",

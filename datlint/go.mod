@@ -1,11 +1,14 @@
 module github.com/jamesread/greyvar/datlint
 
-go 1.18
+go 1.22
 
 replace github.com/jamesread/greyvar/datlib => ../datlib/
 
+replace github.com/jamesread/greyvar/sprite-generator => ../sprite-generator/
+
 require (
 	github.com/jamesread/greyvar/datlib v0.0.0
+	github.com/jamesread/greyvar/sprite-generator v0.0.0
 	github.com/sirupsen/logrus v1.9.3
 )
 

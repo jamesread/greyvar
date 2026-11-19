@@ -1,6 +1,7 @@
 import { dumpMovementDebug, dumpGameStatus } from '../movementDebug.js'
 import { sceneSnapshot } from '../sceneDebug.js'
 import { toggleCollisionDebug } from '../collisionDebug.js'
+import { toggleDebugPos } from '../debugPos.js'
 import { getRig } from '../sprites/PlayerRig.js'
 import { parseAppearanceArgs, describeAppearanceOptions } from '../sprites/appearance.js'
 
@@ -161,6 +162,10 @@ export function registerDefaultCommands (gameConsole) {
     })
     .registerCommand('debug collision', () => toggleCollisionDebug(), {
       description: 'Toggle collision overlay (red=blocking rects/tiles, blue=player bounds)',
+      usage: ''
+    })
+    .registerCommand('debug pos', () => toggleDebugPos(), {
+      description: "Toggle the player's position (pixels, tile, map) in the bottom-left corner",
       usage: ''
     })
     .registerCommand('music', (args) => {

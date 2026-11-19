@@ -18,7 +18,9 @@
   </properties>
  </tile>
  <tile id="3" type="sign_low"/>
+ <tile id="4" type="document"/>
  <tile id="5" type="tv"/>
+ <tile id="7" type="ironDoor"/>
  <tile id="8" type="sign_high"/>
  <tile id="9" type="construct_entity"/>
  <tile id="10" type="chest">
@@ -26,6 +28,7 @@
    <property name="state_closed" type="int" value="0"/>
   </properties>
  </tile>
+ <tile id="11" type="cake"/>
  <tile id="13" type="signpost">
   <properties>
    <property name="collision_type" value=""/>
@@ -36,11 +39,25 @@
   </objectgroup>
  </tile>
  <tile id="15" type="chest_open">
+  <properties>
+   <property name="loop" type="bool" value="false"/>
+  </properties>
   <animation>
    <frame tileid="10" duration="250"/>
    <frame tileid="15" duration="100"/>
    <frame tileid="16" duration="100"/>
    <frame tileid="17" duration="100"/>
+  </animation>
+ </tile>
+ <tile id="17" type="chest_shut">
+  <properties>
+   <property name="loop" type="bool" value="false"/>
+  </properties>
+  <animation>
+   <frame tileid="17" duration="100"/>
+   <frame tileid="16" duration="100"/>
+   <frame tileid="15" duration="100"/>
+   <frame tileid="10" duration="250"/>
   </animation>
  </tile>
  <tile id="20" type="pressureButton">
@@ -54,6 +71,7 @@
    <property name="collision_type" value="pressure"/>
   </properties>
  </tile>
+ <tile id="22" type="pictureHead"/>
  <tile id="23" type="pot">
   <objectgroup draworder="index" id="2">
    <object id="2" x="-0.181818" y="0.181818" width="15.3636" height="15.2727"/>

@@ -130,6 +130,19 @@ side, but the server reads `player.rig.json` at startup.
    the item.
 4. In game, run `appearance held=<item>`. `held=-` clears it.
 
+## Use (action key)
+
+Pressing E plays `use<Facing>` from `clips.yml` once, then the facing idle:
+`useLeft`/`useRight` swing the near arm out of the sleeve (body parts
+`useLeft_half`/`_reach`, `useRight_*`, shirt `useLeft`/`useRight`), `useDown`
+brings both hands up in front of the torso (body and shirt `useDown`; the
+hands are skin pixels on the shirt layer), and `useUp` tucks the forearms
+behind the back (body `useUp`). Diagonals use the side clip. The local player
+plays it on key down; the server sends `use<Facing>` to everyone else as a
+one-off `EntityStateChange` (the entity's state does not change). Only
+movement cuts it short. To restyle it, edit those parts or poses and keep each
+clip short (a test keeps it under 600ms).
+
 ## Transient states (walk*, bump*)
 
 The client plays `walk<Dir>` while moves arrive. The server sends
@@ -159,3 +172,149 @@ give another facing its own variants, add more steps to its `idle<Facing>` clip.
   `AppearanceRequest`.
 - **Protocol:** `Appearance` on `EntitySpawn`, plus `EntityAppearanceChange` and
   `AppearanceRequest`.
+
+# Flora tileset (animated decor tiles)
+
+Flowers are animated **tiles**, not entities: no collision, no interaction,
+and they cost nothing on the server. The source lives in `res/sprites/flora/`:
+
+```
+flora.yml          sway pattern (offsets px + ms per frame), one entry per flower
+parts/<name>.png   16x16 transparent flower, upright (frame 0)
+```
+
+`make sprites` (`spritegen flora build`) writes
+`res/img/textures/tilesets/flora.png` and `flora.tsx`. Each flower is one
+animated tile with type `flora` and property `flora=<name>`; place that tile
+in Tiled. The client plays the animation, starting each map cell on a
+different frame.
+
+```bash
+go run ./sprite-generator flora preview -out /tmp/flora.png   # rows = flowers, columns = frames
+go run ./sprite-generator flora check                         # validate + stale check
+```
+
+Flora tiles carry the property `decor=true`. Decor tiles draw on top, but
+collision, teleports and other tile rules use the terrain beneath them
+(`Grid.CollisionTileAt`). Put them on a `decor` layer above the terrain.
+
+### Move flowers out of other tilesets
+
+Old maps had flowers painted into grass tiles. Each flower's `sources` in
+`flora.yml` lists those tiles, and `migrate.replacement` names the plain tile
+drawn in their place. To migrate:
+
+```bash
+go run ./sprite-generator flora migrate -n server/dat/worlds/*/*.tmj   # dry run
+go run ./sprite-generator flora migrate server/dat/worlds/*/*.tmj
+```
+
+The tool edits each map's JSON text in place, so Tiled's formatting is kept.
+It re-parses and checks the result before writing, and skips maps that
+already use the flora tileset.
+
+### Add a flower
+
+1. Draw `parts/<name>.png` (16x16, transparent background, no semi-transparent pixels).
+2. Add an entry to `flora.yml` and list its `heads`. These are inclusive
+   `[x0, y0, x1, y1]` boxes that sway. Leave stems outside them so they stay
+   planted. For clusters, give each head a box and use `phases` so the heads
+   don't move together.
+3. Run `flora check`, `make sprites` and `flora preview`.
+
+# Crops tileset and crop definitions
+
+Crops use the same generator as flora: source in `res/sprites/crops/`
+(`flora.yml` with `decor: false`, plus parts). It builds
+`res/img/textures/tilesets/crops.png` and `crops.tsx`. Each stage tile carries
+the properties `crop=<id>` and `stage=<n>`. Crop rules live in
+`server/dat/cropdefs/<id>.yml`:
+
+```yaml
+id: hay
+seed: hay_seeds        # holding this and interacting with an empty walkable cell plants it
+starterSeeds: 5        # given to new players
+stages: [{growMs: 30000}, {growMs: 45000}, {}]   # the last stage is ripe
+harvest: {item: hay, count: 2, seeds: 1}
+```
+
+At runtime the server owns crop cells. It grows them by timestamp, so they
+keep growing while the server is off, and saves them to
+`server/state/crops/<world>.json` (gitignored; override with
+`GREYVAR_STATE_DIR`). Clients see crops as a `crops` grid layer and get live
+`TileChange` messages. The interact key (E) targets the cell the player faces
+when no nearby entity has anything to do.
+
+### Add a crop
+
+1. Draw or generate one part per stage in `res/sprites/crops/parts/`.
+2. Add one entry per stage to `res/sprites/crops/flora.yml`, with
+   `props: {crop: <id>, stage: "<n>"}`. Run `make sprites`.
+3. Add `server/dat/itemdefs/<seed>.yml` and the harvest item, then
+   `server/dat/cropdefs/<id>.yml`.
+4. Restart the server. It logs and disables any crop whose items or stage
+   tiles are missing.
+
+# Animated water: the tide on sand shores (PixelLab)
+
+The sand shorelines of `grass_terrains` play a gentle tide: a foam line washes
+up the sand and slides back, leaving the wet sand darker. Open water and plain
+sand stay still. The art comes from PixelLab, not from code.
+`res/sprites/water/` holds the source:
+
+- `tide_base.png` and `island_base.png` are small maps composed from this
+  tileset's own tiles. The lake (water in sand) gives the opaque water/sand
+  tiles of hand-made maps. The island (sand in water) gives the see-through
+  sand tiles the world generator layers over water.
+- `*_styled.png` are PixelLab img2img passes (`create_image_pixflux`) that
+  add the foam line and wet sand.
+- `frames/*.png` are PixelLab animations (`animate_image`) of those, with the
+  first frame pinned as the last so they loop.
+- `tileanim.yml` holds the layouts, the colour map and the prompts, seeds and
+  job ids used.
+
+`make sprites` (`spritegen tiles animate`) cuts each shore tile out of the
+frames. Only pixels within `band` of the tile's own waterline change; the
+rest stay the original art, so shore tiles still meet plain neighbours
+seamlessly. PixelLab colours are mapped onto the tileset palette. Frames are
+appended below the 20 hand-drawn rows of `grass_terrains.png`, and each shore
+tile gets an `<animation>` plus `synced=true` in `grass_terrains.tsx`. The
+hand-drawn rows and the rest of the `.tsx` are never changed, and runs are
+idempotent. After re-exporting the PNG from GIMP, run `make sprites` again;
+`make sprites-check` reports it until you do.
+
+Some see-through sand edge tiles are used both over water (generated maps)
+and over grass (hand-made maps). `make sprites` marks them
+`needs_water_below`, and marks all-water tiles `water`. When the server sends
+a map, it checks each such cell: if the first ground tile underneath (flowers
+and other decor are skipped) is not water, the cell is drawn still. So foam
+appears only where sand meets water, never between sand and grass.
+
+Synced animations run from one shared clock on the client, so the whole
+shoreline breathes together. Flowers and crops start on a different frame per
+cell.
+
+To change the look, regenerate the PixelLab steps listed in `tileanim.yml`
+(e.g. another seed or action text), replace `frames/*.png`, and run
+`make sprites`.
+
+## Taller cliff faces (`res/sprites/faces`)
+
+South-facing hill edges get a face 12px taller than the hand-drawn tiles,
+without changing the tilesets or the maps' terrain:
+
+- `faces.yml` lists the source tilesets (hill tiles are found from the
+  `terrains` wangset's corners; steps are listed by id), the face colours,
+  the rows that repeat (thin rock strata) and the maps to apply to.
+- `make sprites` writes `res/img/textures/tilesets/cliff_faces.{png,tsx}`
+  and two locked layers in each listed map: `face caps (generated)` (over
+  the face tile, replacing its base outline) and `faces (generated)` (the
+  extension into the cell below, with collision).
+- Generated tiles have `overlay=true`: the server adds their collision to
+  the tile beneath instead of replacing it (`Grid.CollisionTileAt`).
+
+Rules: edit the terrain in Tiled as usual, then `make sprites`; never edit
+the generated layers or `cliff_faces.*`. `make sprites-check` fails if a
+listed map changed since. To roll out to another map, add it under `maps:`.
+Leave room for the taller face: the row under a south cliff is now mostly
+cliff (only its bottom 4px are walkable).

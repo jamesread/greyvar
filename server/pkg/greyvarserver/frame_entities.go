@@ -2,6 +2,7 @@ package greyvarserver
 
 import (
 	"path/filepath"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 
@@ -41,12 +42,15 @@ func frameNewEntdefs(s *serverInterface, p *RemotePlayer) {
 
 			if netEntdef.Texture == "" {
 				netEntdef.Texture = vis.Texture
+				netEntdef.TileWidth = int32(vis.TileWidth)
+				netEntdef.TileHeight = int32(vis.TileHeight)
 			}
 
 			netState := &pb.EntityState{
 				Name:   stateName,
 				Frames: append([]int32(nil), vis.Frames...),
 				Holds:  append([]int32(nil), vis.Holds...),
+				Once:   strings.EqualFold(strings.TrimSpace(vis.TileProps["loop"]), "false"),
 			}
 			for _, rect := range vis.Collision {
 				netState.Collision = append(netState.Collision, &pb.CollisionRect{

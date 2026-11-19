@@ -1,0 +1,38 @@
+# Taller south faces for raised terrain. `make sprites` regenerates
+# res/img/textures/tilesets/cliff_faces.{png,tsx} and the "(generated)"
+# layers of every map below; see sprite-generator/pkg/faces.
+#
+# Each face column grows by `extend` px: rows repeat[0]..repeat[1] of that
+# column repeat (one highlight row + two body rows = thin rock strata), then
+# the tile's own base outline follows. Nothing hand-drawn is modified.
+out: ../../img/textures/tilesets/cliff_faces
+extend: 12
+
+sources:
+  # The hill ("high" in the terrains wangset): edges, notches, and the
+  # sand/water variants are all picked up from their wang corners.
+  - tileset: ../../img/textures/tilesets/grass_terrains.tsx
+    wangset: terrains
+    terrain: high
+    faceColors: ["#a06622", "#d79d59"]
+    outlineColors: ["#000000"]
+    repeat: [11, 13]
+  # Steps cut into the hill: the stairs grow with the face but stay walkable.
+  - tileset: ../../img/textures/tilesets/steps.tsx
+    tiles: [0, 1]
+    faceColors: ["#a06622", "#d79d59"]
+    outlineColors: ["#000000"]
+    stairs: true
+    repeat: [11, 13]
+
+# Maps that get the taller faces. Add maps here to roll them out.
+maps:
+  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/0.0.tmj
+  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/0.1.tmj
+  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/0.2.tmj
+  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/1.0.tmj
+  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/1.1.blueHouse.tmj
+  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/1.1.redHouse.tmj
+  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/1.1.tmj
+  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/1.2.tmj
+  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/2.0.tmj

@@ -21,6 +21,10 @@ func (r *Rig) Validate() []string {
 		add("rig.yml: outputs.sheetsDir, outputs.composite and outputs.webRoot are required")
 	}
 
+	if hb := s.HitboxOrDefault(); hb[2] <= 0 || hb[3] <= 0 || hb[0] < 0 || hb[1] < 0 || hb[0]+hb[2] > fs || hb[1]+hb[3] > fs {
+		add("rig.yml: hitbox %v must have positive size and fit in the %dx%d frame", hb, fs, fs)
+	}
+
 	// Colours.
 	allowed := map[RGB]string{}
 	addColour := func(hex, owner string) {

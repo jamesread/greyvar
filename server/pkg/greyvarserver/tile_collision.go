@@ -32,10 +32,7 @@ func tileBlocksEntity(tile *gridfiles.Tile, cellRow, cellCol uint32, entityX, en
 func entityOverlapsTileCollision(tile *gridfiles.Tile, cellRow, cellCol uint32, entityX, entityY int32) bool {
 	tileOriginX := float64(cellCol * tileSizePx)
 	tileOriginY := float64(cellRow * tileSizePx)
-	ex := float64(entityX)
-	ey := float64(entityY)
-	ew := float64(entitySizePx)
-	eh := float64(entitySizePx)
+	ex, ey, ew, eh := moverBox(entityX, entityY)
 
 	for _, colRect := range tile.Collision {
 		local := tiled.TransformCollisionRect(colRect, tileSizePx, tileSizePx, tile.FlipH, tile.FlipV)

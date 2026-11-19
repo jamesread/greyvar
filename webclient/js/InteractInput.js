@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import { facedCell } from './facedCell.js'
 
 let interactKey = null
 
@@ -72,10 +73,16 @@ export function pollInteractInput () {
   }
 
   const localId = window.gameState?.localPlayerEntityId
-  const target = findNearestEntity(grid, localId)
-  if (target?.entityId == null) {
+  const local = localId != null ? grid.entities[localId] : null
+  if (local == null) {
     return
   }
-
-  window.serverConnection.sendInteractRequest(target.entityId)
+  // Send the nearest entity (if any) and the faced cell; the server uses the
+  // entity when it has something to do, otherwise the cell (plant/harvest).
+  const facing = local.img?.facing ?? 'Down'
+  // Play the use animation straight away; the server shows it to others.
+  local.img?.playUse?.(facing)
+  const target = findNearestEntity(grid, localId)
+  const cell = facedCell(local.x ?? local.img?.x ?? 0, local.y ?? local.img?.y ?? 0, facing)
+  window.serverConnection.sendInteractRequest(target?.entityId ?? 0, cell, facing)
 }

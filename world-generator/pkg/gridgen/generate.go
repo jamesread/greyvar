@@ -76,6 +76,31 @@ func Generate(cfg *GenerationConfig) (*Result, error) {
 		return nil, err
 	}
 
+	var decor *decorTileset
+	var decorSource string
+	decorLevel, decorFirst := 0, 0
+	if cfg.DecorTilesetPath != "" && cfg.DecorDensity > 0 {
+		if decor, err = loadDecorTileset(cfg.DecorTilesetPath); err != nil {
+			return nil, err
+		}
+		terrain := cfg.DecorTerrain
+		if terrain == "" {
+			terrain = cfg.SpawnTerrain
+		}
+		var ok bool
+		if decorLevel, ok = palette.LevelOf(terrain); !ok {
+			return nil, fmt.Errorf("decor terrain %q is not one of %v", terrain, cfg.Terrains)
+		}
+		count, err := tsxTileCount(cfg.TilesetPath)
+		if err != nil {
+			return nil, err
+		}
+		decorFirst = 1 + count
+		if decorSource, err = relativeSlashPath(cfg.OutDir, cfg.DecorTilesetPath); err != nil {
+			return nil, err
+		}
+	}
+
 	field := newCornerField(cfg.WorldRows*cfg.MapRows, cfg.WorldCols*cfg.MapCols)
 	fillFromNoise(field, cfg)
 
@@ -116,6 +141,16 @@ func Generate(cfg *GenerationConfig) (*Result, error) {
 				placed := m.scatter(ep.Definition, entityLevels[i], ep.PerMap, used)
 				if placed < ep.PerMap {
 					log.Warnf("%s: placed %d/%d %s (not enough all-%s cells)", name, placed, ep.PerMap, ep.Definition, ep.Terrain)
+				}
+			}
+
+			if decor != nil {
+				if data := m.decorLayer(decorLevel, cfg.DecorDensity, decor, decorFirst, used); data != nil {
+					doc.Layers = append(doc.Layers, tmjLayer{
+						ID: len(doc.Layers) + 1, Type: "tilelayer", Name: "decor",
+						Width: cfg.MapCols, Height: cfg.MapRows, Data: data, Opacity: 1, Visible: true,
+					})
+					doc.Tilesets = append(doc.Tilesets, tmjTileset{FirstGID: decorFirst, Source: decorSource})
 				}
 			}
 

@@ -1,3 +1,4 @@
+import { tilesetAnimationsFromMessage } from './tileAnimations.js'
 import Grid from './Grid.js'
 import Tile from './Tile.js'
 
@@ -56,7 +57,8 @@ export function buildGridFromMessage (netGrid) {
     image: tileset.image,
     tileWidth: tileset.tileWidth ?? 16,
     tileHeight: tileset.tileHeight ?? 16,
-    columns: tileset.columns ?? 0
+    columns: tileset.columns ?? 0,
+    animations: tilesetAnimationsFromMessage(tileset)
   }))
   newGrid.transition = netGrid.transition ?? null
   newGrid.layers = buildLayersFromMessage(netGrid, rowCount, colCount)

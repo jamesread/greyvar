@@ -2,9 +2,16 @@ import { greyvarproto } from './greyvarproto.js'
 import { buildGridFromMessage } from './gridFromMessage.js'
 import { normalizeEntityStateChange } from './entityUtils.js'
 import { logGreyvar } from './sceneDebug.js'
+import { reconnectDelayMs, setDisconnectedBanner } from './reconnect.js'
 
 export default class ServerConnection {
   isOk = false
+  // Reconnect state: attempts since the last good connection, and whether we
+  // have ever connected (a reconnect must reset session state on the client).
+  reconnectAttempt = 0
+  hasConnected = false
+  closedByUser = false
+  reconnectTimer = null
 
   constructor () {
     this.connect()
@@ -26,6 +33,13 @@ export default class ServerConnection {
 
     this.sock.onopen = () => {
       this.isOk = true
+      if (this.hasConnected) {
+        // New server session: fresh entity ids, player and grid follow.
+        window.gameState?.onReconnected?.()
+      }
+      this.hasConnected = true
+      this.reconnectAttempt = 0
+      setDisconnectedBanner(false)
 
       this.sendClientRequest({
         registrationRequest: {
@@ -146,19 +160,27 @@ export default class ServerConnection {
       window.gameState.gridScene.onEntityChange(normalizeEntityStateChange(entchange))
     }
 
+    for (const change of receivedMessage.tileChanges ?? []) {
+      window.gameState.gridScene.onTileChange(change)
+    }
+
     for (const change of receivedMessage.entityAppearanceChanges ?? []) {
       window.gameState.gridScene.onEntityAppearance(normalizeEntityStateChange(change))
     }
   }
 
-  sendInteractRequest (entityId) {
-    if (entityId == null) {
+  sendInteractRequest (entityId, cell = null, facing = null) {
+    const req = { entityId: Number(entityId ?? 0) }
+    if (cell != null) {
+      req.cell = { row: cell.row, col: cell.col }
+    }
+    if (facing) {
+      req.facing = String(facing)
+    }
+    if (!req.entityId && req.cell == null) {
       return
     }
-
-    this.sendClientRequest({
-      interactRequest: { entityId: Number(entityId) }
-    })
+    this.sendClientRequest({ interactRequest: req })
   }
 
   sendCraftRequest (recipeId) {
@@ -210,13 +232,25 @@ export default class ServerConnection {
   }
 
   disconnect () {
+    this.closedByUser = true
+    clearTimeout(this.reconnectTimer)
     this.isOk = false
     this.sock?.close()
   }
 
   onClose () {
     this.isOk = false
-    console.error('ServerConnection closed')
+    if (this.closedByUser) {
+      return
+    }
+    // Server restarts (air rebuilds) close the socket; keep trying.
+    const delay = reconnectDelayMs(this.reconnectAttempt++)
+    console.warn(`ServerConnection closed; reconnecting in ${delay}ms`)
+    if (this.hasConnected) {
+      setDisconnectedBanner(true)
+    }
+    clearTimeout(this.reconnectTimer)
+    this.reconnectTimer = setTimeout(() => this.connect(), delay)
   }
 
   onWorldListResponse (response) {

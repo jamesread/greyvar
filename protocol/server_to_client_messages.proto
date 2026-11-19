@@ -21,6 +21,16 @@ message ServerUpdate {
 	repeated ItemDefinition itemDefinitions = 15;
 	repeated RecipeDefinition recipeDefinitions = 16;
 	repeated EntityAppearanceChange entityAppearanceChanges = 17;
+	repeated TileChange tileChanges = 18;
+}
+
+// A live change to a server-owned grid layer (e.g. "crops"). An unset tile
+// clears the cell.
+message TileChange {
+	string layer = 1;
+	uint32 row = 2;
+	uint32 col = 3;
+	Tile tile = 4;
 }
 
 message EntityPosition {
@@ -67,6 +77,9 @@ message EntityDefinition {
 	string name = 1;
 	repeated EntityState states = 3;
 	string texture = 4;
+	// Frame size of the entity tileset (most are 15px, newer ones 16px).
+	int32 tileWidth = 5;
+	int32 tileHeight = 6;
 }
 
 message EntityState {
@@ -77,6 +90,9 @@ message EntityState {
 	repeated int32 holds = 3;
 	// Tile-local collision shapes from the entity tileset (same as map tile collision).
 	repeated CollisionRect collision = 4;
+	// Play the animation once and hold its last frame (tile property loop=false),
+	// e.g. a chest opening. Default (false) loops.
+	bool once = 5;
 }
 
 message PlayerQuit {
@@ -114,6 +130,14 @@ message Tile {
 	int32 frameIndex = 8;
 	repeated CollisionRect collision = 9;
 	bool collisionFromTsx = 10;
+	// Draw the tile's still image even if its tileset animates it (e.g. a
+	// see-through sand shore over grass: the tide only plays over water).
+	bool still = 11;
+	// Decor (e.g. flowers) has no collision of its own; an overlay (e.g. a
+	// generated cliff face) adds its collision to the tile beneath. The
+	// client mirrors the server's collision rule for the debug overlay.
+	bool decor = 12;
+	bool overlay = 13;
 }
 
 message Tileset {
@@ -122,6 +146,18 @@ message Tileset {
 	uint32 tileWidth = 3;
 	uint32 tileHeight = 4;
 	uint32 columns = 5;
+	// Tiled <animation>s: tiles in this tileset that animate on the client.
+	repeated TileAnimation animations = 6;
+}
+
+message TileAnimation {
+	// Local tile id that is placed in maps.
+	int32 tileId = 1;
+	// Frames as local tile ids, with a duration per frame (parallel arrays).
+	repeated int32 frames = 2;
+	repeated int32 durationsMs = 3;
+	// Run in step in every cell (water); otherwise each cell starts on its own frame.
+	bool synced = 4;
 }
 
 message GridLayer {

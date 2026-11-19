@@ -1,7 +1,9 @@
----
 title: wallSwitch
 solid: true
 initialState: flickedLeft
+# Interact flips the lever; doors can watch it with open_when.
+interact:
+  toggle: [flickedLeft, flickedRight]
 states:
   flickedLeft: {}
   flickedRight: {}

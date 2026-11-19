@@ -8,6 +8,19 @@ import (
 const tileSizePx = 16
 const entitySizePx = 16
 
+// hitbox is a mover's collision box relative to its 16px cell origin.
+type hitbox struct{ X, Y, W, H int32 }
+
+// playerHitbox is set from the player rig (rig.yml `hitbox`) at startup so
+// collision hugs the visible body. Default: the whole cell.
+var playerHitbox = hitbox{0, 0, entitySizePx, entitySizePx}
+
+// moverBox is the player's collision box when its cell origin is (x, y).
+func moverBox(x, y int32) (l, t, w, h float64) {
+	hb := playerHitbox
+	return float64(x + hb.X), float64(y + hb.Y), float64(hb.W), float64(hb.H)
+}
+
 func isTileTraversable(tile *gridfiles.Tile) bool {
 	if tile == nil {
 		return false
@@ -76,7 +89,7 @@ func (s *serverInterface) tileAtGrid(grid *gridfiles.Grid, x int32, y int32) *gr
 		return nil
 	}
 
-	return grid.TopTileAt(row, col)
+	return grid.CollisionTileAt(row, col)
 }
 
 func (s *serverInterface) tileAtForPlayer(rp *RemotePlayer, x int32, y int32) *gridfiles.Tile {
@@ -92,7 +105,7 @@ func (s *serverInterface) tileAtGridCell(grid *gridfiles.Grid, row uint32, col u
 		return nil
 	}
 
-	return grid.TopTileAt(row, col)
+	return grid.CollisionTileAt(row, col)
 }
 
 func (s *serverInterface) isTraversableOnGrid(worldId string, gridId string, x int32, y int32) bool {
@@ -105,10 +118,11 @@ func (s *serverInterface) isTraversableOnGrid(worldId string, gridId string, x i
 		return false
 	}
 
-	minRow := uint32(y / tileSizePx)
-	maxRow := uint32((y + entitySizePx - 1) / tileSizePx)
-	minCol := uint32(x / tileSizePx)
-	maxCol := uint32((x + entitySizePx - 1) / tileSizePx)
+	hb := playerHitbox
+	minRow := uint32((y + hb.Y) / tileSizePx)
+	maxRow := uint32((y + hb.Y + hb.H - 1) / tileSizePx)
+	minCol := uint32((x + hb.X) / tileSizePx)
+	maxCol := uint32((x + hb.X + hb.W - 1) / tileSizePx)
 
 	for row := minRow; row <= maxRow; row++ {
 		for col := minCol; col <= maxCol; col++ {
@@ -184,6 +198,11 @@ func (s *serverInterface) isBlockedBySolidEntity(rp *RemotePlayer, mover *Entity
 			continue
 		}
 
+		// e.g. an open door.
+		if entdef.IsPassableIn(other.State) {
+			continue
+		}
+
 		if !entdef.Solid && !hasShapes {
 			continue
 		}
@@ -195,8 +214,9 @@ func (s *serverInterface) isBlockedBySolidEntity(rp *RemotePlayer, mover *Entity
 			continue
 		}
 
+		ml, mt, mw, mh := moverBox(newX, newY)
 		if rectsOverlap(
-			float64(newX), float64(newY), float64(entitySizePx), float64(entitySizePx),
+			ml, mt, mw, mh,
 			float64(other.X), float64(other.Y), float64(entitySizePx), float64(entitySizePx),
 		) {
 			return true, other.Definition
@@ -207,10 +227,9 @@ func (s *serverInterface) isBlockedBySolidEntity(rp *RemotePlayer, mover *Entity
 }
 
 func entityOverlapsEntityCollision(rects []tiled.CollisionRect, otherX, otherY, moverX, moverY int32) bool {
-	moverL := float64(moverX)
-	moverT := float64(moverY)
-	moverR := moverL + float64(entitySizePx)
-	moverB := moverT + float64(entitySizePx)
+	moverL, moverT, mw, mh := moverBox(moverX, moverY)
+	moverR := moverL + mw
+	moverB := moverT + mh
 
 	for _, rect := range rects {
 		l := float64(otherX) + rect.X

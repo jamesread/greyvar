@@ -38,6 +38,8 @@ type serverInterface struct {
 	entityVisuals *tiled.EntityVisualCatalog
 	// playerRig is res/.../player.rig.json (layered player look); nil if missing.
 	playerRig *rigs.Rig
+	// crops: planted crop cells per world (see crops.go).
+	crops *cropStore
 	loadedWorlds map[string]*worlds.World;
 	defaultWorldId string;
 
@@ -108,6 +110,7 @@ func newServer() *serverInterface {
 	blockingTileTextures = loadBlockingTileTextures()
 	s.loadServerEntdefs()
 	s.loadItemCatalog()
+	s.loadCrops()
 	s.remotePlayers = make(map[string]*RemotePlayer);
 
 	s.defaultWorldId = defaultWorldId()
@@ -136,6 +139,8 @@ func (s *serverInterface) ensureWorldLoaded(worldId string) (*worlds.World, erro
 
 	for gridId, grid := range world.Grids {
 		s.instantiateGridEntities(worldId, gridId, grid)
+		// Doors start open or closed according to their open_when wiring.
+		s.evaluateOpenWhen(worldId, gridId, 0)
 	}
 
 	return world, nil
@@ -314,6 +319,7 @@ func (s *serverInterface) onConnected(c *websocket.Conn) (*RemotePlayer) {
 		KnownRecipes: make(map[string]bool),
 		TimeOfLastMoveRequest: s.frameTime,
 	}
+	s.giveStarterSeeds(rp)
 
 	connectionFrame := &pb.ServerUpdate{
 		ConnectionResponse: &pb.ConnectionResponse {

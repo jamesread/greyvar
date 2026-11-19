@@ -37,6 +37,17 @@ message WorldLoadRequest {
 // Mine, break, or otherwise harvest a world entity (e.g. pot).
 message InteractRequest {
 	int64 entityId = 1;
+	// The cell the player faces. Used when the entity (if any) has nothing to
+	// do: plant held seeds, harvest a ripe crop.
+	CellTarget cell = 2;
+	// The way the player faces (Up, DownLeft, ...): other players see the
+	// matching use animation (EntityStateChange "use<Facing>").
+	string facing = 3;
+}
+
+message CellTarget {
+	uint32 row = 1;
+	uint32 col = 2;
 }
 
 message CraftRequest {

@@ -140,6 +140,22 @@ clips:
     - {pose: walkDownRight_0, ms: 110}
     - {pose: bumpDownRight_lean2, ms: 180}
     - {pose: walkDownRight_0, ms: 110}
+  # Use (action key): reach, hold, return; played once, then the facing
+  # idle. Diagonals use the side clip (useLeft/useRight), like the idles.
+  useRight:
+    - {pose: useRight_half, ms: 60}
+    - {pose: useRight_reach, ms: 200}
+    - {pose: useRight_half, ms: 80}
+  useLeft:
+    - {pose: useLeft_half, ms: 60}
+    - {pose: useLeft_reach, ms: 200}
+    - {pose: useLeft_half, ms: 80}
+  useDown:
+    - {pose: useDown_reach, ms: 260}
+    - {pose: down_stand, ms: 80}
+  useUp:
+    - {pose: useUp_reach, ms: 260}
+    - {pose: walkUp_0, ms: 80}
 idle:
   base: idle
   # One of these plays once every intervalMs (random in range), then back to base.

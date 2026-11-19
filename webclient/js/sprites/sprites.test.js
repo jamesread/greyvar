@@ -209,3 +209,58 @@ describe('facing', () => {
     })
   })
 })
+
+describe('use animation', () => {
+  it('picks use<Facing>, the side clip for diagonals, else the front', async () => {
+    const { useClipForFacing, facingFromState } = await import('./facing.js')
+    const clips = { useLeft: [{}], useRight: [{}], useUp: [{}], useDown: [{}] }
+    expect(useClipForFacing(clips, 'Up')).toBe('useUp')
+    expect(useClipForFacing(clips, 'UpLeft')).toBe('useLeft')
+    expect(useClipForFacing(clips, 'DownRight')).toBe('useRight')
+    expect(useClipForFacing(clips, null)).toBe('useDown')
+    expect(useClipForFacing({}, 'Left')).toBe(null)
+    expect(facingFromState('useUpLeft')).toBe('UpLeft')
+  })
+
+  it('the player rig has a one-shot use clip for every facing', async () => {
+    const { useClipForFacing } = await import('./facing.js')
+    for (const f of ['Up', 'Down', 'Left', 'Right', 'UpLeft', 'UpRight', 'DownLeft', 'DownRight']) {
+      const clip = useClipForFacing(playerRig.clips, f)
+      expect(clip, f).not.toBe(null)
+      const total = playerRig.clips[clip].reduce((ms, step) => ms + step.ms, 0)
+      expect(total, `${clip} should be a quick gesture`).toBeLessThan(600)
+    }
+  })
+
+  it('plays once and then returns', () => {
+    const c = new AnimationController({ useLeft: [{ frame: 1, ms: 60 }, { frame: 2, ms: 200 }], idle: [{ frame: 0, ms: 1000 }] })
+    let done = false
+    c.play('useLeft', { loop: false, restart: true, onComplete: () => { done = true } })
+    c.tick(100)
+    expect(c.frame).toBe(2)
+    c.tick(300)
+    expect(done).toBe(true)
+  })
+})
+
+describe('appearanceStore', () => {
+  const mem = () => { const m = new Map(); return { getItem: (k) => m.get(k) ?? null, setItem: (k, v) => m.set(k, v) } }
+
+  it('round-trips a saved look and builds a restore request', async () => {
+    const { saveAppearance, loadSavedAppearance, restoreRequest } = await import('./appearanceStore.js')
+    const s = mem()
+    expect(loadSavedAppearance(s)).toBe(null)
+    saveAppearance({ parts: { hair: 'long' }, palettes: { hair: 'red' }, heldItem: '' }, s)
+    const saved = loadSavedAppearance(s)
+    expect(saved).toEqual({ parts: { hair: 'long' }, palettes: { hair: 'red' }, heldItem: '' })
+    expect(restoreRequest(saved).heldItem).toBe('-')
+    expect(restoreRequest(null)).toBe(null)
+  })
+
+  it('survives corrupt or unavailable storage', async () => {
+    const { loadSavedAppearance, saveAppearance } = await import('./appearanceStore.js')
+    expect(loadSavedAppearance({ getItem: () => '{nope' })).toBe(null)
+    expect(loadSavedAppearance({ getItem: () => { throw new Error('blocked') } })).toBe(null)
+    expect(() => saveAppearance({}, { setItem: () => { throw new Error('quota') } })).not.toThrow()
+  })
+})

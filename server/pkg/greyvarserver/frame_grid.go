@@ -1,6 +1,9 @@
 package greyvarserver
 
 import (
+	"sort"
+
+	"github.com/jamesread/greyvar/datlib/tiled"
 	pb "github.com/jamesread/greyvar/server/gen/greyvarprotocol"
 	"github.com/jamesread/greyvar/datlib/gridfiles"
 )
@@ -38,6 +41,7 @@ func generateGridUpdate(s *serverInterface, p *RemotePlayer) (*pb.Grid) {
 			TileWidth:  uint32(tileset.TileWidth),
 			TileHeight: uint32(tileset.TileHeight),
 			Columns:    uint32(tileset.Columns),
+			Animations: tileAnimationsToPB(tileset.Animations, tileset.Synced),
 		})
 	}
 
@@ -50,19 +54,25 @@ func generateGridUpdate(s *serverInterface, p *RemotePlayer) (*pb.Grid) {
 		p.PendingGridTransition = nil
 	}
 
-	for _, layer := range memGrid.Layers {
+	defer s.addCropsToGridUpdate(gridToSend, worldId, gridId)
+
+	for li, layer := range memGrid.Layers {
 		netLayer := &pb.GridLayer{
 			Name: layer.Name,
 			Kind: string(layer.Kind),
 		}
 		for row, cols := range layer.Tiles {
 			for col, tile := range cols {
-				_ = row
-				_ = col
 				if !tileVisibleToClient(tile) {
 					continue
 				}
-				netLayer.Tiles = append(netLayer.Tiles, netTileFromMem(tile))
+				netTile := netTileFromMem(tile)
+				// The same see-through sand edge borders water and grass:
+				// its tide only plays where water lies underneath.
+				if tile.NeedsWaterBelow && !memGrid.WaterBelow(li, row, col) {
+					netTile.Still = true
+				}
+				netLayer.Tiles = append(netLayer.Tiles, netTile)
 			}
 		}
 		gridToSend.Layers = append(gridToSend.Layers, netLayer)
@@ -90,6 +100,8 @@ func netTileFromMem(memTile *gridfiles.Tile) *pb.Tile {
 		AtlasKey:         memTile.AtlasKey,
 		FrameIndex:       memTile.FrameIndex,
 		CollisionFromTsx: memTile.CollisionFromTSX,
+		Decor:            memTile.Decor,
+		Overlay:          memTile.Overlay,
 	}
 
 	for _, rect := range memTile.Collision {
@@ -106,4 +118,23 @@ func netTileFromMem(memTile *gridfiles.Tile) *pb.Tile {
 
 func tileVisibleToClient(memTile *gridfiles.Tile) bool {
 	return memTile != nil && !memTile.Hidden
+}
+
+// tileAnimationsToPB sorts by tile id so grid messages are deterministic.
+func tileAnimationsToPB(anims map[int][]tiled.AnimFrame, synced map[int]bool) []*pb.TileAnimation {
+	ids := make([]int, 0, len(anims))
+	for id := range anims {
+		ids = append(ids, id)
+	}
+	sort.Ints(ids)
+	out := make([]*pb.TileAnimation, 0, len(ids))
+	for _, id := range ids {
+		a := &pb.TileAnimation{TileId: int32(id), Synced: synced[id]}
+		for _, f := range anims[id] {
+			a.Frames = append(a.Frames, int32(f.TileID))
+			a.DurationsMs = append(a.DurationsMs, int32(f.DurationMs))
+		}
+		out = append(out, a)
+	}
+	return out
 }

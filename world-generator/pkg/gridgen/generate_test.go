@@ -1,7 +1,10 @@
 package gridgen
 
 import (
+	"encoding/json"
 	"math/rand"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/jamesread/greyvar/datlib/tiled"
@@ -154,7 +157,8 @@ func TestLoadPaletteRejectsUnknownTerrain(t *testing.T) {
 }
 
 // Variants are weighted by Tiled probability: grass_terrains.tsx gives the
-// plain grass tile 0.05 and each flower tile 0.01.
+// plain grass tiles 0.05 and the old baked-flower tiles 0 (flowers now come
+// from the decor layer, see TestGenerateScattersDecor).
 func TestTileHonoursProbability(t *testing.T) {
 	ws, err := tiled.LoadWangSet(repoTileset, "terrains")
 	if err != nil {
@@ -186,5 +190,60 @@ func TestTileHonoursProbability(t *testing.T) {
 		if got < want-0.02 || got > want+0.02 {
 			t.Errorf("tile %d picked %.3f of the time, want ~%.3f", id, got, want)
 		}
+	}
+}
+
+func TestGenerateScattersDecor(t *testing.T) {
+	cfg := testConfig(t)
+	cfg.DecorTilesetPath = filepath.Join(filepath.Dir(repoTileset), "flora.tsx")
+	cfg.DecorDensity = 0.5
+	if _, err := Generate(cfg); err != nil {
+		t.Fatal(err)
+	}
+	decor, err := loadDecorTileset(cfg.DecorTilesetPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	grassTiles, err := tsxTileCount(repoTileset)
+	if err != nil {
+		t.Fatal(err)
+	}
+	floraFirst := 1 + grassTiles // flora follows every grass_terrains tile (incl. generated water frames)
+	isDecorGID := map[uint32]bool{}
+	for _, id := range decor.IDs {
+		isDecorGID[uint32(floraFirst+id)] = true
+	}
+	baked := map[uint32]bool{127: true, 128: true, 129: true} // gids of tiles 126-128
+	placed := 0
+	for _, name := range []string{"0.0.tmj", "0.1.tmj", "1.0.tmj", "1.1.tmj"} {
+		raw, err := os.ReadFile(filepath.Join(cfg.OutDir, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		var doc tmjDoc
+		if err := json.Unmarshal(raw, &doc); err != nil {
+			t.Fatal(err)
+		}
+		for _, l := range doc.Layers {
+			for _, g := range l.Data {
+				if g == 0 {
+					continue
+				}
+				if l.Name == "decor" {
+					if !isDecorGID[g] {
+						t.Fatalf("%s: decor layer has non-decor gid %d", name, g)
+					}
+					placed++
+				} else if baked[g] {
+					t.Fatalf("%s layer %s: baked flower tile gid %d still generated", name, l.Name, g)
+				}
+			}
+		}
+		if placed > 0 && doc.Tilesets[len(doc.Tilesets)-1].FirstGID != floraFirst {
+			t.Fatalf("%s: flora tileset should start at gid %d: %+v", name, floraFirst, doc.Tilesets)
+		}
+	}
+	if placed == 0 {
+		t.Fatal("expected flowers on the decor layers")
 	}
 }

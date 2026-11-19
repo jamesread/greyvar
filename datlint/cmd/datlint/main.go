@@ -26,6 +26,7 @@ func main() {
 	}
 
 	checks := lint.LintAll(lint.Options{DatDir: datDir, ResDir: resDir})
+	checks = append(checks, spriteChecks(resDir)...)
 	errorCount, warnCount := 0, 0
 	for _, check := range checks {
 		errs, warns := printCheck(check)

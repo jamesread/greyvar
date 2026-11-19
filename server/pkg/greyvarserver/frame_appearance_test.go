@@ -24,6 +24,7 @@ func newAppearanceTestServer(t *testing.T) (*serverInterface, *RemotePlayer, *Re
 
 func TestAppearanceRequestBroadcasts(t *testing.T) {
 	s, a, b := newAppearanceTestServer(t)
+	a.addInventoryItem("key", 1)
 	processAppearanceRequest(s, a, &pb.AppearanceRequest{Palettes: map[string]string{"hair": "blonde"}, HeldItem: "key"})
 
 	if a.Entity.Appearance == nil || a.Entity.Appearance.Palettes["hair"] != "blonde" || a.Entity.Appearance.HeldItem != "key" {
@@ -54,7 +55,6 @@ func TestAppearanceRequestRejectsUnknown(t *testing.T) {
 	for _, req := range []*pb.AppearanceRequest{
 		{Palettes: map[string]string{"hair": "plaid"}},
 		{Parts: map[string]string{"hair": "mohawk"}},
-		{HeldItem: "sword"},
 	} {
 		processAppearanceRequest(s, a, req)
 	}
@@ -64,8 +64,43 @@ func TestAppearanceRequestRejectsUnknown(t *testing.T) {
 	if len(b.PendingAppearanceChanges) != 0 {
 		t.Fatal("invalid requests must not broadcast")
 	}
-	if len(a.PendingConsoleMessages) != 3 || !strings.Contains(a.PendingConsoleMessages[0], `unknown hair palette "plaid"`) {
-		t.Fatalf("want 3 error replies, got %v", a.PendingConsoleMessages)
+	if len(a.PendingConsoleMessages) != 2 || !strings.Contains(a.PendingConsoleMessages[0], `unknown hair palette "plaid"`) {
+		t.Fatalf("want 2 error replies, got %v", a.PendingConsoleMessages)
+	}
+}
+
+// Held items must be owned; a bad held item drops only itself, and the item
+// is put away when it leaves the inventory.
+func TestHeldItemFollowsInventory(t *testing.T) {
+	s, a, b := newAppearanceTestServer(t)
+	processAppearanceRequest(s, a, &pb.AppearanceRequest{Palettes: map[string]string{"hair": "red"}, HeldItem: "key"})
+	if a.Entity.Appearance == nil || a.Entity.Appearance.Palettes["hair"] != "red" || a.Entity.Appearance.HeldItem != "" {
+		t.Fatalf("unowned key: palette should apply, held item should not: %+v", a.Entity.Appearance)
+	}
+	if !strings.Contains(strings.Join(a.PendingConsoleMessages, "\n"), "you have no key") {
+		t.Fatalf("want a 'you have no key' reply, got %v", a.PendingConsoleMessages)
+	}
+	processAppearanceRequest(s, a, &pb.AppearanceRequest{HeldItem: "sword"})
+	if !strings.Contains(strings.Join(a.PendingConsoleMessages, "\n"), `unknown item "sword"`) {
+		t.Fatal("unknown item should be reported")
+	}
+
+	a.addInventoryItem("key", 1)
+	processAppearanceRequest(s, a, &pb.AppearanceRequest{HeldItem: "key"})
+	if a.Entity.Appearance.HeldItem != "key" {
+		t.Fatal("owned key should be held")
+	}
+
+	b.PendingAppearanceChanges = nil
+	a.removeInventoryItem("key", 1)
+	a.PendingInventoryUpdate = true
+	a.currentFrame = &pb.ServerUpdate{}
+	frameInventoryUpdates(s, a)
+	if a.Entity.Appearance.HeldItem != "" {
+		t.Fatal("held key should be put away once it leaves the inventory")
+	}
+	if len(b.PendingAppearanceChanges) != 1 || b.PendingAppearanceChanges[0].Appearance.HeldItem != "" {
+		t.Fatalf("others should see the key put away: %+v", b.PendingAppearanceChanges)
 	}
 }
 

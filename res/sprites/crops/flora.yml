@@ -1,0 +1,28 @@
+# Source of truth for the crops tileset (same generator as flora). Run `make sprites`.
+# Generated: res/img/textures/tilesets/crops.png + crops.tsx (do not edit).
+# Art: generated with PixelLab (pixen, seed 4242), 16x16 transparent.
+name: crops
+decor: false          # crops are interactive tiles, not decoration
+tileSize: 16
+columns: 8
+outputs:
+  image: ../../img/textures/tilesets/crops.png
+  tsx: ../../img/textures/tilesets/crops.tsx
+# Stalk tops sway in the wind like the flowers; the soil stays put.
+sway:
+  offsets: [0, 1, 0, -1]
+  ms: [600, 400, 600, 400]
+flora:
+  # props are what server/dat/cropdefs/*.yml refer to: crop name + stage index.
+  - name: hay_sprout
+    part: hay_sprout.png
+    heads: [[0, 0, 15, 7]]
+    props: {crop: hay, stage: "0"}
+  - name: hay_growing
+    part: hay_growing.png
+    heads: [[0, 0, 15, 7]]
+    props: {crop: hay, stage: "1"}
+  - name: hay_ripe
+    part: hay_ripe.png
+    heads: [[0, 0, 15, 7]]
+    props: {crop: hay, stage: "2"}

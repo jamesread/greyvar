@@ -1,0 +1,62 @@
+# Tide on the sand shorelines of grass_terrains, animated with PixelLab.
+# Run `make sprites`; see res/sprites/README.md.
+#
+# Two compositions of this tileset's own tiles, each restyled and animated in
+# PixelLab (MCP) with the same prompts, so every shore tile has frames:
+#   lake    (tide_base.png):   water inside sand -> opaque water/sand tiles
+#                              (hand-made maps) + inward sand corners.
+#   island  (island_base.png): sand inside water, drawn with the transparent
+#                              sand tiles the world generator layers over water.
+# For each: create_image_pixflux img2img (strength 90, seed 77) adds a white
+# foam line and darker wet sand (*_styled.png), then animate_image (8 frames,
+# seed 31, first = last frame so it loops) with the action
+#   "gentle tide: the white foam line rolls a little way up onto the sand
+#    all around the ..., then slides back into the water, leaving the wet
+#    sand darker for a moment; the water surface swells softly in place".
+# Jobs: lake 7fde0ac6 / d8e5822f, island 061a2200 / f11d4a38.
+# To redo the art, regenerate and replace frames/*.png.
+tileset: ../../img/textures/tilesets/grass_terrains.tsx
+sourceRows: 20
+ms: 300                 # 8 frames x 300ms: a slow 2.4s wash in and out
+synced: true            # every shore tile moves together
+waterColor: "#00a2e8"   # finds each tile's waterline (see-through counts as water)
+band: 4                 # px either side of the waterline that animate
+sources:
+  - frames: [frames/island_0.png, frames/island_1.png, frames/island_2.png, frames/island_3.png,
+             frames/island_4.png, frames/island_5.png, frames/island_6.png, frames/island_7.png]
+    layout:
+      - [153, 153, 153, 153, 153, 153]
+      - [153, 43, 44, 44, 45, 153]
+      - [153, 63, 64, 64, 65, 153]
+      - [153, 63, 64, 64, 65, 153]
+      - [153, 83, 84, 84, 85, 153]
+      - [153, 153, 153, 153, 153, 153]
+  - frames: [frames/tide_0.png, frames/tide_1.png, frames/tide_2.png, frames/tide_3.png,
+             frames/tide_4.png, frames/tide_5.png, frames/tide_6.png, frames/tide_7.png]
+    layout:
+      - [64, 64, 64, 64, 64, 64]
+      - [64, 132, 133, 133, 134, 64]
+      - [64, 152, 153, 153, 154, 64]
+      - [64, 152, 153, 153, 154, 64]
+      - [64, 172, 173, 173, 174, 64]
+      - [64, 64, 64, 64, 64, 64]
+    aliases:            # transparent inward sand corners, same shape as these
+      4: 132
+      5: 134
+      24: 172
+      25: 174
+colorMap:               # PixelLab colours -> this tileset's palette (nearest wins)
+  - {from: "#05b7eb", to: "#00a2e8"}   # water (lake)
+  - {from: "#02aae6", to: "#00a2e8"}   # water (island)
+  - {from: "#0d9eca", to: "#00a2e8"}
+  - {from: "#527ed8", to: "#00a2e8"}   # water specks
+  - {from: "#6651ba", to: "#00a2e8"}
+  - {from: "#41c4f4", to: "#99d9ea"}   # shallow water
+  - {from: "#f6f8f6", to: "#f6f8f6"}   # foam
+  - {from: "#e9eceb", to: "#f6f8f6"}
+  - {from: "#d6c392", to: "#d6c392"}   # wet sand
+  - {from: "#b2ae9b", to: "#d6c392"}
+  - {from: "#bfb996", to: "#d6c392"}
+  - {from: "#d6d3a6", to: "#d6c392"}
+  - {from: "#f3e9ad", to: "#efe4b0"}   # sand
+  - {from: "#ede8b7", to: "#efe4b0"}

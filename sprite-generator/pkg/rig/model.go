@@ -44,6 +44,18 @@ type RigSpec struct {
 	Palettes map[string]map[string][]string `yaml:"palettes"`
 	Defaults Defaults                       `yaml:"defaults"`
 	Outputs  Outputs                        `yaml:"outputs"`
+	// Hitbox is the collision box [x, y, w, h] within the frame. It should
+	// hug the visible body so walls are touched, not stopped short of.
+	// Default: the whole frame.
+	Hitbox *[4]int `yaml:"hitbox,omitempty"`
+}
+
+// HitboxOrDefault returns the hitbox, or the whole frame.
+func (s RigSpec) HitboxOrDefault() [4]int {
+	if s.Hitbox != nil {
+		return *s.Hitbox
+	}
+	return [4]int{0, 0, s.FrameSize, s.FrameSize}
 }
 
 // LayerSpec is one draw layer. Variants are alternative part sets (for example

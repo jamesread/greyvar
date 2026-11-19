@@ -101,10 +101,13 @@ func ReadGridTMJ(filename string) (*Grid, error) {
 			TileWidth:  atlas.TileWidth,
 			TileHeight: atlas.TileHeight,
 			Columns:    atlas.Columns,
+			Animations: atlas.Animations,
+			Synced:     atlas.Synced,
 		})
 	}
 
 	mapDir := filepath.Dir(filename)
+	var entityLayer []int // per g.Entities: its object layer's index in g.Layers
 	for _, layer := range doc.Layers {
 		if !layerVisible(layer) {
 			continue
@@ -119,11 +122,17 @@ func ReadGridTMJ(filename string) (*Grid, error) {
 			g.Layers = append(g.Layers, tileLayer)
 		case "objectgroup":
 			objectLayer := NewTileLayer(layer.Name, LayerKindObject)
+			before := len(g.Entities)
 			applyObjectLayer(g, catalog, doc, layer, mapDir, &objectLayer)
+			for range g.Entities[before:] {
+				entityLayer = append(entityLayer, len(g.Layers))
+			}
 			g.Layers = append(g.Layers, objectLayer)
 		}
 	}
 
+	dropCovered(g, entityLayer)
+	applyWaterCollision(g)
 	g.SyncTopTiles()
 
 	if doc.NextObjectID > 1 {
@@ -185,6 +194,12 @@ func tileFromCatalog(decoded tiled.GID, catalog *tiled.TilesetCatalog, row, col 
 		tile.FrameIndex = info.FrameIndex
 		tile.CollisionFromTSX = info.CollisionFromTSX
 		tile.Hidden = info.Hidden
+		tile.Decor = info.Decor
+		tile.Water = info.Water
+		tile.NeedsWaterBelow = info.NeedsWaterBelow
+		tile.Overlay = info.Overlay
+		tile.SeeThrough = info.SeeThrough
+		tile.WaterPixels = info.WaterPixels
 		if len(info.Collision) > 0 {
 			tile.Collision = append([]CollisionRect(nil), info.Collision...)
 		}

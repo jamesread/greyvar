@@ -147,5 +147,11 @@
     "idle": "idle",
     "walk": "walk"
   },
-  "initialState": "idle"
+  "initialState": "idle",
+  "hitbox": [
+    0,
+    0,
+    16,
+    16
+  ]
 }

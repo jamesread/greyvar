@@ -1,7 +1,15 @@
----
 title: chest
 solid: true
 initialState: closed
+# Interact opens it; interacting again closes it ("shut": the lid closes,
+# animated) and then reopens it. Map properties apply to the first opening
+# only: requires (item used up to open), loot ("item[:count], ..."), msg
+# (shown on opening), locked_msg. "closed" is only the unopened chest, so
+# chests do not animate shut when a map loads.
+interact:
+  open: open
+  close: shut
 states:
   closed: {}
   open: {}
+  shut: {}

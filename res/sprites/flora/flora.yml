@@ -1,0 +1,31 @@
+# Source of truth for the animated flora tileset. Run `make sprites`.
+# Generated: res/img/textures/tilesets/flora.png + flora.tsx (do not edit).
+name: flora
+tileSize: 16
+columns: 8
+outputs:
+  image: ../../img/textures/tilesets/flora.png
+  tsx: ../../img/textures/tilesets/flora.tsx
+# Every flower sways its heads sideways through these offsets (px), one
+# duration per frame. The client also starts each map cell at a different
+# frame so fields do not move in lockstep.
+sway:
+  offsets: [0, 1, 0, -1]
+  ms: [500, 350, 500, 350]
+flora:
+  # heads: [x0, y0, x1, y1] inclusive boxes that sway; stems stay planted.
+  - name: red
+    sources: [grass_terrains.tsx#126, grass_terrains.tsx#146, grass_terrains.tsx#166]
+    heads: [[5, 5, 9, 7]]
+  - name: purple
+    sources: [grass_terrains.tsx#127]
+    heads: [[5, 5, 9, 7]]
+  - name: cluster
+    sources: [grass_terrains.tsx#128]
+    heads: [[7, 2, 11, 4], [2, 7, 6, 9], [9, 8, 13, 10]]   # cyan, green, blue
+    phases: [0, 1, 3]
+# `spritegen flora migrate <maps>`: baked flower tiles (sources above) become
+# this plain tile, and the flower moves to a "decor" layer above.
+migrate:
+  replacement:
+    grass_terrains.tsx: 67   # full-grass wangtile, same background as the flower tiles

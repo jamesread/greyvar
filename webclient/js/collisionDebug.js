@@ -129,7 +129,7 @@ export function collisionDebugStats (grid) {
 
   for (let row = 0; row < grid.rowCount; row++) {
     for (let col = 0; col < grid.colCount; col++) {
-      const tile = grid.topTileAt(row, col)
+      const tile = grid.collisionTileAt(row, col)
       if (tile?.collision?.length > 0) {
         tsxRectCount += tile.collision.length
       } else if (tile?.collisionFromTsx) {

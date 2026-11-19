@@ -36,6 +36,9 @@ func main() {
 		seed       = flag.Int64("seed", 1347, "noise and placement seed")
 		scale      = flag.Float64("scale", 10, "noise scale in tiles; larger gives broader terrain")
 		spawn      = flag.String("spawn-terrain", "", "terrain for the player spawn marker (default: top terrain)")
+		decorTs    = flag.String("decor-tileset", "../res/img/textures/tilesets/flora.tsx", "tileset whose decor=true tiles (flowers) are scattered on a decor layer; empty disables")
+		decorTerr  = flag.String("decor-terrain", "", "terrain decor is scattered on (default: spawn terrain)")
+		decorDens  = flag.Float64("decor-density", 0.15, "chance each free all-decor-terrain cell gets a decor tile")
 		entities   stringList
 	)
 	flag.Var(&entities, "entity", "scatter entities as definition:terrain:perMap (repeatable)")
@@ -57,6 +60,10 @@ func main() {
 		Seed:         *seed,
 		NoiseScale:   *scale,
 		SpawnTerrain: *spawn,
+
+		DecorTilesetPath: *decorTs,
+		DecorTerrain:     *decorTerr,
+		DecorDensity:     *decorDens,
 	}
 	if cfg.OutDir == "" {
 		cfg.OutDir = filepath.Join(*worldsDir, *name+"_tiled")

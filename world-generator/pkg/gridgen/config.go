@@ -36,6 +36,13 @@ type GenerationConfig struct {
 
 	SpawnTerrain string // terrain the player spawn marker is placed on
 	Entities     []EntityPlacement
+
+	// Decor scatters tiles marked decor=true (flowers) from DecorTilesetPath
+	// on a "decor" layer over all-DecorTerrain cells, each cell with
+	// probability DecorDensity. Empty path disables it.
+	DecorTilesetPath string
+	DecorTerrain     string
+	DecorDensity     float64
 }
 
 // EntityPlacement scatters an entity definition over cells of one terrain.
@@ -65,6 +72,9 @@ func (c *GenerationConfig) Validate() error {
 	}
 	if c.NoiseScale <= 0 {
 		return fmt.Errorf("noise scale must be positive")
+	}
+	if c.DecorDensity < 0 || c.DecorDensity > 1 {
+		return fmt.Errorf("decor density must be between 0 and 1, got %v", c.DecorDensity)
 	}
 	return nil
 }

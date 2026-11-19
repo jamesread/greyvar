@@ -93,6 +93,11 @@ export declare type ServerUpdate = Message<"greyvarproto.ServerUpdate"> & {
    * @generated from field: repeated greyvarproto.EntityAppearanceChange entityAppearanceChanges = 17;
    */
   entityAppearanceChanges: EntityAppearanceChange[];
+
+  /**
+   * @generated from field: repeated greyvarproto.TileChange tileChanges = 18;
+   */
+  tileChanges: TileChange[];
 };
 
 /**
@@ -100,6 +105,40 @@ export declare type ServerUpdate = Message<"greyvarproto.ServerUpdate"> & {
  * Use `create(ServerUpdateSchema)` to create a new message.
  */
 export declare const ServerUpdateSchema: GenMessage<ServerUpdate>;
+
+/**
+ * A live change to a server-owned grid layer (e.g. "crops"). An unset tile
+ * clears the cell.
+ *
+ * @generated from message greyvarproto.TileChange
+ */
+export declare type TileChange = Message<"greyvarproto.TileChange"> & {
+  /**
+   * @generated from field: string layer = 1;
+   */
+  layer: string;
+
+  /**
+   * @generated from field: uint32 row = 2;
+   */
+  row: number;
+
+  /**
+   * @generated from field: uint32 col = 3;
+   */
+  col: number;
+
+  /**
+   * @generated from field: greyvarproto.Tile tile = 4;
+   */
+  tile?: Tile | undefined;
+};
+
+/**
+ * Describes the message greyvarproto.TileChange.
+ * Use `create(TileChangeSchema)` to create a new message.
+ */
+export declare const TileChangeSchema: GenMessage<TileChange>;
 
 /**
  * @generated from message greyvarproto.EntityPosition
@@ -280,6 +319,18 @@ export declare type EntityDefinition = Message<"greyvarproto.EntityDefinition"> 
    * @generated from field: string texture = 4;
    */
   texture: string;
+
+  /**
+   * Frame size of the entity tileset (most are 15px, newer ones 16px).
+   *
+   * @generated from field: int32 tileWidth = 5;
+   */
+  tileWidth: number;
+
+  /**
+   * @generated from field: int32 tileHeight = 6;
+   */
+  tileHeight: number;
 };
 
 /**
@@ -316,6 +367,14 @@ export declare type EntityState = Message<"greyvarproto.EntityState"> & {
    * @generated from field: repeated greyvarproto.CollisionRect collision = 4;
    */
   collision: CollisionRect[];
+
+  /**
+   * Play the animation once and hold its last frame (tile property loop=false),
+   * e.g. a chest opening. Default (false) loops.
+   *
+   * @generated from field: bool once = 5;
+   */
+  once: boolean;
 };
 
 /**
@@ -477,6 +536,28 @@ export declare type Tile = Message<"greyvarproto.Tile"> & {
    * @generated from field: bool collisionFromTsx = 10;
    */
   collisionFromTsx: boolean;
+
+  /**
+   * Draw the tile's still image even if its tileset animates it (e.g. a
+   * see-through sand shore over grass: the tide only plays over water).
+   *
+   * @generated from field: bool still = 11;
+   */
+  still: boolean;
+
+  /**
+   * Decor (e.g. flowers) has no collision of its own; an overlay (e.g. a
+   * generated cliff face) adds its collision to the tile beneath. The
+   * client mirrors the server's collision rule for the debug overlay.
+   *
+   * @generated from field: bool decor = 12;
+   */
+  decor: boolean;
+
+  /**
+   * @generated from field: bool overlay = 13;
+   */
+  overlay: boolean;
 };
 
 /**
@@ -513,6 +594,13 @@ export declare type Tileset = Message<"greyvarproto.Tileset"> & {
    * @generated from field: uint32 columns = 5;
    */
   columns: number;
+
+  /**
+   * Tiled <animation>s: tiles in this tileset that animate on the client.
+   *
+   * @generated from field: repeated greyvarproto.TileAnimation animations = 6;
+   */
+  animations: TileAnimation[];
 };
 
 /**
@@ -520,6 +608,43 @@ export declare type Tileset = Message<"greyvarproto.Tileset"> & {
  * Use `create(TilesetSchema)` to create a new message.
  */
 export declare const TilesetSchema: GenMessage<Tileset>;
+
+/**
+ * @generated from message greyvarproto.TileAnimation
+ */
+export declare type TileAnimation = Message<"greyvarproto.TileAnimation"> & {
+  /**
+   * Local tile id that is placed in maps.
+   *
+   * @generated from field: int32 tileId = 1;
+   */
+  tileId: number;
+
+  /**
+   * Frames as local tile ids, with a duration per frame (parallel arrays).
+   *
+   * @generated from field: repeated int32 frames = 2;
+   */
+  frames: number[];
+
+  /**
+   * @generated from field: repeated int32 durationsMs = 3;
+   */
+  durationsMs: number[];
+
+  /**
+   * Run in step in every cell (water); otherwise each cell starts on its own frame.
+   *
+   * @generated from field: bool synced = 4;
+   */
+  synced: boolean;
+};
+
+/**
+ * Describes the message greyvarproto.TileAnimation.
+ * Use `create(TileAnimationSchema)` to create a new message.
+ */
+export declare const TileAnimationSchema: GenMessage<TileAnimation>;
 
 /**
  * @generated from message greyvarproto.GridLayer

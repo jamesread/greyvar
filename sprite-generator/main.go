@@ -7,6 +7,11 @@
 //	spritegen part derive -layer head -from idle_0 -to blink -edit 6,4=skin.0 [-edit ...] [rig-dir]
 //	spritegen part prune [-n]   (delete parts no pose references)
 //	spritegen part longhair -from short -to long [-rows 3]   (derive a whole hair variant)
+//	spritegen flora build|check [flora-dir]        (animated flora tileset)
+//	spritegen flora preview -out file.png [flora-dir]
+//	spritegen flora migrate [-n] map.tmj...         (baked flower tiles -> decor layer)
+//	spritegen tiles animate|animate-check [dir]      (animate tiles of one colour, e.g. water)
+//	spritegen tiles remap [-n] -from-image water.png -to res/.../water.tsx#0 map.tmj...
 //	spritegen import  -sheet ss.png -tsx player.tsx -out res/sprites/player   (one-time migration)
 package main
 
@@ -15,9 +20,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
+	"github.com/jamesread/greyvar/sprite-generator/pkg/faces"
+	"github.com/jamesread/greyvar/sprite-generator/pkg/flora"
 	"github.com/jamesread/greyvar/sprite-generator/pkg/rig"
+	"github.com/jamesread/greyvar/sprite-generator/pkg/tileanim"
 )
 
 const defaultRig = "res/sprites/player"
@@ -37,6 +46,10 @@ func main() {
 		err = runPreview(args)
 	case "part":
 		err = runPart(args)
+	case "flora":
+		err = runFlora(args)
+	case "tiles":
+		err = runTiles(args)
 	case "import":
 		err = runImport(args)
 	default:
@@ -49,7 +62,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: spritegen check|build|preview|part|import [flags] [rig-dir]")
+	fmt.Fprintln(os.Stderr, "usage: spritegen check|build|preview|part|flora|tiles|import [flags] [rig-dir]")
 	os.Exit(2)
 }
 
@@ -296,4 +309,205 @@ func runPart(args []string) error {
 	default:
 		return fmt.Errorf("part: unknown subcommand %q", args[0])
 	}
+}
+
+const defaultFlora = "res/sprites/flora"
+
+func runFlora(args []string) error {
+	if len(args) == 0 {
+		return fmt.Errorf("flora: want build, check or preview")
+	}
+	fs := flag.NewFlagSet("flora "+args[0], flag.ExitOnError)
+	out := fs.String("out", "", "preview output PNG")
+	scale := fs.Int("scale", 8, "preview pixel scale")
+	dry := fs.Bool("n", false, "migrate: report only, do not write")
+	if args[0] == "migrate" {
+		_ = fs.Parse(args[1:])
+	} else {
+		_ = fs.Parse(reorder(args[1:]))
+	}
+	dir := defaultFlora
+	if fs.NArg() > 0 && args[0] != "migrate" {
+		dir = fs.Arg(0)
+	}
+	f, err := flora.Load(dir)
+	if err != nil {
+		return err
+	}
+	switch args[0] {
+	case "migrate":
+		// flora migrate [-n] <map.tmj>... (flora dir is the default)
+		if fs.NArg() == 0 {
+			return fmt.Errorf("flora migrate: give one or more .tmj maps")
+		}
+		f, err = flora.Load(defaultFlora)
+		if err != nil {
+			return err
+		}
+		for _, m := range fs.Args() {
+			res, err := f.Migrate(m, !*dry)
+			if err != nil {
+				return err
+			}
+			if res.Skipped != "" {
+				fmt.Printf("skip  %s (%s)\n", m, res.Skipped)
+				continue
+			}
+			verb := "moved"
+			if *dry {
+				verb = "would move"
+			}
+			fmt.Printf("%s %d flowers in %s -> %s\n", verb, res.Moved, m, strings.Join(res.Layers, ", "))
+		}
+		return nil
+	case "preview":
+		if *out == "" {
+			return fmt.Errorf("flora preview: -out is required")
+		}
+		img, err := f.Preview(*scale)
+		if err != nil {
+			return err
+		}
+		return os.WriteFile(*out, rig.EncodePNG(img), 0o644)
+	case "check", "build":
+		outs, err := f.Build()
+		if err != nil {
+			return err
+		}
+		stale := rig.Stale(outs)
+		if args[0] == "check" {
+			if len(stale) > 0 {
+				return fmt.Errorf("generated flora files are out of date; run `make sprites`:\n  %s", strings.Join(stale, "\n  "))
+			}
+			fmt.Printf("ok: %s (%d flora, %d outputs up to date)\n", f.Spec.Name, len(f.Spec.Flora), len(outs))
+			return nil
+		}
+		for _, p := range stale {
+			for _, o := range outs {
+				if o.Path == p {
+					if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
+						return err
+					}
+					if err := os.WriteFile(p, o.Data, 0o644); err != nil {
+						return err
+					}
+					fmt.Println("wrote", p)
+				}
+			}
+		}
+		fmt.Printf("built %s: %d flora (%d changed)\n", f.Spec.Name, len(f.Spec.Flora), len(stale))
+		return nil
+	default:
+		return fmt.Errorf("flora: unknown subcommand %q", args[0])
+	}
+}
+
+func runTiles(args []string) error {
+	if len(args) > 0 && (args[0] == "animate" || args[0] == "animate-check") {
+		dir := "res/sprites/water"
+		if len(args) > 1 {
+			dir = args[1]
+		}
+		a, err := tileanim.Load(dir)
+		if err != nil {
+			return err
+		}
+		outs, err := a.Build()
+		if err != nil {
+			return err
+		}
+		stale := rig.Stale(outs)
+		if args[0] == "animate-check" {
+			if len(stale) > 0 {
+				return fmt.Errorf("generated tile animation is out of date; run `make sprites`:\n  %s", strings.Join(stale, "\n  "))
+			}
+			fmt.Printf("ok: %s (%d animated tiles, up to date)\n", dir, tileanim.AnimatedCount(outs))
+			return nil
+		}
+		for _, o := range outs {
+			for _, p := range stale {
+				if p == o.Path {
+					if err := os.WriteFile(o.Path, o.Data, 0o644); err != nil {
+						return err
+					}
+					fmt.Println("wrote", o.Path)
+				}
+			}
+		}
+		fmt.Printf("animated %s: %d tiles (%d files changed)\n", dir, tileanim.AnimatedCount(outs), len(stale))
+		return nil
+	}
+	if len(args) > 0 && (args[0] == "faces" || args[0] == "faces-check") {
+		return runFaces(args[0] == "faces-check", args[1:])
+	}
+	if len(args) == 0 || args[0] != "remap" {
+		return fmt.Errorf("tiles: want remap, animate, animate-check, faces or faces-check")
+	}
+	fs := flag.NewFlagSet("tiles remap", flag.ExitOnError)
+	fromImage := fs.String("from-image", "", "embedded tile image basename to replace (e.g. water.png)")
+	to := fs.String("to", "", "replacement as path/to/tileset.tsx#tileid")
+	dry := fs.Bool("n", false, "report only, do not write")
+	_ = fs.Parse(args[1:])
+	tsx, idStr, ok := strings.Cut(*to, "#")
+	id, err := strconv.Atoi(idStr)
+	if *fromImage == "" || !ok || err != nil || fs.NArg() == 0 {
+		return fmt.Errorf("tiles remap: need -from-image, -to tileset.tsx#id and maps")
+	}
+	abs, err := filepath.Abs(tsx)
+	if err != nil {
+		return err
+	}
+	for _, m := range fs.Args() {
+		res, err := flora.RemapEmbeddedTile(m, flora.RemapOptions{FromImage: *fromImage, ToTsx: abs, ToTile: id}, !*dry)
+		if err != nil {
+			return err
+		}
+		if res.Skipped != "" {
+			fmt.Printf("skip  %s (%s)\n", m, res.Skipped)
+			continue
+		}
+		fmt.Printf("remapped %d tiles in %s (%s)\n", res.Moved, m, strings.Join(res.Layers, ", "))
+	}
+	return nil
+}
+
+// runFaces builds (or checks) the taller cliff faces: res/sprites/faces.
+func runFaces(check bool, args []string) error {
+	dir := "res/sprites/faces"
+	if len(args) > 0 {
+		dir = args[0]
+	}
+	f, err := faces.Load(dir)
+	if err != nil {
+		return err
+	}
+	res, err := f.Build()
+	if err != nil {
+		return err
+	}
+	placed := 0
+	for _, n := range res.Placed {
+		placed += n
+	}
+	summary := fmt.Sprintf("%s (%d face tiles, %d placed on %d maps", dir, len(res.Tiles), placed, len(res.Placed))
+	stale := rig.Stale(res.Outputs)
+	if check {
+		if len(stale) > 0 {
+			return fmt.Errorf("generated cliff faces are out of date; run `make sprites`:\n  %s", strings.Join(stale, "\n  "))
+		}
+		fmt.Printf("ok: %s, up to date)\n", summary)
+		return nil
+	}
+	for _, p := range stale {
+		for _, o := range res.Outputs {
+			if o.Path == p {
+				if err := os.WriteFile(o.Path, o.Data, 0o644); err != nil {
+					return err
+				}
+				fmt.Println("wrote", o.Path)
+			}
+		}
+	}
+	fmt.Printf("faces: %s, %d files changed)\n", summary, len(stale))
+	return nil
 }

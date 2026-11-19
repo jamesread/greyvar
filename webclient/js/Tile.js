@@ -22,8 +22,13 @@ export default class Tile {
     this.textureVerticalFlip = netTile.flipV ?? false
     this.textureRotation = netTile.rot ?? 0
     this.atlasKey = netTile.atlasKey ?? null
-    this.frameIndex = netTile.frameIndex ?? null
+    // JSON omits zero values, so an atlas tile's frame 0 arrives as undefined.
+    this.frameIndex = netTile.frameIndex ?? (this.atlasKey != null ? 0 : null)
     this.collisionFromTsx = netTile.collisionFromTsx ?? false
+    // Server says: draw the still image here (e.g. a sand shore over grass).
+    this.still = netTile.still === true
+    this.decor = netTile.decor === true
+    this.overlay = netTile.overlay === true
     this.collision = (netTile.collision ?? []).map((rect) => ({
       x: rect.x ?? 0,
       y: rect.y ?? 0,

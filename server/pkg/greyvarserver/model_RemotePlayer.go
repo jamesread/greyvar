@@ -32,6 +32,7 @@ type RemotePlayer struct {
 	PendingDespawns        []int64
 	PendingConsoleMessages []string
 	PendingAppearanceChanges []*pb.EntityAppearanceChange
+	PendingTileChanges       []*pb.TileChange
 
 	Inventory              []InventoryItem
 	PendingInventoryUpdate bool

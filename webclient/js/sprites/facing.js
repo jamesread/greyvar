@@ -1,6 +1,6 @@
-// Which way a character faces, derived from its last walk/bump state.
+// Which way a character faces, derived from its last walk/bump/use state.
 
-const DIRECTIONAL = /^(?:walk|bump)(Up|Down)?(Left|Right)?$/
+const DIRECTIONAL = /^(?:walk|bump|use)(Up|Down)?(Left|Right)?$/
 
 /**
  * "walkUpLeft" -> "UpLeft", "bumpRight" -> "Right"; null for non-directional
@@ -29,4 +29,15 @@ export function idleClipForFacing (clips, facing) {
     candidates.push(`idle${horizontal}`)
   }
   return candidates.find((name) => Array.isArray(clips[name]) && clips[name].length > 0) ?? null
+}
+
+/**
+ * Use clip for a facing: use<Facing>, then the side clip for diagonals
+ * (useUpLeft -> useLeft), then useDown. Null if the rig has no use clips.
+ */
+export function useClipForFacing (clips, facing) {
+  const f = String(facing ?? 'Down')
+  const horizontal = /Left|Right/.exec(f)?.[0]
+  const candidates = [`use${f}`, horizontal != null ? `use${horizontal}` : null, 'useDown']
+  return candidates.find((name) => name != null && Array.isArray(clips[name]) && clips[name].length > 0) ?? null
 }

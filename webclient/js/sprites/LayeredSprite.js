@@ -5,7 +5,7 @@ import AnimationController from './AnimationController.js'
 import IdleScheduler from './IdleScheduler.js'
 import { resolveAppearance } from './appearance.js'
 import { layerTexture } from './PlayerRig.js'
-import { facingFromState, idleClipForFacing } from './facing.js'
+import { facingFromState, idleClipForFacing, useClipForFacing } from './facing.js'
 
 // Walking and bumping are transient: remote players only get move/bump
 // messages, never an explicit "stopped", so fall back to idle when none has
@@ -113,6 +113,11 @@ export default class LayeredSprite extends Phaser.GameObjects.Container {
     if (state === this.state) {
       return
     }
+    // A use gesture finishes by itself and then idles; only movement
+    // (walk/bump) cuts it short. The scene asks for idle every frame.
+    if (this.state === 'use' && state === this.rig.initialState) {
+      return
+    }
     this.state = state
     this.facing = facingFromState(state) ?? this.facing
     if (state === this.rig.initialState) {
@@ -130,6 +135,32 @@ export default class LayeredSprite extends Phaser.GameObjects.Container {
       this.controller.play(this.rig.states[state] ?? state)
     }
     this.applyFrame()
+  }
+
+  /**
+   * Play the one-shot use (action key) animation for a facing, then return
+   * to the facing idle. A move arriving meanwhile takes over as usual.
+   */
+  playUse (facing) {
+    const clip = useClipForFacing(this.rig.clips, facing ?? this.facing)
+    if (clip == null) {
+      return false
+    }
+    this.facing = facing ?? this.facing
+    this.idle.stop()
+    this.state = 'use'
+    this.controller.play(clip, {
+      loop: false,
+      restart: true,
+      onComplete: () => {
+        if (this.state === 'use') {
+          this.state = null
+          this.playState(this.rig.initialState)
+        }
+      }
+    })
+    this.applyFrame()
+    return true
   }
 
   applyFrame () {

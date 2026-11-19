@@ -70,3 +70,20 @@ func TestLoadTilesetCollisionIntoCatalog(t *testing.T) {
 		t.Fatalf("expected collision rects on tile 42, got %d", len(info.Collision))
 	}
 }
+
+func TestSnapCollisionRect(t *testing.T) {
+	cases := []struct {
+		x, y, w, h float64
+		want       CollisionRect
+	}{
+		{5.90909, 5.81818, 10.0909, 10.1818, CollisionRect{6, 6, 10, 10}}, // hand-drawn wall in grass_terrains
+		{0, 6, 9.72727, 10, CollisionRect{0, 6, 10, 10}},
+		{6.09091, 0, 3.90909, 10.0909, CollisionRect{6, 0, 4, 10}},
+		{3.2, 3.2, 0.2, 0.2, CollisionRect{3, 3, 1, 1}}, // never vanishes
+	}
+	for _, c := range cases {
+		if got := snapCollisionRect(c.x, c.y, c.w, c.h); got != c.want {
+			t.Errorf("snap(%v,%v,%v,%v) = %+v, want %+v", c.x, c.y, c.w, c.h, got, c.want)
+		}
+	}
+}

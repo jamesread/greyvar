@@ -13,6 +13,8 @@ func (s *serverInterface) frame() {
 
 	s.processPlayerRequests();
 
+	s.tickCrops(nowMs())
+
 	s.createServerUpdates();
 
 	s.sendServerUpdates();
@@ -75,6 +77,7 @@ func (s *serverInterface) createServerUpdates() {
 		frameSpawnEntities(s, p)
 		frameEntityPositions(s, p);
 		frameAppearanceChanges(s, p)
+		frameTileChanges(s, p)
 		frameConsoleMessages(s, p)
 		frameHudMessages(s, p)
 		frameInventoryUpdates(s, p)

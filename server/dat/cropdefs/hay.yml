@@ -1,0 +1,17 @@
+# A crop: plant by holding `seed` and interacting with an empty walkable cell
+# you face; it grows through `stages` (one tile each in the crops tileset,
+# found by tile properties crop=<id>, stage=<index>); interact when ripe (the
+# last stage) to harvest.
+id: hay
+title: Hay
+seed: hay_seeds
+# New players start with this many seeds (there is no other source yet).
+starterSeeds: 5
+stages:
+  - growMs: 30000      # sprout
+  - growMs: 45000      # growing
+  - {}                 # ripe: harvestable, does not grow further
+harvest:
+  item: hay
+  count: 2
+  seeds: 1             # seeds returned, so a field can be replanted

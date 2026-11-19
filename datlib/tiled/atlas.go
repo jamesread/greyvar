@@ -13,6 +13,40 @@ type AtlasTileset struct {
 	TileWidth  int
 	TileHeight int
 	Columns    int
+	// Animations maps a local tile id to its Tiled <animation> frames.
+	Animations map[int][]AnimFrame
+	// Synced animations (tile property synced=true) run in step in every
+	// cell, so patterns flow across tiles (water); others start per cell.
+	Synced map[int]bool
+}
+
+// DefaultAnimFrameMs is used for animation frames with no (or zero) duration.
+const DefaultAnimFrameMs = 100
+
+// SanitizeAnimations drops frames that reference tiles outside the tileset
+// (tileCount <= 0 disables that check), defaults missing durations, and drops
+// animations left with fewer than two frames (nothing to animate).
+func SanitizeAnimations(anims map[int][]AnimFrame, tileCount int) map[int][]AnimFrame {
+	out := map[int][]AnimFrame{}
+	for id, frames := range anims {
+		var kept []AnimFrame
+		for _, f := range frames {
+			if f.TileID < 0 || (tileCount > 0 && f.TileID >= tileCount) {
+				continue
+			}
+			if f.DurationMs <= 0 {
+				f.DurationMs = DefaultAnimFrameMs
+			}
+			kept = append(kept, f)
+		}
+		if len(kept) >= 2 {
+			out[id] = kept
+		}
+	}
+	if len(out) == 0 {
+		return nil
+	}
+	return out
 }
 
 // ResWebPath converts a filesystem path that contains the project's res/ tree

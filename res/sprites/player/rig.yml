@@ -75,6 +75,9 @@ defaults:
     skin: rose
   parts:
     hair: short
+# Collision box [x, y, w, h] in frame pixels: the side-view body is x 4..11,
+# so walls are touched from every side (the whole 16px frame left 4px gaps).
+hitbox: [4, 0, 8, 16]
 outputs:
   sheetsDir: ../../img/textures/entities/player
   composite: ../../img/textures/entities/player/composite.png

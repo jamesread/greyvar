@@ -21,6 +21,10 @@ How it works:
 - Corner patterns the tileset has no tile for (usually the two diagonals) are
   filled in automatically; tiles that are blank in the tileset image are
   skipped and reported.
+- Flowers are not terrain variants. Tiles marked `decor=true` in
+  `-decor-tileset` (default: the generated `flora.tsx`) are scattered on a
+  `decor` layer over the spawn terrain (or `-decor-terrain`), each free cell
+  with probability `-decor-density` (default 0.15). They animate and never collide.
 - A `spawn` marker is placed on the centre map, on `-spawn-terrain` (default:
   the top terrain).
 

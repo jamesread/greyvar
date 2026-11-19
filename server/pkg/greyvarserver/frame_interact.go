@@ -11,27 +11,47 @@ func processInteractRequest(s *serverInterface, rp *RemotePlayer, req *pb.Intera
 	if rp == nil || req == nil || rp.Entity == nil {
 		return
 	}
-
-	ent := s.entityInstances[req.EntityId]
-	if ent == nil {
+	s.broadcastUse(rp, req.GetFacing())
+	if processEntityInteract(s, rp, req.EntityId) {
 		return
+	}
+	// Nothing to do with the entity (or none sent): act on the faced cell.
+	if cell := req.GetCell(); cell != nil {
+		s.processCellInteract(rp, cell.GetRow(), cell.GetCol())
+	}
+}
+
+// processEntityInteract harvests a lootable entity in range. Returns whether
+// it did anything.
+func processEntityInteract(s *serverInterface, rp *RemotePlayer, entityId int64) bool {
+	ent := s.entityInstances[entityId]
+	if ent == nil {
+		return false
 	}
 
 	if ent.WorldId != rp.CurrentWorldId || ent.GridId != rp.CurrentGridId {
-		return
+		return false
 	}
 
 	if ent.ServerId == rp.Entity.ServerId {
-		return
+		return false
 	}
 
 	if !entityInInteractRange(rp.Entity, ent) {
-		return
+		return false
 	}
 
 	entdef := s.entityDefinitions[ent.Definition]
-	if entdef == nil || len(entdef.Loot) == 0 {
-		return
+	if entdef == nil {
+		return false
+	}
+	// Entities with interact rules (levers, chests) never fall through to
+	// loot harvesting: an opened chest must not hand out its loot again.
+	if entdef.Interact != nil {
+		return s.interactBehaviour(rp, ent, entdef)
+	}
+	if len(lootFor(ent, entdef)) == 0 {
+		return false
 	}
 
 	log.WithFields(log.Fields{
@@ -41,6 +61,7 @@ func processInteractRequest(s *serverInterface, rp *RemotePlayer, req *pb.Intera
 	}).Info("Interact harvest")
 
 	s.harvestEntity(rp, ent)
+	return true
 }
 
 func entityInInteractRange(player, target *Entity) bool {
@@ -54,24 +75,12 @@ func entityInInteractRange(player, target *Entity) bool {
 
 func (s *serverInterface) harvestEntity(rp *RemotePlayer, ent *Entity) {
 	entdef := s.entityDefinitions[ent.Definition]
-	if entdef == nil || len(entdef.Loot) == 0 {
+	loot := lootFor(ent, entdef)
+	if len(loot) == 0 {
 		return
 	}
 
-	for _, drop := range entdef.Loot {
-		count := drop.Count
-		if count <= 0 {
-			count = 1
-		}
-		rp.addInventoryItem(drop.Item, count)
-	}
-	rp.PendingInventoryUpdate = true
-
-	label := ent.Definition
-	if len(entdef.Loot) == 1 {
-		label = itemTitle(s, entdef.Loot[0].Item)
-	}
-	text := "Collected " + label
+	text := "Collected " + s.grantLoot(rp, loot)
 	rp.PendingHudMessage = &text
 	rp.PendingHudEntityId = ent.ServerId
 

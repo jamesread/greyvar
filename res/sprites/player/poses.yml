@@ -219,3 +219,26 @@ poses:
     parts: {pants: walkRight_legs3, body: walkRight_3, shirt: walkRight_3, head: walkRight_3, hair: walkRight_3}
     offsets: {pants: [1, 0], body: [2, 0], shirt: [2, 0], head: [2, 1], hair: [2, 1]}  # walkRight_3 torso art sits 1px left
     hand: [12, 9]
+  # Use (action key): the near arm reaches forward, then returns. Side views
+  # extend the arm from the sleeve (body useLeft/Right_half, _reach); the
+  # front view brings both hands up in front of the torso (shirt useDown);
+  # the back view hides the forearms behind the torso (reaching away).
+  - name: useRight_half
+    parts: {pants: walkRight_legs1, body: useRight_half, shirt: useRight, head: walkRight_1, hair: walkRight_1}
+    hand: [13, 10]
+  - name: useRight_reach
+    parts: {pants: walkRight_legs1, body: useRight_reach, shirt: useRight, head: walkRight_1, hair: walkRight_1}
+    hand: [14, 9]
+  - name: useLeft_half
+    parts: {pants: walkLeft_legs1, body: useLeft_half, shirt: useLeft, head: walkLeft_1, hair: walkLeft_1}
+    hand: [2, 10]
+  - name: useLeft_reach
+    parts: {pants: walkLeft_legs1, body: useLeft_reach, shirt: useLeft, head: walkLeft_1, hair: walkLeft_1}
+    hand: [1, 9]
+  - name: useDown_reach
+    parts: {pants: idle_0, body: useDown, shirt: useDown, head: idle_0, hair: idle_0}
+    hand: [10, 10]
+  - name: useUp_reach
+    parts: {pants: walkUp_0, body: useUp, shirt: walkUp_0, hair: walkUp_0}
+    hand: [8, 9]
+    itemZ: behind

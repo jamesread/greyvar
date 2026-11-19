@@ -10,3 +10,4 @@ greyvar.crt
 greyvar.csr
 greyvar.key
 protocol
+state/

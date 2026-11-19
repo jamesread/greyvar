@@ -21,6 +21,7 @@ type tilesetRef struct {
 	TileWidth int   `json:"tilewidth"`
 	TileHeight int  `json:"tileheight"`
 	Columns  int    `json:"columns"`
+	TileCount int   `json:"tilecount"`
 	Image    string `json:"image"`
 	Tiles    []embeddedTile `json:"tiles"`
 }
@@ -30,6 +31,10 @@ type embeddedTile struct {
 	Type       string            `json:"type"`
 	Image      string            `json:"image"`
 	Properties []propertyEntry   `json:"properties"`
+	Animation  []struct {
+		TileID   int `json:"tileid"`
+		Duration int `json:"duration"`
+	} `json:"animation"`
 }
 
 type propertyEntry struct {
@@ -59,6 +64,7 @@ type tsxTile struct {
 	Image       tsxImage        `xml:"image"`
 	ObjectGroup tsxObjectGroup  `xml:"objectgroup"`
 	Properties  tsxProperties   `xml:"properties"`
+	Animation   *tsxAnimation   `xml:"animation"`
 }
 
 type tsxProperty struct {
@@ -90,6 +96,19 @@ type tileInfo struct {
 	Collision        []CollisionRect
 	CollisionFromTSX bool
 	Hidden           bool
+	Decor            bool
+	// Water marks all-water tiles; NeedsWaterBelow marks see-through shore
+	// tiles whose tide animation only plays over water (property names
+	// water / needs_water_below, set by `spritegen tiles animate`).
+	Water           bool
+	NeedsWaterBelow bool
+	// Overlay (property overlay=true, e.g. generated cliff faces) draws over
+	// the tile beneath and adds its collision to that tile's.
+	Overlay bool
+	// SeeThrough marks the tile's transparent pixels; WaterPixels those drawn
+	// in the tileset's water colour. Nil when none (16x16 atlases only).
+	SeeThrough  *PixelMask
+	WaterPixels *PixelMask
 }
 
 type TilesetCatalog struct {
@@ -245,14 +264,44 @@ func (c *TilesetCatalog) loadExternalTileset(mapDir string, ref tilesetRef) erro
 		}
 		webPath := ResWebPath(atlasImage)
 		if webPath != "" && ts.Columns > 0 {
+			anims := map[int][]AnimFrame{}
+			synced := map[int]bool{}
+			for _, tile := range ts.Tiles {
+				if tile.Animation == nil {
+					continue
+				}
+				for _, p := range tile.Properties.Properties {
+					if strings.EqualFold(p.Name, "synced") && strings.EqualFold(p.Value, "true") {
+						synced[tile.ID] = true
+					}
+				}
+				frames := make([]AnimFrame, 0, len(tile.Animation.Frames))
+				for _, f := range tile.Animation.Frames {
+					frames = append(frames, AnimFrame{TileID: f.TileID, DurationMs: f.Duration})
+				}
+				anims[tile.ID] = frames
+			}
 			c.registerAtlas(AtlasTileset{
 				Key:        atlasKey,
 				ImagePath:  webPath,
 				TileWidth:  ts.TileWidth,
 				TileHeight: ts.TileHeight,
 				Columns:    ts.Columns,
+				Animations: SanitizeAnimations(anims, countAtlasTiles(ts)),
+				Synced:     synced,
 			})
 		}
+	}
+
+	var masks map[int]tileMasks
+	if atlasImage != "" && ts.TileWidth == 16 && ts.TileHeight == 16 {
+		var waterTiles []int
+		for _, tile := range ts.Tiles {
+			if boolProperty(tsxPropsToEntries(tile.Properties.Properties), "water") {
+				waterTiles = append(waterTiles, tile.ID)
+			}
+		}
+		masks = computeTileMasks(atlasImage, ts.Columns, waterTiles)
 	}
 
 	for _, tile := range ts.Tiles {
@@ -262,6 +311,12 @@ func (c *TilesetCatalog) loadExternalTileset(mapDir string, ref tilesetRef) erro
 			Collision:        collisionRectsFromTSXTile(tile),
 			CollisionFromTSX: true,
 			Hidden:           !drawFromProperties(tsxPropsToEntries(tile.Properties.Properties)),
+			Decor:            decorFromProperties(tsxPropsToEntries(tile.Properties.Properties)),
+			Water:            boolProperty(tsxPropsToEntries(tile.Properties.Properties), "water"),
+			NeedsWaterBelow:  boolProperty(tsxPropsToEntries(tile.Properties.Properties), "needs_water_below"),
+			Overlay:          boolProperty(tsxPropsToEntries(tile.Properties.Properties), "overlay"),
+			SeeThrough:       masks[tile.ID].seeThrough,
+			WaterPixels:      masks[tile.ID].water,
 		}
 
 		if tile.Image.Source != "" {
@@ -288,6 +343,8 @@ func (c *TilesetCatalog) loadExternalTileset(mapDir string, ref tilesetRef) erro
 				FrameIndex:       int32(localID),
 				CollisionFromTSX: true,
 				Hidden:           false,
+				SeeThrough:       masks[localID].seeThrough,
+				WaterPixels:      masks[localID].water,
 			}
 		}
 	}
@@ -311,12 +368,25 @@ func (c *TilesetCatalog) loadEmbeddedTileset(ref tilesetRef) {
 		if tileHeight <= 0 {
 			tileHeight = 16
 		}
+		anims := map[int][]AnimFrame{}
+		for _, tile := range ref.Tiles {
+			if len(tile.Animation) == 0 {
+				continue
+			}
+			frames := make([]AnimFrame, 0, len(tile.Animation))
+			for _, f := range tile.Animation {
+				frames = append(frames, AnimFrame{TileID: f.TileID, DurationMs: f.Duration})
+			}
+			anims[tile.ID] = frames
+		}
 		c.registerAtlas(AtlasTileset{
 			Key:        atlasKey,
 			ImagePath:  webPath,
 			TileWidth:  tileWidth,
 			TileHeight: tileHeight,
 			Columns:    ref.Columns,
+			// tilecount 0 (older exports) skips the frame range check.
+			Animations: SanitizeAnimations(anims, ref.TileCount),
 		})
 	}
 
@@ -326,6 +396,10 @@ func (c *TilesetCatalog) loadEmbeddedTileset(ref tilesetRef) {
 			Type:             strings.TrimSpace(tile.Type),
 			CollisionFromTSX: true,
 			Hidden:           !drawFromProperties(tile.Properties),
+			Decor:            decorFromProperties(tile.Properties),
+			Water:            boolProperty(tile.Properties, "water"),
+			NeedsWaterBelow:  boolProperty(tile.Properties, "needs_water_below"),
+			Overlay:          boolProperty(tile.Properties, "overlay"),
 		}
 
 		if tile.Image != "" {
@@ -439,3 +513,4 @@ func ParseTilesetRefs(raw json.RawMessage) ([]tilesetRef, error) {
 
 	return refs, nil
 }
+

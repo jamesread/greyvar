@@ -16,6 +16,7 @@ var knownDatExtensions = map[string]struct{}{
 	".tx":    {},
 	".grid":  {},
 	".world": {},
+	".md":    {}, // documentation kept next to the data (e.g. worlds/PUZZLES.md)
 }
 
 // LintUnknownFiles warns on unrecognized files under dat/.

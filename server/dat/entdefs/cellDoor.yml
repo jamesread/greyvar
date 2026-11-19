@@ -1,0 +1,9 @@
+---
+title: cellDoor
+solid: true
+initialState: closed
+# Blocks only while closed. Opens/closes from its `open_when` map property.
+passableStates: [open]
+states:
+  closed: {}
+  open: {}

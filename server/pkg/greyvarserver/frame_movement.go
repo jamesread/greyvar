@@ -110,7 +110,53 @@ func (s *serverInterface) resolveMoveDestination(rp *RemotePlayer, newX, newY in
 		}
 	}
 
+	if (dx == 0) != (dy == 0) {
+		if destX, destY, ok := s.cornerSlide(rp, fromX, fromY, dx, dy); ok {
+			return destX, destY, true
+		}
+	}
+
 	return fromX, fromY, false
+}
+
+// cornerSlidePx is how far to the side a blocked straight move looks for an
+// opening (a doorway the player is slightly misaligned with).
+const cornerSlidePx = 8
+
+// cornerSlide is classic Zelda corner sliding: when a straight move is
+// blocked but stepping forward would work a few pixels to the side, nudge the
+// player sideways toward that spot (at most one step per request), so
+// one-tile doorways do not need pixel-perfect alignment.
+func (s *serverInterface) cornerSlide(rp *RemotePlayer, fromX, fromY, dx, dy int32) (int32, int32, bool) {
+	fwdX, fwdY := sign32(dx), sign32(dy)
+	step := absInt32(dx) + absInt32(dy)
+	for off := int32(1); off <= cornerSlidePx; off++ {
+		for _, side := range []int32{-1, 1} {
+			sideX, sideY := fwdY*side*off, fwdX*side*off // perpendicular to the move
+			if !s.canMoveTo(rp, rp.Entity, fromX+sideX, fromY+sideY) {
+				continue
+			}
+			if !s.canMoveTo(rp, rp.Entity, fromX+sideX+fwdX, fromY+sideY+fwdY) {
+				continue
+			}
+			nudge := off
+			if nudge > step {
+				nudge = step
+			}
+			return s.farthestWalkableAlong(rp, fromX, fromY, fwdY*side*nudge, fwdX*side*nudge)
+		}
+	}
+	return fromX, fromY, false
+}
+
+func sign32(v int32) int32 {
+	switch {
+	case v > 0:
+		return 1
+	case v < 0:
+		return -1
+	}
+	return 0
 }
 
 // farthestWalkableAlong returns the farthest position from (fromX,fromY) toward
@@ -264,17 +310,13 @@ func (s *serverInterface) entityContactTriggered(player, ent *Entity, vis tiled.
 			return false, math.Inf(1)
 		}
 		ok := playerMajorityOverlaps(player.X, player.Y, rects, ent.X, ent.Y)
-		dist := aabbDistanceToCollisionRects(
-			float64(player.X), float64(player.Y), float64(entitySizePx), float64(entitySizePx),
-			rects, ent.X, ent.Y,
-		)
+		pl, pt, pw, ph := moverBox(player.X, player.Y)
+		dist := aabbDistanceToCollisionRects(pl, pt, pw, ph, rects, ent.X, ent.Y)
 		return ok, dist
 	default: // touch
 		if len(rects) > 0 {
-			dist := aabbDistanceToCollisionRects(
-				float64(player.X), float64(player.Y), float64(entitySizePx), float64(entitySizePx),
-				rects, ent.X, ent.Y,
-			)
+			pl, pt, pw, ph := moverBox(player.X, player.Y)
+			dist := aabbDistanceToCollisionRects(pl, pt, pw, ph, rects, ent.X, ent.Y)
 			return dist <= float64(entityTriggerMarginPx), dist
 		}
 		dX := math.Abs(float64(player.X - ent.X))
@@ -303,13 +345,12 @@ func triggerRectsForVisual(vis tiled.TypedTileVisual) []tiled.CollisionRect {
 }
 
 func playerMajorityOverlaps(playerX, playerY int32, rects []tiled.CollisionRect, originX, originY int32) bool {
-	playerArea := float64(entitySizePx * entitySizePx)
+	px, py, pw, ph := moverBox(playerX, playerY)
+	playerArea := pw * ph
 	if playerArea <= 0 {
 		return false
 	}
 	var overlap float64
-	px, py := float64(playerX), float64(playerY)
-	pw, ph := float64(entitySizePx), float64(entitySizePx)
 	for _, rect := range rects {
 		bx := float64(originX) + rect.X
 		by := float64(originY) + rect.Y
@@ -369,14 +410,7 @@ func (s *serverInterface) activateEntity(rp *RemotePlayer, ent *Entity, vis tile
 	if next == "" {
 		next = "pressed"
 	}
-	if ent.State == next {
-		return
-	}
-	ent.State = next
-	rp.currentFrame.EntityStateChanges = append(rp.currentFrame.EntityStateChanges, &pb.EntityStateChange{
-		EntityId: ent.ServerId,
-		NewState: ent.State,
-	})
+	s.setEntityState(ent, next)
 }
 
 func (s *serverInterface) onEntityContactLeave(rp *RemotePlayer, ent *Entity) {
@@ -396,11 +430,7 @@ func (s *serverInterface) onEntityContactLeave(rp *RemotePlayer, ent *Entity) {
 	if ent.State != transition || ent.State == initial {
 		return
 	}
-	ent.State = initial
-	rp.currentFrame.EntityStateChanges = append(rp.currentFrame.EntityStateChanges, &pb.EntityStateChange{
-		EntityId: ent.ServerId,
-		NewState: ent.State,
-	})
+	s.setEntityState(ent, initial)
 }
 
 func (s *serverInterface) pickupEntity(rp *RemotePlayer, ent *Entity) {

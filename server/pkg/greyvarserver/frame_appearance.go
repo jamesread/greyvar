@@ -22,6 +22,10 @@ func loadPlayerRig() *rigs.Rig {
 		return nil
 	}
 	log.Infof("Loaded player rig from %s (%d layers)", path, len(r.Layers))
+	if hb := r.Hitbox; hb[2] > 0 && hb[3] > 0 {
+		playerHitbox = hitbox{hb[0], hb[1], hb[2], hb[3]}
+		log.Infof("Player hitbox %v", hb)
+	}
 	return r
 }
 
@@ -57,6 +61,9 @@ func processAppearanceRequest(s *serverInterface, rp *RemotePlayer, req *pb.Appe
 		reply("appearance: " + err.Error())
 		return
 	}
+	// The held item must be in the player's inventory. A bad held item only
+	// drops that part, so a restored look still applies after reconnecting
+	// with an empty inventory.
 	switch held := req.GetHeldItem(); held {
 	case "":
 	case "-":
@@ -64,11 +71,19 @@ func processAppearanceRequest(s *serverInterface, rp *RemotePlayer, req *pb.Appe
 	default:
 		if _, ok := s.itemDefinitions[held]; !ok {
 			reply(fmt.Sprintf("appearance: unknown item %q", held))
-			return
+		} else if rp.inventoryCount(held) <= 0 {
+			reply(fmt.Sprintf("appearance: you have no %s to hold", held))
+		} else {
+			next.HeldItem = held
 		}
-		next.HeldItem = held
 	}
 
+	setAppearance(s, rp, next)
+	reply("appearance: " + describeAppearance(next))
+}
+
+// setAppearance stores a look and tells every client that knows the player.
+func setAppearance(s *serverInterface, rp *RemotePlayer, next rigs.Appearance) {
 	rp.Entity.Appearance = &next
 	change := &pb.EntityAppearanceChange{EntityId: rp.Entity.ServerId, Appearance: appearanceToPB(&next)}
 	for _, p := range s.remotePlayers {
@@ -76,7 +91,21 @@ func processAppearanceRequest(s *serverInterface, rp *RemotePlayer, req *pb.Appe
 			p.PendingAppearanceChanges = append(p.PendingAppearanceChanges, change)
 		}
 	}
-	reply("appearance: " + describeAppearance(next))
+}
+
+// putAwayHeldItemIfGone clears the held item once it is no longer in the
+// player's inventory (crafted away, used...). Called on every inventory change.
+func putAwayHeldItemIfGone(s *serverInterface, rp *RemotePlayer) {
+	if rp.Entity == nil || rp.Entity.Appearance == nil {
+		return
+	}
+	held := rp.Entity.Appearance.HeldItem
+	if held == "" || rp.inventoryCount(held) > 0 {
+		return
+	}
+	next := *rp.Entity.Appearance
+	next.HeldItem = ""
+	setAppearance(s, rp, next)
 }
 
 func describeAppearance(a rigs.Appearance) string {

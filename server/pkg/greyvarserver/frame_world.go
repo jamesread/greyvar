@@ -237,6 +237,7 @@ func frameInventoryUpdates(s *serverInterface, p *RemotePlayer) {
 	if !p.PendingInventoryUpdate {
 		return
 	}
+	putAwayHeldItemIfGone(s, p)
 	items := make([]*pb.InventoryItem, 0, len(p.Inventory))
 	for _, it := range p.Inventory {
 		items = append(items, &pb.InventoryItem{

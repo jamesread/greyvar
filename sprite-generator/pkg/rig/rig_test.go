@@ -255,6 +255,8 @@ func TestValidateCatchesMistakes(t *testing.T) {
 		{"hand outside frame", func(r *Rig) { r.Poses[0].Hand = &[2]int{16, 0} }, "hand"},
 		{"duplicate key colour", func(r *Rig) { r.Spec.Fixed = append(r.Spec.Fixed, "#c08060") }, "used by both"},
 		{"bad default palette", func(r *Rig) { r.Spec.Defaults.Palettes["hair"] = "green" }, `defaults.palettes.hair = "green"`},
+		{"hitbox outside frame", func(r *Rig) { r.Spec.Hitbox = &[4]int{10, 0, 8, 16} }, "hitbox [10 0 8 16] must have positive size"},
+		{"hitbox empty", func(r *Rig) { r.Spec.Hitbox = &[4]int{0, 0, 0, 16} }, "hitbox"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {

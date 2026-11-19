@@ -1,5 +1,7 @@
 package gridfiles
 
+import "github.com/jamesread/greyvar/datlib/tiled"
+
 type LayerKind string
 
 const (
@@ -24,6 +26,47 @@ type Tile struct {
 	TeleportX int `yaml:"teleportX,omitempty"`
 	TeleportY int `yaml:"teleportY,omitempty"`
 	Hidden bool `yaml:"-"`
+	// Decor tiles (tile property decor=true, e.g. flowers) draw on top but
+	// are skipped for collision and tile triggers; see CollisionTileAt.
+	Decor bool `yaml:"-"`
+	// Water: an all-water tile. NeedsWaterBelow: a see-through shore tile
+	// whose animation should only play when water is under it.
+	Water           bool `yaml:"-"`
+	NeedsWaterBelow bool `yaml:"-"`
+	// Overlay tiles (property overlay=true, e.g. generated cliff faces) draw
+	// over the tile beneath and add their collision to it: CollisionTileAt
+	// returns the tile beneath with the overlay's rects appended.
+	Overlay bool `yaml:"-"`
+	// SeeThrough / WaterPixels: the tile art's transparent and water-coloured
+	// pixels, used to give water collision where it shows (water_collision.go).
+	SeeThrough  *tiled.PixelMask `yaml:"-"`
+	WaterPixels *tiled.PixelMask `yaml:"-"`
+}
+
+// WaterBelow reports whether the tile at (layer, row, col) mostly shows
+// water through its see-through pixels (at least half of them), looking down
+// past decor, overlays and other see-through tiles: e.g. a sand shore over a
+// grass edge over water. Used to decide if a see-through shore animates; a
+// few stray water pixels under a sand/grass edge do not count.
+func (g *Grid) WaterBelow(layer int, row, col uint32) bool {
+	through := tiled.PixelMask{}
+	for y := range through {
+		through[y] = 0xffff
+	}
+	if layer >= 0 && layer < len(g.Layers) {
+		if t := g.Layers[layer].TileAt(row, col); t != nil && t.SeeThrough != nil {
+			through = *t.SeeThrough
+		}
+	}
+	var below []int
+	for i := 0; i < layer && i < len(g.Layers); i++ {
+		if g.Layers[i].Kind == LayerKindTerrain {
+			below = append(below, i)
+		}
+	}
+	shown := exposedWater(g, below, len(below)-1, row, col, through)
+	n := shown.Count()
+	return n > 0 && n*2 >= through.Count()
 }
 
 type TileLayer struct {
@@ -60,6 +103,9 @@ type GridTileset struct {
 	TileWidth  int
 	TileHeight int
 	Columns    int
+	// Animations maps a local tile id to its frames (from the Tiled tileset).
+	Animations map[int][]tiled.AnimFrame
+	Synced     map[int]bool
 }
 
 type GridFileEntityInstance struct {
@@ -114,6 +160,37 @@ func (g *Grid) BuildEmpty() {
 // TopTileAt returns the topmost non-empty tile at a cell across all layers.
 // Upper layers take precedence. In-bounds empty cells return a traversable tile.
 // Out-of-bounds coordinates return nil.
+// CollisionTileAt is the topmost non-decor tile: what the player stands on
+// for collision, teleports and other tile rules.
+func (g *Grid) CollisionTileAt(row, col uint32) *Tile {
+	if row >= g.RowCount || col >= g.ColCount {
+		return nil
+	}
+	var extra []CollisionRect
+	for i := len(g.Layers) - 1; i >= 0; i-- {
+		tile := g.Layers[i].TileAt(row, col)
+		if tile == nil || tile.Decor {
+			continue
+		}
+		if tile.Overlay {
+			extra = append(extra, tile.Collision...)
+			continue
+		}
+		if len(extra) == 0 {
+			return tile
+		}
+		merged := *tile
+		merged.Collision = append(append([]CollisionRect(nil), tile.Collision...), extra...)
+		return &merged
+	}
+	top := g.TopTileAt(row, col)
+	if top != nil && (top.Decor || top.Overlay) {
+		// Only decor/overlays in this cell: an empty cell plus overlay rects.
+		return &Tile{Row: row, Col: col, Traversable: len(extra) == 0, Collision: extra, CollisionFromTSX: true}
+	}
+	return top
+}
+
 func (g *Grid) TopTileAt(row, col uint32) *Tile {
 	if row >= g.RowCount || col >= g.ColCount {
 		return nil

@@ -1,4 +1,5 @@
 import GridScene from './scenes/GridScene.js'
+import { loadSavedAppearance, restoreRequest } from './sprites/appearanceStore.js'
 import { normalizeEntitySpawn, normalizeEntityPosition, entityId } from './entityUtils.js'
 import { logGreyvar, sceneSnapshot } from './sceneDebug.js'
 import { initCollisionDebugPreference, isCollisionDebugEnabled, refreshCollisionDebugOverlay } from './collisionDebug.js'
@@ -24,8 +25,40 @@ export default class GameState {
   addMessage (m) {}
 
   onNewGrid (g) {
+    const current = this.gridScene
+    // First grid (no scene yet) or mid-scroll: cut straight in.
+    if (this.warpFading || (current != null && current.sys?.isActive?.() && !current.isScrollTransitioning)) {
+      this.beginWarpFade(g)
+      return
+    }
     // Keep localPlayerEntityId across teleports; playerJoined is only sent once on connect.
     this.applyGrid(g, { resetLocalPlayer: false })
+  }
+
+  // Warps (teleport tiles, world loads) fade the old map to black, swap, then
+  // fade the new map in. While fading, gridScene is null so the new map's
+  // spawns queue in pendingSpawns (the same path as the first connect) instead
+  // of landing in the old scene. A grid arriving mid-fade replaces the target.
+  beginWarpFade (g) {
+    this.pendingWarpGrid = g
+    if (this.warpFading) {
+      return
+    }
+    this.warpFading = true
+    const old = this.gridScene
+    this.gridScene = null
+    old.fadeOutForWarp(() => {
+      // The fade-complete event fires inside Phaser's scene update; swapping
+      // scenes there is deferred by the scene manager and leaves the old scene
+      // half torn down. Swap on the next task instead, outside the game step.
+      setTimeout(() => {
+        const next = this.pendingWarpGrid
+        this.pendingWarpGrid = null
+        this.warpFading = false
+        this.fadeInNextGrid = true
+        this.applyGrid(next, { resetLocalPlayer: false })
+      }, 0)
+    })
   }
 
   onGridTransition (g) {
@@ -206,6 +239,13 @@ export default class GameState {
     sceneSnapshot('finishShowGame (after grid ready)')
   }
 
+  // The server restarted or the socket dropped: the next session assigns new
+  // entity ids and resends the player, grid and spawns, so forget the old ones.
+  onReconnected () {
+    this.localPlayerEntityId = null
+    this.pendingSpawns = []
+  }
+
   onPlayerJoined (plj) {
     console.log('player joined:', plj.username)
 
@@ -213,6 +253,11 @@ export default class GameState {
     // replace our local entity id or movement/camera attach to the wrong player.
     if (plj.entityId != null && this.localPlayerEntityId == null) {
       this.localPlayerEntityId = entityId(plj.entityId)
+      // Bring back the look chosen in an earlier session (this browser).
+      const restore = restoreRequest(loadSavedAppearance())
+      if (restore != null) {
+        window.serverConnection?.sendAppearanceRequest(restore)
+      }
     }
   }
 

@@ -31,6 +31,7 @@ type RigJSON struct {
 	Idle         IdleSpec                       `json:"idle"`
 	States       map[string]string              `json:"states"`
 	InitialState string                         `json:"initialState"`
+	Hitbox       [4]int                         `json:"hitbox"`
 }
 
 // LayerJSON lists a layer's sheets (web paths under /res) and which colour
@@ -269,6 +270,7 @@ func (r *Rig) Build() ([]Output, error) {
 		Idle:         r.Clips.Idle,
 		States:       r.Clips.States,
 		InitialState: r.Clips.InitialState,
+		Hitbox:       r.Spec.HitboxOrDefault(),
 	}
 
 	for _, l := range r.Spec.Layers {

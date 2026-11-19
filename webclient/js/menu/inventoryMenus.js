@@ -38,11 +38,28 @@ export function buildInventoryMenuItems () {
     }]
   }
 
-  return items.map((slot, index) => ({
-    id: `inv-${slot.definition}-${index}`,
-    label: `${itemTitle(slot.definition)} x${slot.count ?? 1}`,
-    enabled: false
-  }))
+  // Choosing an item holds it (drawn in the player's hand); choosing the held
+  // item puts it away. The server checks the item is really in the inventory.
+  const held = localHeldItem()
+  return items.map((slot, index) => {
+    const isHeld = slot.definition === held
+    return {
+      id: `inv-${slot.definition}-${index}`,
+      label: `${itemTitle(slot.definition)} x${slot.count ?? 1}${isHeld ? '  (held)' : ''}`,
+      enabled: true,
+      action: () => {
+        window.serverConnection?.sendAppearanceRequest({ heldItem: isHeld ? '-' : slot.definition })
+        window.menuSystem?.close()
+      }
+    }
+  })
+}
+
+/** Item the local player is holding, from its sprite's current appearance. */
+export function localHeldItem () {
+  const gs = window.gameState
+  const ent = gs?.gridScene?.entities?.[gs?.localPlayerEntityId]
+  return ent?.img?.appearance?.heldItem || ent?.appearance?.heldItem || ''
 }
 
 export function buildCraftingMenuItems () {
