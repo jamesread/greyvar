@@ -21,8 +21,14 @@ func (r *Rig) Validate() []string {
 		add("rig.yml: outputs.sheetsDir, outputs.composite and outputs.webRoot are required")
 	}
 
-	if hb := s.HitboxOrDefault(); hb[2] <= 0 || hb[3] <= 0 || hb[0] < 0 || hb[1] < 0 || hb[0]+hb[2] > fs || hb[1]+hb[3] > fs {
-		add("rig.yml: hitbox %v must have positive size and fit in the %dx%d frame", hb, fs, fs)
+	if hb := s.HitboxOrDefault(); hb[2] <= 0 || hb[3] <= 0 || hb[0] < 0 || hb[1] < 0 || hb[0]+hb[2] > CellSize || hb[1]+hb[3] > CellSize {
+		add("rig.yml: hitbox %v must have positive size and fit in the %dx%d cell", hb, CellSize, CellSize)
+	}
+	if s.Size != "child" && s.Size != "adult" {
+		add("rig.yml: size %q must be child or adult", s.Size)
+	}
+	if a := s.AnchorOrDefault(); a[0] < 0 || a[1] < 0 || a[0] > fs || a[1] > fs {
+		add("rig.yml: anchor %v must be inside the %dx%d frame", a, fs, fs)
 	}
 
 	// Colours.
@@ -62,6 +68,14 @@ func (r *Rig) Validate() []string {
 				if _, err := ParseHex(hex); err != nil {
 					add("rig.yml: palette %s.%s: %v", slot, name, err)
 				}
+			}
+		}
+		for _, h := range s.Hidden[slot] {
+			if _, ok := pals[h]; !ok {
+				add("rig.yml: hidden palette %s.%s is not a palette", slot, h)
+			}
+			if s.Defaults.Palettes[slot] == h {
+				add("rig.yml: defaults.palettes.%s cannot be hidden palette %q", slot, h)
 			}
 		}
 		if d := s.Defaults.Palettes[slot]; d == "" {

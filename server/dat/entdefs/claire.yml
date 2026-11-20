@@ -1,0 +1,16 @@
+# Claire: the hairdresser in her salon on isleOfStarting 1.2 (1.2.salon.tmj),
+# across from Bill's house. Talking to her (dialogs/claire.yml) changes the
+# player's hairstyle and hair colour.
+title: claire
+solid: true
+initialState: idle
+states:
+  idle: {}
+appearance:
+  parts: {hair: bob}
+  palettes: {skin: tan, hair: blonde, shirt: magenta, pants: khaki}
+wander:
+  rangePx: 24
+  speedPx: 2
+  pauseMs: [1500, 4000]
+dialog: claire

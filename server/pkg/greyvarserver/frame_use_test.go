@@ -24,6 +24,8 @@ func TestInteractBroadcastsUse(t *testing.T) {
 	t.Setenv("GREYVAR_RES_DIR", res)
 	t.Setenv("GREYVAR_STATE_DIR", t.TempDir())
 	t.Setenv("GREYVAR_WORLD", "isleOfStarting_dev_tiled")
+	saved := playerHitbox // newServer sets it from the rig; other tests expect the default
+	t.Cleanup(func() { playerHitbox = saved })
 	s := newServer()
 	me := &Entity{ServerId: 1, Definition: "player", WorldId: "w", GridId: "g"}
 	s.entityInstances[me.ServerId] = me

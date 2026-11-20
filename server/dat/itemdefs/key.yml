@@ -2,6 +2,7 @@ id: key
 title: Key
 stackMax: 99
 category: key
+icon: img/textures/items/icons/key.png
 held:
   sprite: img/textures/items/held/key.png
   grip: [1, 2]

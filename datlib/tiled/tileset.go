@@ -105,6 +105,9 @@ type tileInfo struct {
 	// Overlay (property overlay=true, e.g. generated cliff faces) draws over
 	// the tile beneath and adds its collision to that tile's.
 	Overlay bool
+	// Above (property above=true, e.g. a tree's canopy) draws over
+	// characters; for collision it acts like an overlay.
+	Above bool
 	// SeeThrough marks the tile's transparent pixels; WaterPixels those drawn
 	// in the tileset's water colour. Nil when none (16x16 atlases only).
 	SeeThrough  *PixelMask
@@ -315,6 +318,7 @@ func (c *TilesetCatalog) loadExternalTileset(mapDir string, ref tilesetRef) erro
 			Water:            boolProperty(tsxPropsToEntries(tile.Properties.Properties), "water"),
 			NeedsWaterBelow:  boolProperty(tsxPropsToEntries(tile.Properties.Properties), "needs_water_below"),
 			Overlay:          boolProperty(tsxPropsToEntries(tile.Properties.Properties), "overlay"),
+			Above:            boolProperty(tsxPropsToEntries(tile.Properties.Properties), "above"),
 			SeeThrough:       masks[tile.ID].seeThrough,
 			WaterPixels:      masks[tile.ID].water,
 		}
@@ -400,6 +404,7 @@ func (c *TilesetCatalog) loadEmbeddedTileset(ref tilesetRef) {
 			Water:            boolProperty(tile.Properties, "water"),
 			NeedsWaterBelow:  boolProperty(tile.Properties, "needs_water_below"),
 			Overlay:          boolProperty(tile.Properties, "overlay"),
+			Above:            boolProperty(tile.Properties, "above"),
 		}
 
 		if tile.Image != "" {

@@ -347,6 +347,7 @@ export default class GameState {
       title: itemdef.title ?? itemdef.id,
       stackMax: itemdef.stackMax ?? 99,
       category: itemdef.category ?? '',
+      icon: itemdef.icon ?? '',
       heldSprite: itemdef.heldSprite ?? '',
       heldGrip: [itemdef.heldGripX ?? 0, itemdef.heldGripY ?? 0]
     })

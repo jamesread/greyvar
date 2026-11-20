@@ -1,0 +1,7 @@
+---
+title: riftCoin
+# A rift coin lying in a rift (near its exit): walk over it to pick it up.
+itemId: rift_coin
+initialState: coinlike
+states:
+  coinlike: {}

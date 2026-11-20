@@ -36,42 +36,42 @@ clips:
       ms: 100
     - pose: walkDown_3
       ms: 100
-  walkDownLeft:
-    - pose: walkDownLeft_0
-      ms: 100
-    - pose: walkDownLeft_1
-      ms: 100
-    - pose: walkDownLeft_2
-      ms: 100
-    - pose: walkDownLeft_3
-      ms: 100
-  walkDownRight:
-    - pose: walkDownRight_0
-      ms: 100
-    - pose: walkDownRight_1
-      ms: 100
-    - pose: walkDownRight_2
-      ms: 100
-    - pose: walkDownRight_3
-      ms: 100
-  walkLeft:
-    - pose: walkLeft_0
-      ms: 100
-    - pose: walkLeft_1
-      ms: 100
-    - pose: walkLeft_2
-      ms: 100
-    - pose: walkLeft_3
-      ms: 100
-  walkRight:
-    - pose: walkRight_0
-      ms: 100
-    - pose: walkRight_1
-      ms: 100
-    - pose: walkRight_2
-      ms: 100
-    - pose: walkRight_3
-      ms: 100
+  walkDownLeft:  # side cycle from frame 6 (each state needs its own first frame)
+    - {pose: walkLeft_s6, ms: 75}
+    - {pose: walkLeft_s7, ms: 75}
+    - {pose: walkLeft_s0, ms: 75}
+    - {pose: walkLeft_s1, ms: 75}
+    - {pose: walkLeft_s2, ms: 75}
+    - {pose: walkLeft_s3, ms: 75}
+    - {pose: walkLeft_s4, ms: 75}
+    - {pose: walkLeft_s5, ms: 75}
+  walkDownRight:  # side cycle from frame 6 (each state needs its own first frame)
+    - {pose: walkRight_s6, ms: 75}
+    - {pose: walkRight_s7, ms: 75}
+    - {pose: walkRight_s0, ms: 75}
+    - {pose: walkRight_s1, ms: 75}
+    - {pose: walkRight_s2, ms: 75}
+    - {pose: walkRight_s3, ms: 75}
+    - {pose: walkRight_s4, ms: 75}
+    - {pose: walkRight_s5, ms: 75}
+  walkLeft:  # 8-frame smooth cycle (poses walkLeft_s0..7)
+    - {pose: walkLeft_s0, ms: 75}
+    - {pose: walkLeft_s1, ms: 75}
+    - {pose: walkLeft_s2, ms: 75}
+    - {pose: walkLeft_s3, ms: 75}
+    - {pose: walkLeft_s4, ms: 75}
+    - {pose: walkLeft_s5, ms: 75}
+    - {pose: walkLeft_s6, ms: 75}
+    - {pose: walkLeft_s7, ms: 75}
+  walkRight:  # 8-frame smooth cycle (poses walkRight_s0..7)
+    - {pose: walkRight_s0, ms: 75}
+    - {pose: walkRight_s1, ms: 75}
+    - {pose: walkRight_s2, ms: 75}
+    - {pose: walkRight_s3, ms: 75}
+    - {pose: walkRight_s4, ms: 75}
+    - {pose: walkRight_s5, ms: 75}
+    - {pose: walkRight_s6, ms: 75}
+    - {pose: walkRight_s7, ms: 75}
   walkUp:
     - pose: walkUp_0
       ms: 100
@@ -81,24 +81,24 @@ clips:
       ms: 100
     - pose: walkUp_3
       ms: 100
-  walkUpLeft:
-    - pose: walkUpLeft_0
-      ms: 100
-    - pose: walkUpLeft_1
-      ms: 100
-    - pose: walkUpLeft_2
-      ms: 100
-    - pose: walkUpLeft_3
-      ms: 100
-  walkUpRight:
-    - pose: walkUpRight_0
-      ms: 100
-    - pose: walkUpRight_1
-      ms: 100
-    - pose: walkUpRight_2
-      ms: 100
-    - pose: walkUpRight_3
-      ms: 100
+  walkUpLeft:  # side cycle from frame 2 (each state needs its own first frame)
+    - {pose: walkLeft_s2, ms: 75}
+    - {pose: walkLeft_s3, ms: 75}
+    - {pose: walkLeft_s4, ms: 75}
+    - {pose: walkLeft_s5, ms: 75}
+    - {pose: walkLeft_s6, ms: 75}
+    - {pose: walkLeft_s7, ms: 75}
+    - {pose: walkLeft_s0, ms: 75}
+    - {pose: walkLeft_s1, ms: 75}
+  walkUpRight:  # side cycle from frame 2 (each state needs its own first frame)
+    - {pose: walkRight_s2, ms: 75}
+    - {pose: walkRight_s3, ms: 75}
+    - {pose: walkRight_s4, ms: 75}
+    - {pose: walkRight_s5, ms: 75}
+    - {pose: walkRight_s6, ms: 75}
+    - {pose: walkRight_s7, ms: 75}
+    - {pose: walkRight_s0, ms: 75}
+    - {pose: walkRight_s1, ms: 75}
   # Pushing against something solid: lean in, ease back, slower than walking.
   bumpLeft:
     - {pose: bumpLeft_lean1, ms: 180}

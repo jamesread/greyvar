@@ -5,6 +5,7 @@ import {
   menuBorderReady
 } from '../menu/menuBorder.js'
 import { MENU_THEME } from '../menu/MenuTheme.js'
+import { spriteBounds } from '../sprites/spriteBounds.js'
 
 /**
  * Reusable floating message box for world-anchored prompts (signs, pickups, etc.).
@@ -23,7 +24,18 @@ const DEFAULTS = {
   maxWidth: 280,
   gap: 10,
   screenPadding: 12,
-  depth: 120
+  depth: 120,
+  // Non-sticky messages (pickups, harvests) fade out after this long; longer
+  // texts stay a little longer to be read.
+  holdMs: 2500,
+  holdMsPerChar: 40,
+  maxHoldMs: 6000,
+  fadeMs: 400
+}
+
+/** How long a non-sticky message stays before fading out. */
+export function messageHoldMs (text, opts = DEFAULTS) {
+  return Math.min(opts.maxHoldMs, opts.holdMs + String(text ?? '').length * opts.holdMsPerChar)
 }
 
 /**
@@ -56,6 +68,31 @@ export function createFloatingMessageBox (scene, style = {}) {
 
   /** @type {null | { text: string, entityId?: number|null, worldX?: number|null, worldY?: number|null }} */
   let active = null
+  let fadeTimer = null
+  let fadeTween = null
+
+  function cancelFade () {
+    fadeTimer?.remove(false)
+    fadeTimer = null
+    fadeTween?.stop()
+    fadeTween = null
+    root.setAlpha(1)
+  }
+
+  function scheduleFade (text) {
+    fadeTimer = scene.time.delayedCall(messageHoldMs(text, opts), () => {
+      fadeTimer = null
+      fadeTween = scene.tweens.add({
+        targets: root,
+        alpha: 0,
+        duration: opts.fadeMs,
+        onComplete: () => {
+          fadeTween = null
+          hide()
+        }
+      })
+    })
+  }
 
   function measure () {
     const tw = Math.ceil(label.width)
@@ -81,6 +118,7 @@ export function createFloatingMessageBox (scene, style = {}) {
   }
 
   function hide () {
+    cancelFade()
     active = null
     label.setText('')
     if (bg != null) {
@@ -90,14 +128,19 @@ export function createFloatingMessageBox (scene, style = {}) {
   }
 
   /**
-   * Show or update a floating message.
-   * @param {{ text: string, entityId?: number|null, worldX?: number|null, worldY?: number|null }} msg
+   * Show or update a floating message. Unless sticky (a sign, which the
+   * server clears when you walk away), it fades out after a few seconds.
+   * @param {{ text: string, entityId?: number|null, worldX?: number|null, worldY?: number|null, sticky?: boolean }} msg
    */
   function show (msg) {
     const text = typeof msg?.text === 'string' ? msg.text.trim() : ''
     if (text === '') {
       hide()
       return
+    }
+    cancelFade()
+    if (!msg.sticky) {
+      scheduleFade(text)
     }
     active = {
       text,
@@ -122,17 +165,13 @@ export function createFloatingMessageBox (scene, style = {}) {
       const ent = gridScene.entities[active.entityId]
         ?? gridScene.entities[String(active.entityId)]
       if (ent?.img != null) {
-        const displayW = ent.img.displayWidth || 16
-        const displayH = ent.img.displayHeight || 16
+        const b = spriteBounds(ent.img)
         return {
-          x: ent.img.x + displayW / 2,
-          y: ent.img.y + displayH / 2,
-          w: displayW,
-          h: displayH,
-          left: ent.img.x,
-          top: ent.img.y,
-          right: ent.img.x + displayW,
-          bottom: ent.img.y + displayH
+          x: (b.left + b.right) / 2,
+          y: (b.top + b.bottom) / 2,
+          w: b.right - b.left,
+          h: b.bottom - b.top,
+          ...b
         }
       }
       if (ent != null && ent.x != null) {
@@ -165,10 +204,9 @@ export function createFloatingMessageBox (scene, style = {}) {
     if (ent?.img == null || cam == null) {
       return null
     }
-    const dw = ent.img.displayWidth || 16
-    const dh = ent.img.displayHeight || 16
-    const tl = worldToScreen(cam, ent.img.x, ent.img.y, viewW, viewH)
-    const br = worldToScreen(cam, ent.img.x + dw, ent.img.y + dh, viewW, viewH)
+    const b = spriteBounds(ent.img)
+    const tl = worldToScreen(cam, b.left, b.top, viewW, viewH)
+    const br = worldToScreen(cam, b.right, b.bottom, viewW, viewH)
     return {
       left: Math.min(tl.x, br.x),
       top: Math.min(tl.y, br.y),

@@ -2,6 +2,8 @@ package greyvarserver
 
 import (
 	"math"
+	"strconv"
+	"strings"
 
 	"github.com/jamesread/greyvar/datlib/tiled"
 	pb "github.com/jamesread/greyvar/server/gen/greyvarprotocol"
@@ -33,13 +35,8 @@ func processMoveRequest(s *serverInterface, rp *RemotePlayer, mr *pb.MoveRequest
 		"deltaY":   mr.Y,
 	}
 
-	if (s.frameTime - rp.TimeOfLastMoveRequest) < 67 {
-		log.WithFields(fields).Info("MoveRequest throttled")
-		return
-	}
-
 	if mr.X < -1 || mr.X > 1 || mr.Y < -1 || mr.Y > 1 {
-		log.WithFields(fields).Info("MoveRequest rejected: delta out of range")
+		log.WithFields(fields).Debug("MoveRequest rejected: delta out of range")
 		return
 	}
 
@@ -59,15 +56,18 @@ func processMoveRequest(s *serverInterface, rp *RemotePlayer, mr *pb.MoveRequest
 
 	if s.tryEdgeTransition(rp, mr, newX, newY) {
 		rp.TimeOfLastMoveRequest = s.frameTime
-		log.WithFields(fields).Info("MoveRequest triggered grid transition")
+		log.WithFields(fields).Debug("MoveRequest triggered grid transition")
 		s.processEntityInteractions(rp)
 		return
 	}
 
 	destX, destY, ok := s.resolveMoveDestination(rp, newX, newY)
 	if !ok {
-		log.WithFields(fields).Info("MoveRequest blocked")
+		log.WithFields(fields).Debug("MoveRequest blocked")
 		rp.TimeOfLastMoveRequest = s.frameTime
+		if s.tryPush(rp, mr.X, mr.Y) {
+			log.WithFields(fields).Debug("MoveRequest pushed a block")
+		}
 		s.broadcastBump(rp, mr.X, mr.Y)
 		s.processEntityInteractions(rp)
 		return
@@ -76,15 +76,16 @@ func processMoveRequest(s *serverInterface, rp *RemotePlayer, mr *pb.MoveRequest
 	rp.Entity.X = destX
 	rp.Entity.Y = destY
 	rp.TimeOfLastMoveRequest = s.frameTime
+	s.resetPush(rp)
 	fields["toX"] = destX
 	fields["toY"] = destY
 
-	log.WithFields(fields).Info("MoveRequest accepted")
+	log.WithFields(fields).Debug("MoveRequest accepted")
 
 	s.processEntityInteractions(rp)
 
 	if s.tryTeleportTile(rp) {
-		log.WithFields(fields).Info("MoveRequest triggered teleport tile")
+		log.WithFields(fields).Debug("MoveRequest triggered teleport tile")
 	}
 }
 
@@ -287,13 +288,19 @@ func (s *serverInterface) processEntityInteractions(rp *RemotePlayer) {
 		}
 
 		if contact.ct == tiled.CollisionPressure && entered {
-			if contact.ent.Definition == "teleportPad" {
+			if isRiftPortal(contact.ent) {
+				s.useRiftPortal(rp, contact.ent, contact.vis)
+				skipTouchHud = true
+				continue
+			}
+			// Teleport pads, and anything else with a destination (doors).
+			if contact.ent.Definition == "teleportPad" || entityProp(contact.ent, contact.vis, "teleport_destination") != "" {
 				s.tryTeleportPad(rp, contact.ent, contact.vis)
 				// Keep teleport success/error HUD; updateTouchHud would clear it.
 				skipTouchHud = true
 				continue
 			}
-			s.activateEntity(rp, contact.ent, contact.vis)
+			s.refreshPlate(contact.ent)
 		}
 	}
 
@@ -322,7 +329,13 @@ func (s *serverInterface) entityContactTriggered(player, ent *Entity, vis tiled.
 		dX := math.Abs(float64(player.X - ent.X))
 		dY := math.Abs(float64(player.Y - ent.Y))
 		chebyshev := math.Max(dX, dY)
-		return chebyshev < float64(entityTriggerOriginPx), chebyshev
+		// touch_range (px) widens it, e.g. a shop sign above a door whose
+		// name shows while you stand at the door.
+		reach := float64(entityTriggerOriginPx)
+		if r, err := strconv.Atoi(strings.TrimSpace(entityProp(ent, vis, "touch_range"))); err == nil && r > 0 {
+			reach = float64(r)
+		}
+		return chebyshev < reach, chebyshev
 	}
 }
 
@@ -418,6 +431,11 @@ func (s *serverInterface) onEntityContactLeave(rp *RemotePlayer, ent *Entity) {
 	if !ok || ct != tiled.CollisionPressure {
 		return
 	}
+	// Plates stay down while another player or a push block holds them.
+	if !isTeleporter(ent, vis) {
+		s.refreshPlate(ent)
+		return
+	}
 	entdef := s.entityDefinitions[ent.Definition]
 	initial := "unpressed"
 	if entdef != nil && entdef.InitialState != "" {
@@ -465,6 +483,8 @@ func (s *serverInterface) updateTouchHud(rp *RemotePlayer, nearest *entityContac
 	text := msg
 	rp.PendingHudMessage = &text
 	rp.PendingHudEntityId = id
+	// A sign's text stays while you stand there; clearSignHud removes it.
+	rp.pendingHudSticky = &text
 }
 
 func clearSignHud(rp *RemotePlayer) {

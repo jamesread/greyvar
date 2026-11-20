@@ -156,8 +156,8 @@
                  "type":"document",
                  "visible":true,
                  "width":16,
-                 "x":136,
-                 "y":72
+                 "x":128,
+                 "y":64
                 }, 
                 {
                  "height":16,
@@ -168,8 +168,8 @@
                  "type":"key",
                  "visible":true,
                  "width":16,
-                 "x":184,
-                 "y":104
+                 "x":176,
+                 "y":96
                 }, 
                 {
                  "height":16,
@@ -180,8 +180,8 @@
                  "type":"chest",
                  "visible":true,
                  "width":16,
-                 "x":40,
-                 "y":184
+                 "x":32,
+                 "y":176
                 }, 
                 {
                  "height":16,
@@ -192,8 +192,8 @@
                  "type":"chest",
                  "visible":true,
                  "width":16,
-                 "x":40,
-                 "y":216
+                 "x":32,
+                 "y":208
                 }, 
                 {
                  "height":16,
@@ -204,8 +204,8 @@
                  "type":"key",
                  "visible":true,
                  "width":16,
-                 "x":104,
-                 "y":280
+                 "x":96,
+                 "y":272
                 }, 
                 {
                  "height":16,
@@ -216,8 +216,8 @@
                  "type":"pressureButton",
                  "visible":true,
                  "width":16,
-                 "x":200,
-                 "y":296
+                 "x":192,
+                 "y":288
                 }, 
                 {
                  "gid":441,

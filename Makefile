@@ -26,6 +26,7 @@ tidy:
 # Regenerate layered sprite sheets, rig.json and entdef .tsx from res/sprites/<rig>.
 sprites:
 	go run ./sprite-generator build res/sprites/player
+	go run ./sprite-generator build res/sprites/adult
 	go run ./sprite-generator flora build res/sprites/flora
 	go run ./sprite-generator flora build res/sprites/crops
 	go run ./sprite-generator tiles animate res/sprites/water
@@ -34,6 +35,7 @@ sprites:
 # Fail if a rig is invalid or its generated files are stale.
 sprites-check:
 	go run ./sprite-generator check res/sprites/player
+	go run ./sprite-generator check res/sprites/adult
 	go run ./sprite-generator flora check res/sprites/flora
 	go run ./sprite-generator flora check res/sprites/crops
 	go run ./sprite-generator tiles animate-check res/sprites/water

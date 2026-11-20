@@ -5,6 +5,30 @@ import { recolourMap, recolourPixels, recolouredTextureKey } from './appearance.
 export const PLAYER_RIG_KEY = 'rig:player'
 export const PLAYER_RIG_URL = 'img/textures/entities/player/player.rig.json'
 
+// Character sizes and their rig manifests. Players and NPCs are adults unless
+// their appearance says rig: child (the original 16px rig).
+export const DEFAULT_SIZE = 'adult'
+export const RIG_URLS = {
+  adult: 'img/textures/entities/adult/adult.rig.json',
+  child: PLAYER_RIG_URL
+}
+
+export function rigKey (size) {
+  return size === 'child' ? PLAYER_RIG_KEY : `rig:${size}`
+}
+
+/** The size an appearance is drawn at. */
+export function sizeOf (appearance) {
+  return appearance?.rig || DEFAULT_SIZE
+}
+
+/** Queue every size's rig. */
+export function preloadRigs (scene) {
+  for (const [size, url] of Object.entries(RIG_URLS)) {
+    preloadRig(scene, rigKey(size), url)
+  }
+}
+
 /** Queue the rig manifest and, once it arrives, every layer sheet. */
 export function preloadRig (scene, key = PLAYER_RIG_KEY, url = PLAYER_RIG_URL) {
   if (scene.cache.json.exists(key)) {
@@ -25,8 +49,12 @@ function queueSheets (scene, rig) {
   }
 }
 
-/** The loaded rig, or null until its manifest and sheets are ready. */
-export function getRig (scene, key = PLAYER_RIG_KEY) {
+/**
+ * The loaded rig for a size (or a rig key), or null until its manifest and
+ * sheets are ready.
+ */
+export function getRig (scene, size = DEFAULT_SIZE) {
+  const key = String(size).startsWith('rig:') ? size : rigKey(size)
   const rig = scene.cache.json.get(key)
   if (rig == null) {
     return null

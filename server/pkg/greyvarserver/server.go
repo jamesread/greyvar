@@ -9,6 +9,7 @@ import (
 	"time"
 	pb "github.com/jamesread/greyvar/server/gen/greyvarprotocol"
 	"github.com/jamesread/golure/pkg/dirs"
+	"github.com/jamesread/greyvar/datlib/dialogs"
 	"github.com/jamesread/greyvar/datlib/entdefs"
 	"github.com/jamesread/greyvar/datlib/gridfiles"
 	"github.com/jamesread/greyvar/datlib/itemdefs"
@@ -36,10 +37,18 @@ type serverInterface struct {
 	itemDefinitions map[string]*itemdefs.ItemDefinition
 	recipeDefinitions map[string]*recipes.RecipeDefinition
 	entityVisuals *tiled.EntityVisualCatalog
-	// playerRig is res/.../player.rig.json (layered player look); nil if missing.
-	playerRig *rigs.Rig
+	// dialogs are loaded NPC conversations (dat/dialogs), by name.
+	dialogs map[string]*dialogs.Dialog
+
+	// rigs are the layered character rigs by size (adult, child); players and
+	// NPCs are drawn with the one their appearance names. nil if missing.
+	rigs *rigs.Set
 	// crops: planted crop cells per world (see crops.go).
 	crops *cropStore
+	// rifts: generated puzzle worlds (rifts) and progress (see rifts.go).
+	rifts *riftState
+	// accounts: per-player banked items (Herman), see accounts.go.
+	accounts map[string]map[string]int64
 	loadedWorlds map[string]*worlds.World;
 	defaultWorldId string;
 
@@ -106,11 +115,12 @@ func newServer() *serverInterface {
 	s.itemDefinitions = make(map[string]*itemdefs.ItemDefinition)
 	s.recipeDefinitions = make(map[string]*recipes.RecipeDefinition)
 	s.entityVisuals = loadEntityVisuals()
-	s.playerRig = loadPlayerRig()
+	s.rigs = loadRigs()
 	blockingTileTextures = loadBlockingTileTextures()
 	s.loadServerEntdefs()
 	s.loadItemCatalog()
 	s.loadCrops()
+	s.loadRifts()
 	s.remotePlayers = make(map[string]*RemotePlayer);
 
 	s.defaultWorldId = defaultWorldId()
@@ -177,6 +187,7 @@ func (s *serverInterface) instantiateGridEntities(worldId string, gridId string,
 			WorldId:    worldId,
 			Spawned:    true,
 		}
+		s.setupNPC(ent, entdef)
 
 		s.entityInstances[ent.ServerId] = ent
 	}
@@ -246,9 +257,15 @@ func (s *serverInterface) gridById(worldId string, gridId string) *gridfiles.Gri
 	return world.Grids[gridId]
 }
 
+// frameInterval is one server frame: a steady 15Hz, matching the client's
+// move rate (webclient MovementInput MOVE_INTERVAL_MS, GridScene
+// MOVE_DURATION_MS), so each frame carries one 6px step and movement is even.
+const frameInterval = time.Second / 15
+
 func (s *serverInterface) mainLoop() {
-	for {
-		time.Sleep(100 * time.Millisecond)
+	ticker := time.NewTicker(frameInterval)
+	defer ticker.Stop()
+	for range ticker.C {
 		s.mu.Lock()
 		s.frame();
 		s.mu.Unlock()
@@ -298,8 +315,8 @@ func (s *serverInterface) onConnected(c *websocket.Conn) (*RemotePlayer) {
 		GridId: spawnGridId,
 		WorldId: s.defaultWorldId,
 	}
-	if s.playerRig != nil {
-		look := s.playerRig.Default(username)
+	if s.rigs != nil {
+		look := s.rigs.DefaultLook(username)
 		playerEntity.Appearance = &look
 	}
 
@@ -363,6 +380,8 @@ func (s *serverInterface) removePlayer(rp *RemotePlayer) {
 
 	delete(s.remotePlayers, key)
 	delete(s.entityInstances, rp.Entity.ServerId)
+	s.refreshPlates(rp.CurrentWorldId, rp.CurrentGridId)
+	s.playerLeftWorld(rp.CurrentWorldId)
 
 	for _, other := range s.remotePlayers {
 		if _, known := other.KnownEntities[rp.Entity.ServerId]; known {
@@ -408,7 +427,7 @@ func (server *serverInterface) handleConnection(w http.ResponseWriter, r *http.R
 				"entityId": rp.Entity.ServerId,
 				"x":        reqs.MoveRequest.X,
 				"y":        reqs.MoveRequest.Y,
-			}).Info("MoveRequest received over websocket")
+			}).Debug("MoveRequest received over websocket")
 		}
 
 		server.mu.Lock()

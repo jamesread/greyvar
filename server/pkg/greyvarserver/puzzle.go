@@ -20,6 +20,8 @@ import (
 //	locked_msg  text shown when `requires` is missing
 //	open_when   "id=state, id=state": this entity is "open" while all hold,
 //	            otherwise "closed" (e.g. a cell door watching levers)
+//	reset_after ms: a toggle entity flipped away from its initial state
+//	            springs back after this long (a timed switch; mechanics.go)
 
 const (
 	propID        = "id"
@@ -195,6 +197,7 @@ func (s *serverInterface) interactBehaviour(rp *RemotePlayer, ent *Entity, entde
 			}
 		}
 		s.setEntityState(ent, next)
+		s.armReset(rp, ent, entdef.InitialState)
 		return true
 	}
 	if in.Open != "" {

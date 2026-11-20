@@ -1,0 +1,6 @@
+id: rift_coin
+title: Rift Coin
+# Found around the exits of rifts. They pile up; nothing takes them yet.
+stackMax: 9999
+category: currency
+icon: img/textures/items/icons/rift_coin.png

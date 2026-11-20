@@ -1,0 +1,8 @@
+---
+title: caveExit
+# Daylight at a cave's mouth, seen from inside: step on it to leave
+# (teleport_destination + teleport_x/teleport_y, like stoneDoorway).
+solid: false
+initialState: idle
+states:
+  idle: {}

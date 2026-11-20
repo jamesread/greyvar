@@ -2,8 +2,10 @@ import { dumpMovementDebug, dumpGameStatus } from '../movementDebug.js'
 import { sceneSnapshot } from '../sceneDebug.js'
 import { toggleCollisionDebug } from '../collisionDebug.js'
 import { toggleDebugPos } from '../debugPos.js'
-import { getRig } from '../sprites/PlayerRig.js'
+import { getRig, sizeOf, RIG_URLS } from '../sprites/PlayerRig.js'
 import { parseAppearanceArgs, describeAppearanceOptions } from '../sprites/appearance.js'
+import { parseRiftArgs } from './riftArgs.js'
+import { parseZoomArg, DEFAULT_ZOOM, MIN_ZOOM, MAX_ZOOM } from '../camera/zoom.js'
 
 export function registerDefaultCommands (gameConsole) {
   gameConsole
@@ -125,14 +127,25 @@ export function registerDefaultCommands (gameConsole) {
     })
     .registerCommand('appearance', (args) => {
       const scene = window.gameState?.gridScene
-      const rig = scene != null ? getRig(scene) : null
+      const gs = window.gameState
+      const look = scene?.entities?.[gs?.localPlayerEntityId]?.appearance
+      // size=adult|child switches rig; the other keys are checked against it.
+      const sizeArg = args.find((a) => String(a).startsWith('size='))
+      const size = sizeArg != null ? sizeArg.slice(5) : sizeOf(look)
+      if (!Object.hasOwn(RIG_URLS, size)) {
+        return `unknown size "${size}" (have: ${Object.keys(RIG_URLS).join(', ')})`
+      }
+      const rig = scene != null ? getRig(scene, size) : null
       if (rig == null) {
         return 'player rig not loaded yet'
       }
       if (args.length === 0) {
-        return ['Usage: appearance key=value ...', ...describeAppearanceOptions(rig)]
+        return ['Usage: appearance key=value ...', `  size: ${Object.keys(RIG_URLS).join(', ')}`, ...describeAppearanceOptions(rig)]
       }
-      const { request, errors } = parseAppearanceArgs(rig, args)
+      const { request, errors } = parseAppearanceArgs(rig, args.filter((a) => a !== sizeArg))
+      if (sizeArg != null) {
+        request.rig = size
+      }
       if (errors.length > 0) {
         return errors
       }
@@ -142,8 +155,25 @@ export function registerDefaultCommands (gameConsole) {
       window.serverConnection.sendAppearanceRequest(request)
       return 'requesting appearance change...'
     }, {
-      description: 'Change your look, e.g. appearance hair=blonde shirt=green held=key (no args lists options)',
+      description: 'Change your look, e.g. appearance hair=blonde shirt=green held=key size=child (no args lists options)',
       usage: '[key=value...]'
+    })
+    .registerCommand('rift', (args) => {
+      const { request, errors } = parseRiftArgs(args)
+      if (errors.length > 0) {
+        return [...errors, 'usage: rift [level] [seed=N] [mechanics=lever,keyChest,pushBlock,timedSwitch] | rift leave']
+      }
+      if (!window.serverConnection?.isOk) {
+        return 'not connected to server'
+      }
+      window.serverConnection.sendRiftRequest(request)
+      if (request.leave) {
+        return 'fleeing the rift...'
+      }
+      return request.level > 0 ? `opening rift level ${request.level}...` : 'opening your next rift...'
+    }, {
+      description: 'Enter a rift, a generated puzzle world (default: one level above your best), or `rift leave`',
+      usage: '[level] [seed=N] [mechanics=a,b] | leave'
     })
     .registerCommand('world-reload', (args) => {
       if (!window.serverConnection?.isOk) {
@@ -163,6 +193,24 @@ export function registerDefaultCommands (gameConsole) {
     .registerCommand('debug collision', () => toggleCollisionDebug(), {
       description: 'Toggle collision overlay (red=blocking rects/tiles, blue=player bounds)',
       usage: ''
+    })
+    .registerCommand('zoom', (args) => {
+      const scene = window.gameState?.gridScene
+      if (scene?.cameras?.main == null) {
+        return 'game not loaded yet'
+      }
+      const current = scene.zoomLevel ?? scene.cameras.main.zoom
+      if (args.length === 0) {
+        return `zoom ${current} (default ${DEFAULT_ZOOM}, range ${MIN_ZOOM}-${MAX_ZOOM}; higher is closer)`
+      }
+      const { zoom, error } = parseZoomArg(args[0], current)
+      if (error != null) {
+        return error
+      }
+      return `zoom ${scene.setZoomLevel(zoom)}`
+    }, {
+      description: 'Show or set the camera zoom: zoom 4, zoom in, zoom out, zoom +2, zoom reset (lower shows more of the map)',
+      usage: '[N|in|out|+N|-N|reset]'
     })
     .registerCommand('debug pos', () => toggleDebugPos(), {
       description: "Toggle the player's position (pixels, tile, map) in the bottom-left corner",

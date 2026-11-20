@@ -1,0 +1,68 @@
+# Geraldine, the tailor in her shop on isleOfStarting 0.0. Options with
+# `wear` change the player's clothes (colours from the adult rig, res/sprites/adult/rig.yml).
+# Dresses are the `outfit` layer (drawn over shirt and trousers) in a
+# `garment` colour with a `trim` colour; `outfit: none` takes one off.
+speaker: Geraldine
+start: hello
+nodes:
+  hello:
+    text: "Welcome to my little shop, dear! Fancy something new to wear?"
+    options:
+      - {label: "A dress", goto: dresses}
+      - {label: "A new shirt", goto: shirts}
+      - {label: "New trousers", goto: pants}
+      - {label: "Just looking, thanks."}
+  dresses:
+    text: "A dress, how lovely! Which colour?"
+    options:
+      - {label: "Blue", wear: {outfit: dress, garment: blue}, goto: trims}
+      - {label: "Green", wear: {outfit: dress, garment: green}, goto: trims}
+      - {label: "Red", wear: {outfit: dress, garment: red}, goto: trims}
+      - {label: "Yellow", wear: {outfit: dress, garment: yellow}, goto: trims}
+      - {label: "Pink", wear: {outfit: dress, garment: pink}, goto: trims}
+      - {label: "Purple", wear: {outfit: dress, garment: purple}, goto: trims}
+      - {label: "White", wear: {outfit: dress, garment: white}, goto: trims}
+      - {label: "Black", wear: {outfit: dress, garment: black}, goto: trims}
+      - {label: "Never mind", goto: hello}
+  trims:
+    text: "And for the sash and hem?"
+    options:
+      - {label: "Gold", wear: {trim: gold}, goto: done}
+      - {label: "White", wear: {trim: white}, goto: done}
+      - {label: "Black", wear: {trim: black}, goto: done}
+      - {label: "Red", wear: {trim: red}, goto: done}
+      - {label: "Pink", wear: {trim: pink}, goto: done}
+      - {label: "Blue", wear: {trim: blue}, goto: done}
+      - {label: "Green", wear: {trim: green}, goto: done}
+  shirts:
+    text: "Which colour takes your fancy?"
+    options:
+      - {label: "Magenta", wear: {shirt: magenta, outfit: none}, goto: done}
+      - {label: "Blue", wear: {shirt: blue, outfit: none}, goto: done}
+      - {label: "Green", wear: {shirt: green, outfit: none}, goto: done}
+      - {label: "Red", wear: {shirt: red, outfit: none}, goto: done}
+      - {label: "Yellow", wear: {shirt: yellow, outfit: none}, goto: done}
+      - {label: "Pink", wear: {shirt: pink, outfit: none}, goto: done}
+      - {label: "White", wear: {shirt: white, outfit: none}, goto: done}
+      - {label: "Black", wear: {shirt: black, outfit: none}, goto: done}
+      - {label: "Never mind", goto: hello}
+  pants:
+    text: "What colour would you like?"
+    options:
+      - {label: "Charcoal", wear: {pants: charcoal, outfit: none}, goto: done}
+      - {label: "Denim", wear: {pants: denim, outfit: none}, goto: done}
+      - {label: "Khaki", wear: {pants: khaki, outfit: none}, goto: done}
+      - {label: "Brown", wear: {pants: brown, outfit: none}, goto: done}
+      - {label: "Pink", wear: {pants: pink, outfit: none}, goto: done}
+      - {label: "Green", wear: {pants: green, outfit: none}, goto: done}
+      - {label: "Blue", wear: {pants: blue, outfit: none}, goto: done}
+      - {label: "Light blue", wear: {pants: lightblue, outfit: none}, goto: done}
+      - {label: "Trousers instead of a skirt", wear: {pants: default, outfit: none}, goto: done}
+      - {label: "Never mind", goto: hello}
+  done:
+    text: "Oh, that suits you! Anything else?"
+    options:
+      - {label: "Another dress", goto: dresses}
+      - {label: "Back to a shirt and trousers", wear: {outfit: none}, goto: done}
+      - {label: "Another shirt", goto: shirts}
+      - {label: "That's all, thank you!"}

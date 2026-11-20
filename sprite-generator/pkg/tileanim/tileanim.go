@@ -17,6 +17,10 @@
 // The source rows are read from the top of the image every run, so
 // re-exporting the art (which drops the generated rows) and running
 // `make sprites` restores the animation; `sprites-check` flags it meanwhile.
+//
+// Rows after the frame block are hand-written tiles added later (terrain
+// variants, wall faces): they are kept as they are. If the frame block ever
+// needs more rows than it had, generation stops instead of overwriting them.
 package tileanim
 
 import (
@@ -330,8 +334,26 @@ func (a *Anim) Build() ([]rig.Output, error) {
 
 	extra := len(animated) * frameCount
 	rows := s.SourceRows + (extra+h.columns-1)/h.columns
-	out := image.NewNRGBA(image.Rect(0, 0, h.columns*h.tileW, rows*h.tileH))
-	for y := 0; y < srcH; y++ {
+	// Keep hand-written rows after the previous frame block.
+	prevRows := s.SourceRows + (previousFrameEnd(tsx, srcTiles)-srcTiles+h.columns-1)/h.columns
+	fullRows := full.Bounds().Dy() / h.tileH
+	keepFrom := rows
+	if fullRows > prevRows && prevRows > s.SourceRows {
+		if rows > prevRows {
+			return nil, fmt.Errorf("%s: the animation now needs %d frame rows but rows %d.. hold other tiles; move those tiles down first",
+				imgPath, rows-s.SourceRows, prevRows)
+		}
+		keepFrom = prevRows
+	}
+	total := rows
+	if fullRows > keepFrom {
+		total = fullRows
+	}
+	out := image.NewNRGBA(image.Rect(0, 0, h.columns*h.tileW, total*h.tileH))
+	for y := 0; y < total*h.tileH; y++ {
+		if y >= srcH && (y < keepFrom*h.tileH) {
+			continue
+		}
 		for x := 0; x < h.columns*h.tileW; x++ {
 			out.SetNRGBA(x, y, full.NRGBAAt(x, y))
 		}
@@ -373,7 +395,7 @@ func (a *Anim) Build() ([]rig.Output, error) {
 		}
 	}
 
-	newTsx, err := a.patchTsx(tsx, srcTiles, rows*h.columns, rows*h.tileH, frameIDs, needsWater, waterTiles)
+	newTsx, err := a.patchTsx(tsx, srcTiles, total*h.columns, total*h.tileH, frameIDs, needsWater, waterTiles)
 	if err != nil {
 		return nil, err
 	}
@@ -540,4 +562,18 @@ func AnimatedCount(outs []rig.Output) int {
 		}
 	}
 	return 0
+}
+
+var reFrameID = regexp.MustCompile(`<frame tileid="(\d+)"`)
+
+// previousFrameEnd is one past the highest generated frame (id >= srcTiles)
+// the tileset's animations reference: where the last run's block ended.
+func previousFrameEnd(tsx string, srcTiles int) int {
+	end := srcTiles
+	for _, m := range reFrameID.FindAllStringSubmatch(tsx, -1) {
+		if id, _ := strconv.Atoi(m[1]); id >= srcTiles && id+1 > end {
+			end = id + 1
+		}
+	}
+	return end
 }

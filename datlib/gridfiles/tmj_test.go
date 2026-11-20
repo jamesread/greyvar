@@ -70,8 +70,10 @@ func TestReadGridTMJ(t *testing.T) {
 	for _, ent := range grid.Entities {
 		if ent.Definition == "tv" {
 			foundTV = true
-			if ent.Row != 6 || ent.Col != 6 {
-				t.Fatalf("expected tv at row 6 col 6, got row %d col %d", ent.Row, ent.Col)
+			// A tile object at y=96 is drawn by Tiled from y=80 (its
+			// bottom-left is the anchor): row 5.
+			if ent.Row != 5 || ent.Col != 6 {
+				t.Fatalf("expected tv at row 5 col 6, got row %d col %d", ent.Row, ent.Col)
 			}
 		}
 	}
@@ -118,8 +120,9 @@ func TestReadGridTMJSpawnPoints(t *testing.T) {
 	}
 
 	sp := grid.SpawnPoints[0]
-	if sp.X != 112 || sp.Y != 128 || sp.Col != 7 || sp.Row != 8 {
-		t.Fatalf("spawn point = (%d,%d) row/col (%d,%d), want (112,128) (8,7)", sp.X, sp.Y, sp.Row, sp.Col)
+	// The spawn tile object at y=128 shows in Tiled at y 112..128: row 7.
+	if sp.X != 112 || sp.Y != 112 || sp.Col != 7 || sp.Row != 7 {
+		t.Fatalf("spawn point = (%d,%d) row/col (%d,%d), want (112,112) (7,7)", sp.X, sp.Y, sp.Row, sp.Col)
 	}
 
 	foundChest := false
@@ -157,5 +160,30 @@ func TestReadGridDispatch(t *testing.T) {
 	yamlPath := "../worldfiles/testdata/dat/worlds/yamlWorld_dev/grids/0.0.grid"
 	if _, err := ReadGrid(yamlPath); err != nil {
 		t.Fatalf("ReadGrid yaml dispatch: %v", err)
+	}
+}
+
+// Objects land in the cell Tiled shows them in: tile objects are anchored
+// bottom-left, others top-left, and off-grid positions go to the nearest
+// cell (never a negative one).
+func TestObjectCellMatchesTiled(t *testing.T) {
+	cases := []struct {
+		x, y, w, h float64
+		tile       bool
+		col, row   uint32
+	}{
+		{32, 64, 16, 16, true, 2, 3},     // tile object: drawn y 48..64
+		{33.25, 66, 16, 16, true, 2, 3},  // dragged a little off the grid
+		{11, 86.25, 16, 16, true, 1, 4},  // nearer col 1 than col 0
+		{137.5, 111.25, 15, 15, true, 9, 6},
+		{15.5, -0.25, 16, 32, false, 1, 0}, // rectangle just above the map's top edge
+		{48, 0, 16, 32, false, 3, 0},
+		{-3, -3, 16, 16, false, 0, 0},
+	}
+	for _, c := range cases {
+		col, row := objectCell(tmjMapObject{X: c.x, Y: c.y, Width: c.w, Height: c.h}, c.tile, 16, 16)
+		if col != c.col || row != c.row {
+			t.Errorf("object at (%v,%v) tile=%v: cell (%d,%d), want (%d,%d)", c.x, c.y, c.tile, col, row, c.col, c.row)
+		}
 	}
 }

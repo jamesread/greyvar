@@ -16,6 +16,7 @@ export function loadSavedAppearance (storage = globalThis.localStorage) {
       return null
     }
     return {
+      rig: typeof a.rig === 'string' ? a.rig : '',
       parts: typeof a.parts === 'object' && a.parts ? a.parts : {},
       palettes: typeof a.palettes === 'object' && a.palettes ? a.palettes : {},
       heldItem: typeof a.heldItem === 'string' ? a.heldItem : ''
@@ -29,6 +30,7 @@ export function loadSavedAppearance (storage = globalThis.localStorage) {
 export function saveAppearance (appearance, storage = globalThis.localStorage) {
   try {
     storage?.setItem(KEY, JSON.stringify({
+      rig: appearance?.rig ?? '',
       parts: appearance?.parts ?? {},
       palettes: appearance?.palettes ?? {},
       heldItem: appearance?.heldItem ?? ''
@@ -43,5 +45,9 @@ export function restoreRequest (saved) {
   if (saved == null) {
     return null
   }
-  return { parts: saved.parts, palettes: saved.palettes, heldItem: saved.heldItem || '-' }
+  const req = { parts: saved.parts, palettes: saved.palettes, heldItem: saved.heldItem || '-' }
+  if (saved.rig) {
+    req.rig = saved.rig // older saves have none: the server fits them to the default size
+  }
+  return req
 }

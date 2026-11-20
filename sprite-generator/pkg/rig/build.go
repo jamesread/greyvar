@@ -32,6 +32,9 @@ type RigJSON struct {
 	States       map[string]string              `json:"states"`
 	InitialState string                         `json:"initialState"`
 	Hitbox       [4]int                         `json:"hitbox"`
+	Size         string                         `json:"size"`
+	Anchor       [2]int                         `json:"anchor"`
+	Hidden       map[string][]string            `json:"hidden,omitempty"`
 }
 
 // LayerJSON lists a layer's sheets (web paths under /res) and which colour
@@ -271,6 +274,9 @@ func (r *Rig) Build() ([]Output, error) {
 		States:       r.Clips.States,
 		InitialState: r.Clips.InitialState,
 		Hitbox:       r.Spec.HitboxOrDefault(),
+		Size:         r.Spec.Size,
+		Anchor:       r.Spec.AnchorOrDefault(),
+		Hidden:       r.Spec.Hidden,
 	}
 
 	for _, l := range r.Spec.Layers {

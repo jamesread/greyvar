@@ -39,21 +39,25 @@ export default class Grid {
   /**
    * The tile whose collision applies here, as the server decides it
    * (gridfiles.Grid.CollisionTileAt): the topmost tile that is neither decor
-   * nor an overlay, with every overlay's rects above it added. Null if empty.
+   * nor an overlay, with every overlay's rects added: those above it, and
+   * overlays below it too (a tall wall face's lower half under a nearer wall).
+   * Null if empty.
    */
   collisionTileAt (row, col) {
     const extra = []
     let base = null
-    for (let i = this.layers.length - 1; i >= 0 && base == null; i--) {
+    for (let i = this.layers.length - 1; i >= 0; i--) {
       const tile = this.layers[i].tiles.find((t) => t.row === row && t.col === col)
       if (tile == null || tile.decor) {
         continue
       }
-      if (tile.overlay) {
+      if (tile.overlay || (tile.above && base == null)) {
         extra.push(...(tile.collision ?? []))
         continue
       }
-      base = tile
+      if (base == null) {
+        base = tile
+      }
     }
     if (extra.length === 0) {
       return base

@@ -12,6 +12,9 @@ import { facingFromState, idleClipForFacing, useClipForFacing } from './facing.j
 // arrived for this long. Bumps arrive every ~67ms while a player pushes.
 const WALK_IDLE_TIMEOUT_MS = 250
 
+// The world grid cell a character stands in.
+const CELL = 16
+
 /** States driven by a stream of events rather than set once. */
 export function isTransientState (state) {
   const s = String(state)
@@ -33,9 +36,14 @@ export default class LayeredSprite extends Phaser.GameObjects.Container {
     this.heldItemId = ''
     this.setSize(rig.frameSize, rig.frameSize)
 
+    // The frame's anchor (feet) sits on the bottom centre of the 16px cell
+    // the container is placed at, so taller rigs rise above it.
+    const anchor = rig.anchor ?? [rig.frameSize / 2, rig.frameSize]
+    this.offset = { x: CELL / 2 - anchor[0], y: CELL - anchor[1] }
+
     this.layerImages = new Map()
     for (const layer of rig.layers) {
-      const img = new Phaser.GameObjects.Image(scene, 0, 0, layer.sheets[layer.default], 0).setOrigin(0)
+      const img = new Phaser.GameObjects.Image(scene, this.offset.x, this.offset.y, layer.sheets[layer.default], 0).setOrigin(0)
       this.layerImages.set(layer.name, img)
       this.add(img)
     }
@@ -137,6 +145,13 @@ export default class LayeredSprite extends Phaser.GameObjects.Container {
     this.applyFrame()
   }
 
+  /** Turn to face a direction and stand idle (e.g. an NPC being talked to). */
+  faceTo (facing) {
+    this.facing = facing ?? this.facing
+    this.state = null
+    this.playState(this.rig.initialState)
+  }
+
   /**
    * Play the one-shot use (action key) animation for a facing, then return
    * to the facing idle. A move arriving meanwhile takes over as usual.
@@ -174,7 +189,7 @@ export default class LayeredSprite extends Phaser.GameObjects.Container {
       this.itemImage.setVisible(hand != null)
       if (hand != null) {
         const grip = this.heldItem?.grip ?? [0, 0]
-        this.itemImage.setPosition(hand[0] - grip[0], hand[1] - grip[1])
+        this.itemImage.setPosition(this.offset.x + hand[0] - grip[0], this.offset.y + hand[1] - grip[1])
         if (pose.itemZ === 'behind') {
           this.sendToBack(this.itemImage)
         } else {

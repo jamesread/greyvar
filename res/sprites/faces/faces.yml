@@ -1,4 +1,12 @@
-# Taller south faces for raised terrain. `make sprites` regenerates
+# Taller south faces for raised terrain.
+#
+# Hills (sources below) are grown from the hand-drawn tiles: a cap over the
+# face tile plus an extension in the cell below. Castle walls work
+# differently: grass_terrains' wall tiles are drawn as the top of a taller
+# face, and tiles with the property face_below name the lower half drawn in
+# the cell below. For every map listed here those lower halves go on a
+# locked "<layer> faces (generated)" layer just under the wall's layer (see
+# sprite-generator/pkg/faces/walls.go). No config is needed per tileset. `make sprites` regenerates
 # res/img/textures/tilesets/cliff_faces.{png,tsx} and the "(generated)"
 # layers of every map below; see sprite-generator/pkg/faces.
 #
@@ -31,8 +39,12 @@ maps:
   - ../../../server/dat/worlds/isleOfStarting_dev_tiled/0.1.tmj
   - ../../../server/dat/worlds/isleOfStarting_dev_tiled/0.2.tmj
   - ../../../server/dat/worlds/isleOfStarting_dev_tiled/1.0.tmj
-  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/1.1.blueHouse.tmj
-  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/1.1.redHouse.tmj
+  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/0.0.tailorShop.tmj
+  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/0.0.professorHouse.tmj
+  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/1.2.salon.tmj
+  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/1.2.redHouse.tmj
   - ../../../server/dat/worlds/isleOfStarting_dev_tiled/1.1.tmj
   - ../../../server/dat/worlds/isleOfStarting_dev_tiled/1.2.tmj
   - ../../../server/dat/worlds/isleOfStarting_dev_tiled/2.0.tmj
+  - ../../../server/dat/worlds/isleOfStarting_dev_tiled/2.1.tmj
+  - ../../../server/dat/worlds/isleOfDebug_dev_tiled/0.0.tmj

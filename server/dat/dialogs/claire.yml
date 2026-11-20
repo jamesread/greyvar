@@ -1,0 +1,48 @@
+# Claire, the hairdresser on isleOfStarting 1.2. `wear: {hair: long}` changes
+# the hairstyle (a variant of the hair layer); `wear: {hair: blonde}` the
+# colour (a hair palette); `wear: {beard: beard}` the beard (drawn in the hair
+# colour). Names come from the adult rig, res/sprites/adult/rig.yml (datlint
+# checks them).
+speaker: Claire
+start: hello
+nodes:
+  hello:
+    text: "Hi there, take a seat! What are we doing with your hair today?"
+    options:
+      - {label: "A new style", goto: styles}
+      - {label: "A new colour", goto: colours}
+      - {label: "A beard", goto: beard}
+      - {label: "Just browsing."}
+  styles:
+    text: "What are you thinking? I can do anything!"
+    options:
+      - {label: "Short", wear: {hair: short}, goto: done}
+      - {label: "Long", wear: {hair: long}, goto: done}
+      - {label: "Ponytail", wear: {hair: ponytail}, goto: done}
+      - {label: "Bun", wear: {hair: bun}, goto: done}
+      - {label: "Curly", wear: {hair: curly}, goto: done}
+      - {label: "Bob", wear: {hair: bob}, goto: done}
+      - {label: "Shave it all off", wear: {hair: bald}, goto: done}
+      - {label: "Never mind", goto: hello}
+  colours:
+    text: "Ooh, fun! Which colour?"
+    options:
+      - {label: "Brown", wear: {hair: brown}, goto: done}
+      - {label: "Black", wear: {hair: black}, goto: done}
+      - {label: "Blonde", wear: {hair: blonde}, goto: done}
+      - {label: "Red", wear: {hair: red}, goto: done}
+      - {label: "Grey", wear: {hair: grey}, goto: done}
+      - {label: "Never mind", goto: hello}
+  beard:
+    text: "A beard? It'll match your hair colour."
+    options:
+      - {label: "Grow a beard", wear: {beard: beard}, goto: done}
+      - {label: "Clean shaven", wear: {beard: none}, goto: done}
+      - {label: "Never mind", goto: hello}
+  done:
+    text: "There we go, gorgeous! Anything else?"
+    options:
+      - {label: "Another style", goto: styles}
+      - {label: "Another colour", goto: colours}
+      - {label: "A beard", goto: beard}
+      - {label: "That's lovely, thanks!"}

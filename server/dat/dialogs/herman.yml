@@ -1,0 +1,29 @@
+# Herman, the rift banker on isleOfStarting 0.1. `deposit: rift_coin` moves
+# every rift coin the player carries into their account (kept by the server
+# in accounts.json); {balance:rift_coin} shows what is banked.
+speaker: Herman
+start: hello
+nodes:
+  hello:
+    text: "Welcome to Herman's Rift Bank! Your account holds {balance:rift_coin} rift coins. Banking today?"
+    options:
+      - {label: "Deposit my rift coins", goto: deposited}
+      - {label: "Why bank with you?", goto: why}
+      - {label: "What are rift coins for?", goto: spend}
+      - {label: "Just looking."}
+  deposited:
+    text: "One, two, three... all counted, logged in the ledger and locked in the vault."
+    deposit: rift_coin
+    options:
+      - {label: "Thanks, Herman!"}
+      - {label: "What are rift coins for?", goto: spend}
+  why:
+    text: "Coins in your pockets have a habit of going missing. Coins in my vault stay yours, for good. You'll find more by the exit of every rift you clear."
+    options:
+      - {label: "Deposit my rift coins", goto: deposited}
+      - {label: "Goodbye."}
+  spend:
+    text: "Spend them? Not yet, not yet! Word is the island's shops will take them soon. Best to save up. You have {balance:rift_coin} banked so far."
+    options:
+      - {label: "Deposit my rift coins", goto: deposited}
+      - {label: "I'll keep saving."}

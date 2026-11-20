@@ -77,4 +77,7 @@ _Add a brief overview of your project architecture_
 - **Sprites (players):** Player art is a layered rig: edit `res/sprites/player/` (YAML + small part PNGs), then `make sprites`.
   Never hand-edit generated sheets, `player.rig.json`, or `server/dat/entdefs/player.tsx`.
   Recipes and safe-editing rules: [res/sprites/README.md](res/sprites/README.md).
+- **Art:** all new or redrawn art follows [res/ART_RULES.md](res/ART_RULES.md) (16px grid, a character is one tile,
+  flat 2D top-down front view, binary alpha, <=16 colours, contrast against every ground it stands on).
+  Check with `python3 res/tools/artcheck.py`; review perspective by eye.
 

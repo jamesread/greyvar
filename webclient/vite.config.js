@@ -48,9 +48,36 @@ function greyvarResPlugin() {
   }
 }
 
+// The dev server only speaks HTTPS. A browser given the bare LAN address
+// (192.168.x.y:5173) tries plain HTTP and got an empty response (Chrome:
+// ERR_EMPTY_RESPONSE / ERR_TOO_MANY_RETRIES). Answer those with a redirect to
+// https:// on the same address instead.
+function httpToHttpsRedirectPlugin() {
+  return {
+    name: 'greyvar-http-to-https',
+    configureServer(server) {
+      server.httpServer?.on('tlsClientError', (err, tlsSocket) => {
+        if (err?.code !== 'ERR_SSL_HTTP_REQUEST') {
+          return
+        }
+        const raw = tlsSocket?._parent ?? tlsSocket
+        const host = String(raw?.localAddress ?? 'localhost').replace(/^::ffff:/, '')
+        const hostPart = host.includes(':') ? `[${host}]` : host
+        const location = `https://${hostPart}:${raw?.localPort ?? 5173}/`
+        try {
+          raw.end(`HTTP/1.1 301 Moved Permanently\r\nLocation: ${location}\r\nContent-Length: 0\r\nConnection: close\r\n\r\n`)
+        } catch {
+          // the socket may already be gone
+        }
+      })
+    },
+  }
+}
+
 export default defineConfig({
   plugins: [
     greyvarResPlugin(),
+    httpToHttpsRedirectPlugin(),
     basicSsl(),
     Components({
       dirs: ['resources/vue/'],

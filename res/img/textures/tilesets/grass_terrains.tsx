@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.12.2" name="grass_terains" tilewidth="16" tileheight="16" tilecount="560" columns="20">
- <image source="grass_terrains.png" width="320" height="448"/>
+<tileset version="1.10" tiledversion="1.12.2" name="grass_terains" tilewidth="16" tileheight="16" tilecount="660" columns="20">
+ <image source="grass_terrains.png" width="320" height="528"/>
  <tile id="0"/>
  <tile id="1"/>
  <tile id="2"/>
@@ -53,11 +53,19 @@
  </tile>
  <tile id="12"/>
  <tile id="13">
+  <properties>
+   <property name="face_below" type="int" value="631"/>
+   <property name="face_below_short" type="int" value="643"/>
+  </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" x="5.91304" y="5.95652" width="10.087" height="10.0435"/>
   </objectgroup>
  </tile>
  <tile id="14">
+  <properties>
+   <property name="face_below" type="int" value="632"/>
+   <property name="face_below_short" type="int" value="644"/>
+  </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="6.08696" width="9.91304" height="9.91304"/>
   </objectgroup>
@@ -372,17 +380,29 @@
   </objectgroup>
  </tile>
  <tile id="92">
+  <properties>
+   <property name="face_below" type="int" value="628"/>
+   <property name="face_below_short" type="int" value="640"/>
+  </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" x="6" y="5.81818" width="10" height="10.1818"/>
    <object id="2" x="6" y="0" width="4.09091" height="5.81818"/>
   </objectgroup>
  </tile>
  <tile id="93">
+  <properties>
+   <property name="face_below" type="int" value="629"/>
+   <property name="face_below_short" type="int" value="641"/>
+  </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="6.09091" width="16" height="10"/>
   </objectgroup>
  </tile>
  <tile id="94">
+  <properties>
+   <property name="face_below" type="int" value="630"/>
+   <property name="face_below_short" type="int" value="642"/>
+  </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" x="6.09091" y="0" width="3.90909" height="5.81818"/>
    <object id="2" x="0" y="5.81818" width="10" height="10.1818"/>
@@ -400,18 +420,14 @@
  <tile id="127" probability="0"/>
  <tile id="128" probability="0"/>
  <tile id="198">
-  <objectgroup draworder="index" id="2">
-   <object id="2" x="15.8125" y="0.0625">
-    <polygon points="0,0 -15.8125,15.9375 0.1875,15.9375 0.1875,-0.0625"/>
-   </object>
-  </objectgroup>
+  <properties>
+   <property name="above" type="bool" value="true"/>
+  </properties>
  </tile>
  <tile id="199">
-  <objectgroup draworder="index" id="2">
-   <object id="3" x="5.6875" y="3.0625">
-    <polygon points="0,0 10.3125,12.875 -5.6875,12.9375 -5.6875,-3.0625"/>
-   </object>
-  </objectgroup>
+  <properties>
+   <property name="above" type="bool" value="true"/>
+  </properties>
  </tile>
  <tile id="108"/>
  <tile id="109"/>
@@ -421,8 +437,11 @@
  <tile id="113"/>
  <tile id="114"/>
  <tile id="218">
+  <properties>
+   <property name="above" type="bool" value="true"/>
+  </properties>
   <objectgroup draworder="index" id="2">
-   <object id="1" x="2" y="0" width="14" height="16"/>
+   <object id="1" x="12" y="8" width="4" height="8"/>
   </objectgroup>
  </tile>
  <tile id="116"/>
@@ -431,8 +450,11 @@
  <tile id="119"/>
  <tile id="120"/>
  <tile id="219">
+  <properties>
+   <property name="above" type="bool" value="true"/>
+  </properties>
   <objectgroup draworder="index" id="2">
-   <object id="1" x="0" y="0" width="15" height="16"/>
+   <object id="1" x="0" y="8" width="4" height="8"/>
   </objectgroup>
  </tile>
  <tile id="122"/>
@@ -988,6 +1010,295 @@
  <tile id="397"/>
  <tile id="398"/>
  <tile id="399"/>
+ <tile id="560" probability="0.003"/>
+ <tile id="561" probability="0.003"/>
+ <tile id="562" probability="0.003"/>
+ <tile id="563" probability="0.003"/>
+ <tile id="564" probability="0.003"/>
+ <tile id="565" probability="0.003"/>
+ <tile id="566" probability="0.003"/>
+ <tile id="567" probability="0.003"/>
+ <tile id="568" probability="0.05"/>
+ <tile id="569" probability="0.05"/>
+ <tile id="570" probability="0.05"/>
+ <tile id="571" probability="0.05"/>
+ <tile id="572" probability="0.05"/>
+ <tile id="573" probability="0.05"/>
+ <tile id="574" probability="0.05"/>
+ <tile id="575" probability="0.05"/>
+ <tile id="576" probability="0.05"/>
+ <tile id="577" probability="0.05"/>
+ <tile id="578" probability="0.05"/>
+ <tile id="579" probability="0.05"/>
+ <tile id="580" probability="0.05"/>
+ <tile id="581" probability="0.05"/>
+ <tile id="582" probability="0.05"/>
+ <tile id="583" probability="0.05"/>
+ <tile id="613" probability="0.08"/>
+ <tile id="614" probability="0.08"/>
+ <tile id="615" probability="0.08"/>
+ <tile id="616" probability="0.35">
+  <properties>
+   <property name="face_below" type="int" value="633"/>
+   <property name="face_below_short" type="int" value="645"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="6.09091" width="16" height="10"/>
+  </objectgroup>
+ </tile>
+ <tile id="617" probability="0.35">
+  <properties>
+   <property name="face_below" type="int" value="634"/>
+   <property name="face_below_short" type="int" value="646"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="6.09091" width="16" height="10"/>
+  </objectgroup>
+ </tile>
+ <tile id="618" probability="0.35">
+  <properties>
+   <property name="face_below" type="int" value="635"/>
+   <property name="face_below_short" type="int" value="647"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="6.09091" width="16" height="10"/>
+  </objectgroup>
+ </tile>
+ <tile id="619" probability="0.35">
+  <properties>
+   <property name="face_below" type="int" value="636"/>
+   <property name="face_below_short" type="int" value="648"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="6.09091" width="16" height="10"/>
+  </objectgroup>
+ </tile>
+ <tile id="620" probability="0.35">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="6" width="16" height="3.72727"/>
+  </objectgroup>
+ </tile>
+ <tile id="621" probability="0.35">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="6" width="16" height="3.72727"/>
+  </objectgroup>
+ </tile>
+ <tile id="622" probability="0.35">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="0" width="4.18182" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="623" probability="0.35">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="0" width="4.18182" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="624" probability="0.35">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="5.81818" y="0" width="4.18182" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="625" probability="0.35">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="5.81818" y="0" width="4.18182" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="626" probability="0.35">
+  <properties>
+   <property name="face_below" type="int" value="637"/>
+   <property name="face_below_short" type="int" value="649"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="5.81818" width="10" height="10.1818"/>
+   <object id="2" x="6" y="0" width="4.09091" height="5.81818"/>
+  </objectgroup>
+ </tile>
+ <tile id="627" probability="0.35">
+  <properties>
+   <property name="face_below" type="int" value="638"/>
+   <property name="face_below_short" type="int" value="650"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6.09091" y="0" width="3.90909" height="5.81818"/>
+   <object id="2" x="0" y="5.81818" width="10" height="10.1818"/>
+  </objectgroup>
+ </tile>
+ <tile id="628">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="0" width="10" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="640">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="0" width="10" height="6"/>
+  </objectgroup>
+ </tile>
+ <tile id="629">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="641">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="16" height="6"/>
+  </objectgroup>
+ </tile>
+ <tile id="630">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="10" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="642">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="10" height="6"/>
+  </objectgroup>
+ </tile>
+ <tile id="631">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="10" y="0" width="6" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="643">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="10" y="0" width="6" height="6"/>
+  </objectgroup>
+ </tile>
+ <tile id="632">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="6" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="644">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="6" height="6"/>
+  </objectgroup>
+ </tile>
+ <tile id="633">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="645">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="16" height="6"/>
+  </objectgroup>
+ </tile>
+ <tile id="634">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="646">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="16" height="6"/>
+  </objectgroup>
+ </tile>
+ <tile id="635">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="647">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="16" height="6"/>
+  </objectgroup>
+ </tile>
+ <tile id="636">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="648">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="16" height="6"/>
+  </objectgroup>
+ </tile>
+ <tile id="637">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="0" width="10" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="649">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="0" width="10" height="6"/>
+  </objectgroup>
+ </tile>
+ <tile id="638">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="10" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="650">
+  <properties>
+   <property name="overlay" type="bool" value="true"/>
+  </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="10" height="6"/>
+  </objectgroup>
+ </tile>
  <wangsets>
   <wangset name="terrains" type="corner" tile="-1">
    <wangcolor name="mud" color="#ff0000" tile="-1" probability="1"/>
@@ -1113,6 +1424,74 @@
    <wangtile tileid="289" wangid="0,2,0,5,0,5,0,5"/>
    <wangtile tileid="290" wangid="0,2,0,5,0,5,0,2"/>
    <wangtile tileid="291" wangid="0,5,0,5,0,5,0,2"/>
+   <wangtile tileid="560" wangid="0,7,0,7,0,7,0,7"/>
+   <wangtile tileid="561" wangid="0,7,0,7,0,7,0,7"/>
+   <wangtile tileid="562" wangid="0,7,0,7,0,7,0,7"/>
+   <wangtile tileid="563" wangid="0,7,0,7,0,7,0,7"/>
+   <wangtile tileid="564" wangid="0,7,0,7,0,7,0,7"/>
+   <wangtile tileid="565" wangid="0,7,0,7,0,7,0,7"/>
+   <wangtile tileid="566" wangid="0,7,0,7,0,7,0,7"/>
+   <wangtile tileid="567" wangid="0,7,0,7,0,7,0,7"/>
+   <wangtile tileid="568" wangid="0,4,0,4,0,4,0,4"/>
+   <wangtile tileid="569" wangid="0,4,0,4,0,4,0,4"/>
+   <wangtile tileid="570" wangid="0,4,0,4,0,4,0,4"/>
+   <wangtile tileid="571" wangid="0,4,0,4,0,4,0,4"/>
+   <wangtile tileid="572" wangid="0,4,0,4,0,4,0,4"/>
+   <wangtile tileid="573" wangid="0,4,0,4,0,4,0,4"/>
+   <wangtile tileid="574" wangid="0,4,0,4,0,4,0,4"/>
+   <wangtile tileid="575" wangid="0,4,0,4,0,4,0,4"/>
+   <wangtile tileid="576" wangid="0,2,0,2,0,2,0,2"/>
+   <wangtile tileid="577" wangid="0,2,0,2,0,2,0,2"/>
+   <wangtile tileid="578" wangid="0,2,0,2,0,2,0,2"/>
+   <wangtile tileid="579" wangid="0,2,0,2,0,2,0,2"/>
+   <wangtile tileid="580" wangid="0,2,0,2,0,2,0,2"/>
+   <wangtile tileid="581" wangid="0,2,0,2,0,2,0,2"/>
+   <wangtile tileid="582" wangid="0,2,0,2,0,2,0,2"/>
+   <wangtile tileid="583" wangid="0,2,0,2,0,2,0,2"/>
+   <wangtile tileid="584" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="585" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="586" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="587" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="588" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="589" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="590" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="591" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="592" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="593" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="594" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="595" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="596" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="597" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="598" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="599" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="600" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="601" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="602" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="603" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="604" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="605" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="606" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="607" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="608" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="609" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="610" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="611" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="612" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="613" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="614" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="615" wangid="0,3,0,3,0,3,0,3"/>
+   <wangtile tileid="616" wangid="0,3,0,0,0,0,0,3"/>
+   <wangtile tileid="617" wangid="0,3,0,0,0,0,0,3"/>
+   <wangtile tileid="618" wangid="0,3,0,0,0,0,0,3"/>
+   <wangtile tileid="619" wangid="0,3,0,0,0,0,0,3"/>
+   <wangtile tileid="620" wangid="0,0,0,3,0,3,0,0"/>
+   <wangtile tileid="621" wangid="0,0,0,3,0,3,0,0"/>
+   <wangtile tileid="622" wangid="0,3,0,3,0,0,0,0"/>
+   <wangtile tileid="623" wangid="0,3,0,3,0,0,0,0"/>
+   <wangtile tileid="624" wangid="0,0,0,0,0,3,0,3"/>
+   <wangtile tileid="625" wangid="0,0,0,0,0,3,0,3"/>
+   <wangtile tileid="626" wangid="0,3,0,0,0,0,0,0"/>
+   <wangtile tileid="627" wangid="0,0,0,0,0,0,0,3"/>
   </wangset>
   <wangset name="paths" type="edge" tile="-1">
    <wangcolor name="path" color="#ff0000" tile="-1" probability="1"/>

@@ -1,0 +1,13 @@
+# Herman: the rift banker, in his bank on isleOfStarting 0.1
+# (0.1.hermanHouse.tmj). Talking to him (dialogs/herman.yml) deposits the
+# player's rift coins into their account, which outlasts the inventory.
+title: herman
+solid: true
+initialState: idle
+states:
+  idle: {}
+appearance:
+  parts: {hair: short}
+  palettes: {skin: peach, hair: brown, shirt: green, pants: green}
+dialog: herman
+interactRange: 52   # talk to him across the bank counter (2 tiles deep)

@@ -8,7 +8,7 @@ import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
  * Describes the file server_to_client_messages.proto.
  */
 export const file_server_to_client_messages = /*@__PURE__*/
-  fileDesc("Ch9zZXJ2ZXJfdG9fY2xpZW50X21lc3NhZ2VzLnByb3RvEgxncmV5dmFycHJvdG8ihgcKDFNlcnZlclVwZGF0ZRI1Cg9lbnRpdHlQb3NpdGlvbnMYAiADKAsyHC5ncmV5dmFycHJvdG8uRW50aXR5UG9zaXRpb24SLwoMZW50aXR5U3Bhd25zGAMgAygLMhkuZ3JleXZhcnByb3RvLkVudGl0eVNwYXduEjAKDHBsYXllckpvaW5lZBgEIAEoCzIaLmdyZXl2YXJwcm90by5QbGF5ZXJKb2luZWQSLAoQc2luZ2xlVGlsZUNoYW5nZRgFIAEoCzISLmdyZXl2YXJwcm90by5UaWxlEiAKBGdyaWQYBiABKAsyEi5ncmV5dmFycHJvdG8uR3JpZBI8ChJjb25uZWN0aW9uUmVzcG9uc2UYByABKAsyIC5ncmV5dmFycHJvdG8uQ29ubmVjdGlvblJlc3BvbnNlEjkKEWVudGl0eURlZmluaXRpb25zGAggAygLMh4uZ3JleXZhcnByb3RvLkVudGl0eURlZmluaXRpb24SOwoSZW50aXR5U3RhdGVDaGFuZ2VzGAkgAygLMh8uZ3JleXZhcnByb3RvLkVudGl0eVN0YXRlQ2hhbmdlEhYKDmVudGl0eURlc3Bhd25zGAogAygDEjoKEXdvcmxkTGlzdFJlc3BvbnNlGAsgASgLMh8uZ3JleXZhcnByb3RvLldvcmxkTGlzdFJlc3BvbnNlEjQKDmNvbnNvbGVNZXNzYWdlGAwgASgLMhwuZ3JleXZhcnByb3RvLkNvbnNvbGVNZXNzYWdlEiwKCmh1ZE1lc3NhZ2UYDSABKAsyGC5ncmV5dmFycHJvdG8uSHVkTWVzc2FnZRI2Cg9pbnZlbnRvcnlVcGRhdGUYDiABKAsyHS5ncmV5dmFycHJvdG8uSW52ZW50b3J5VXBkYXRlEjUKD2l0ZW1EZWZpbml0aW9ucxgPIAMoCzIcLmdyZXl2YXJwcm90by5JdGVtRGVmaW5pdGlvbhI5ChFyZWNpcGVEZWZpbml0aW9ucxgQIAMoCzIeLmdyZXl2YXJwcm90by5SZWNpcGVEZWZpbml0aW9uEkUKF2VudGl0eUFwcGVhcmFuY2VDaGFuZ2VzGBEgAygLMiQuZ3JleXZhcnByb3RvLkVudGl0eUFwcGVhcmFuY2VDaGFuZ2USLQoLdGlsZUNoYW5nZXMYEiADKAsyGC5ncmV5dmFycHJvdG8uVGlsZUNoYW5nZSJXCgpUaWxlQ2hhbmdlEg0KBWxheWVyGAEgASgJEgsKA3JvdxgCIAEoDRILCgNjb2wYAyABKA0SIAoEdGlsZRgEIAEoCzISLmdyZXl2YXJwcm90by5UaWxlIjgKDkVudGl0eVBvc2l0aW9uEhAKCGVudGl0eUlkGAEgASgDEgkKAXgYAiABKAUSCQoBeRgDIAEoBSI3ChFFbnRpdHlTdGF0ZUNoYW5nZRIQCghlbnRpdHlJZBgBIAEoAxIQCghuZXdTdGF0ZRgCIAEoCSK5AQoLRW50aXR5U3Bhd24SEAoIZW50aXR5SWQYASABKAMSCQoBeBgCIAEoBRIJCgF5GAMgASgFEgkKAXcYBCABKAUSCQoBaBgFIAEoBRIUCgxwcmltYXJ5Q29sb3IYByABKA0SEgoKZGVmaW5pdGlvbhgJIAEoCRIUCgxpbml0aWFsU3RhdGUYCiABKAkSLAoKYXBwZWFyYW5jZRgLIAEoCzIYLmdyZXl2YXJwcm90by5BcHBlYXJhbmNlIusBCgpBcHBlYXJhbmNlEjIKBXBhcnRzGAEgAygLMiMuZ3JleXZhcnByb3RvLkFwcGVhcmFuY2UuUGFydHNFbnRyeRI4CghwYWxldHRlcxgCIAMoCzImLmdyZXl2YXJwcm90by5BcHBlYXJhbmNlLlBhbGV0dGVzRW50cnkSEAoIaGVsZEl0ZW0YAyABKAkaLAoKUGFydHNFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBGi8KDVBhbGV0dGVzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ASJYChZFbnRpdHlBcHBlYXJhbmNlQ2hhbmdlEhAKCGVudGl0eUlkGAEgASgDEiwKCmFwcGVhcmFuY2UYAiABKAsyGC5ncmV5dmFycHJvdG8uQXBwZWFyYW5jZSKDAQoQRW50aXR5RGVmaW5pdGlvbhIMCgRuYW1lGAEgASgJEikKBnN0YXRlcxgDIAMoCzIZLmdyZXl2YXJwcm90by5FbnRpdHlTdGF0ZRIPCgd0ZXh0dXJlGAQgASgJEhEKCXRpbGVXaWR0aBgFIAEoBRISCgp0aWxlSGVpZ2h0GAYgASgFIngKC0VudGl0eVN0YXRlEgwKBG5hbWUYASABKAkSDgoGZnJhbWVzGAIgAygFEg0KBWhvbGRzGAMgAygFEi4KCWNvbGxpc2lvbhgEIAMoCzIbLmdyZXl2YXJwcm90by5Db2xsaXNpb25SZWN0EgwKBG9uY2UYBSABKAgiHgoKUGxheWVyUXVpdBIQCghwbGF5ZXJJZBgBIAEoAyIlChFQbGF5ZXJBbHJlYWR5SGVyZRIQCghwbGF5ZXJJZBgBIAEoAyIyCgxQbGF5ZXJKb2luZWQSEAoIdXNlcm5hbWUYASABKAkSEAoIZW50aXR5SWQYAiABKAMiHQoJUGxheWVyWW91EhAKCHBsYXllcklkGAEgASgDIjsKDUNvbGxpc2lvblJlY3QSCQoBeBgBIAEoAhIJCgF5GAIgASgCEgkKAXcYAyABKAISCQoBaBgEIAEoAiL3AQoEVGlsZRILCgNjb2wYASABKA0SCwoDcm93GAIgASgNEgsKA3RleBgDIAEoCRINCgVmbGlwSBgEIAEoCBINCgVmbGlwVhgFIAEoCBILCgNyb3QYBiABKAUSEAoIYXRsYXNLZXkYByABKAkSEgoKZnJhbWVJbmRleBgIIAEoBRIuCgljb2xsaXNpb24YCSADKAsyGy5ncmV5dmFycHJvdG8uQ29sbGlzaW9uUmVjdBIYChBjb2xsaXNpb25Gcm9tVHN4GAogASgIEg0KBXN0aWxsGAsgASgIEg0KBWRlY29yGAwgASgIEg8KB292ZXJsYXkYDSABKAgijgEKB1RpbGVzZXQSCwoDa2V5GAEgASgJEg0KBWltYWdlGAIgASgJEhEKCXRpbGVXaWR0aBgDIAEoDRISCgp0aWxlSGVpZ2h0GAQgASgNEg8KB2NvbHVtbnMYBSABKA0SLwoKYW5pbWF0aW9ucxgGIAMoCzIbLmdyZXl2YXJwcm90by5UaWxlQW5pbWF0aW9uIlQKDVRpbGVBbmltYXRpb24SDgoGdGlsZUlkGAEgASgFEg4KBmZyYW1lcxgCIAMoBRITCgtkdXJhdGlvbnNNcxgDIAMoBRIOCgZzeW5jZWQYBCABKAgiSgoJR3JpZExheWVyEgwKBG5hbWUYASABKAkSDAoEa2luZBgCIAEoCRIhCgV0aWxlcxgDIAMoCzISLmdyZXl2YXJwcm90by5UaWxlIlAKDkdyaWRUcmFuc2l0aW9uEhIKCmZyb21HcmlkSWQYASABKAkSFAoMc2Nyb2xsRGVsdGFYGAIgASgFEhQKDHNjcm9sbERlbHRhWRgDIAEoBSKBAgoER3JpZBINCgV0aXRsZRgBIAEoCRIhCgV0aWxlcxgCIAMoCzISLmdyZXl2YXJwcm90by5UaWxlEhAKCHJvd0NvdW50GAMgASgNEhAKCGNvbENvdW50GAQgASgNEg4KBmdyaWRJZBgFIAEoCRIPCgd3b3JsZElkGAYgASgJEicKCHRpbGVzZXRzGAcgAygLMhUuZ3JleXZhcnByb3RvLlRpbGVzZXQSMAoKdHJhbnNpdGlvbhgIIAEoCzIcLmdyZXl2YXJwcm90by5HcmlkVHJhbnNpdGlvbhInCgZsYXllcnMYCSADKAsyFy5ncmV5dmFycHJvdG8uR3JpZExheWVyImcKEkNvbm5lY3Rpb25SZXNwb25zZRIVCg1zZXJ2ZXJWZXJzaW9uGAEgASgJEjoKEXBsYXllckFscmVhZHlIZXJlGAUgAygLMh8uZ3JleXZhcnByb3RvLlBsYXllckFscmVhZHlIZXJlIlQKDFdvcmxkU3VtbWFyeRIPCgd3b3JsZElkGAEgASgJEg0KBXRpdGxlGAIgASgJEhEKCWdyaWRDb3VudBgDIAEoDRIRCglzcGF3bkdyaWQYBCABKAkiPwoRV29ybGRMaXN0UmVzcG9uc2USKgoGd29ybGRzGAEgAygLMhouZ3JleXZhcnByb3RvLldvcmxkU3VtbWFyeSIeCg5Db25zb2xlTWVzc2FnZRIMCgR0ZXh0GAEgASgJIiwKCkh1ZE1lc3NhZ2USDAoEdGV4dBgBIAEoCRIQCghlbnRpdHlJZBgCIAEoAyIyCg1JbnZlbnRvcnlJdGVtEhIKCmRlZmluaXRpb24YASABKAkSDQoFY291bnQYAiABKAUiPQoPSW52ZW50b3J5VXBkYXRlEioKBWl0ZW1zGAEgAygLMhsuZ3JleXZhcnByb3RvLkludmVudG9yeUl0ZW0iiQEKDkl0ZW1EZWZpbml0aW9uEgoKAmlkGAEgASgJEg0KBXRpdGxlGAIgASgJEhAKCHN0YWNrTWF4GAMgASgFEhAKCGNhdGVnb3J5GAQgASgJEhIKCmhlbGRTcHJpdGUYBSABKAkSEQoJaGVsZEdyaXBYGAYgASgFEhEKCWhlbGRHcmlwWRgHIAEoBSIqCgtSZWNpcGVJbnB1dBIMCgRpdGVtGAEgASgJEg0KBWNvdW50GAIgASgFIisKDFJlY2lwZU91dHB1dBIMCgRpdGVtGAEgASgJEg0KBWNvdW50GAIgASgFIoUBChBSZWNpcGVEZWZpbml0aW9uEgoKAmlkGAEgASgJEg0KBXRpdGxlGAIgASgJEikKBmlucHV0cxgDIAMoCzIZLmdyZXl2YXJwcm90by5SZWNpcGVJbnB1dBIrCgdvdXRwdXRzGAQgAygLMhouZ3JleXZhcnByb3RvLlJlY2lwZU91dHB1dCIMCgpOb1Jlc3BvbnNlQhVaE2dlbi9ncmV5dmFycHJvdG9jb2xiBnByb3RvMw");
+  fileDesc("Ch9zZXJ2ZXJfdG9fY2xpZW50X21lc3NhZ2VzLnByb3RvEgxncmV5dmFycHJvdG8irAcKDFNlcnZlclVwZGF0ZRI1Cg9lbnRpdHlQb3NpdGlvbnMYAiADKAsyHC5ncmV5dmFycHJvdG8uRW50aXR5UG9zaXRpb24SLwoMZW50aXR5U3Bhd25zGAMgAygLMhkuZ3JleXZhcnByb3RvLkVudGl0eVNwYXduEjAKDHBsYXllckpvaW5lZBgEIAEoCzIaLmdyZXl2YXJwcm90by5QbGF5ZXJKb2luZWQSLAoQc2luZ2xlVGlsZUNoYW5nZRgFIAEoCzISLmdyZXl2YXJwcm90by5UaWxlEiAKBGdyaWQYBiABKAsyEi5ncmV5dmFycHJvdG8uR3JpZBI8ChJjb25uZWN0aW9uUmVzcG9uc2UYByABKAsyIC5ncmV5dmFycHJvdG8uQ29ubmVjdGlvblJlc3BvbnNlEjkKEWVudGl0eURlZmluaXRpb25zGAggAygLMh4uZ3JleXZhcnByb3RvLkVudGl0eURlZmluaXRpb24SOwoSZW50aXR5U3RhdGVDaGFuZ2VzGAkgAygLMh8uZ3JleXZhcnByb3RvLkVudGl0eVN0YXRlQ2hhbmdlEhYKDmVudGl0eURlc3Bhd25zGAogAygDEjoKEXdvcmxkTGlzdFJlc3BvbnNlGAsgASgLMh8uZ3JleXZhcnByb3RvLldvcmxkTGlzdFJlc3BvbnNlEjQKDmNvbnNvbGVNZXNzYWdlGAwgASgLMhwuZ3JleXZhcnByb3RvLkNvbnNvbGVNZXNzYWdlEiwKCmh1ZE1lc3NhZ2UYDSABKAsyGC5ncmV5dmFycHJvdG8uSHVkTWVzc2FnZRI2Cg9pbnZlbnRvcnlVcGRhdGUYDiABKAsyHS5ncmV5dmFycHJvdG8uSW52ZW50b3J5VXBkYXRlEjUKD2l0ZW1EZWZpbml0aW9ucxgPIAMoCzIcLmdyZXl2YXJwcm90by5JdGVtRGVmaW5pdGlvbhI5ChFyZWNpcGVEZWZpbml0aW9ucxgQIAMoCzIeLmdyZXl2YXJwcm90by5SZWNpcGVEZWZpbml0aW9uEkUKF2VudGl0eUFwcGVhcmFuY2VDaGFuZ2VzGBEgAygLMiQuZ3JleXZhcnByb3RvLkVudGl0eUFwcGVhcmFuY2VDaGFuZ2USLQoLdGlsZUNoYW5nZXMYEiADKAsyGC5ncmV5dmFycHJvdG8uVGlsZUNoYW5nZRIkCgZkaWFsb2cYEyABKAsyFC5ncmV5dmFycHJvdG8uRGlhbG9nInQKBkRpYWxvZxIQCghlbnRpdHlJZBgBIAEoAxIMCgRub2RlGAIgASgJEg8KB3NwZWFrZXIYAyABKAkSDAoEdGV4dBgEIAEoCRIrCgdvcHRpb25zGAUgAygLMhouZ3JleXZhcnByb3RvLkRpYWxvZ09wdGlvbiKMAQoMRGlhbG9nT3B0aW9uEg0KBWxhYmVsGAEgASgJEgwKBGVuZHMYAiABKAgSMgoEd2VhchgDIAMoCzIkLmdyZXl2YXJwcm90by5EaWFsb2dPcHRpb24uV2VhckVudHJ5GisKCVdlYXJFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBIlcKClRpbGVDaGFuZ2USDQoFbGF5ZXIYASABKAkSCwoDcm93GAIgASgNEgsKA2NvbBgDIAEoDRIgCgR0aWxlGAQgASgLMhIuZ3JleXZhcnByb3RvLlRpbGUiOAoORW50aXR5UG9zaXRpb24SEAoIZW50aXR5SWQYASABKAMSCQoBeBgCIAEoBRIJCgF5GAMgASgFIjcKEUVudGl0eVN0YXRlQ2hhbmdlEhAKCGVudGl0eUlkGAEgASgDEhAKCG5ld1N0YXRlGAIgASgJIsgBCgtFbnRpdHlTcGF3bhIQCghlbnRpdHlJZBgBIAEoAxIJCgF4GAIgASgFEgkKAXkYAyABKAUSCQoBdxgEIAEoBRIJCgFoGAUgASgFEhQKDHByaW1hcnlDb2xvchgHIAEoDRISCgpkZWZpbml0aW9uGAkgASgJEhQKDGluaXRpYWxTdGF0ZRgKIAEoCRIsCgphcHBlYXJhbmNlGAsgASgLMhguZ3JleXZhcnByb3RvLkFwcGVhcmFuY2USDQoFbGFiZWwYDCABKAki+AEKCkFwcGVhcmFuY2USMgoFcGFydHMYASADKAsyIy5ncmV5dmFycHJvdG8uQXBwZWFyYW5jZS5QYXJ0c0VudHJ5EjgKCHBhbGV0dGVzGAIgAygLMiYuZ3JleXZhcnByb3RvLkFwcGVhcmFuY2UuUGFsZXR0ZXNFbnRyeRIQCghoZWxkSXRlbRgDIAEoCRILCgNyaWcYBCABKAkaLAoKUGFydHNFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBGi8KDVBhbGV0dGVzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ASJYChZFbnRpdHlBcHBlYXJhbmNlQ2hhbmdlEhAKCGVudGl0eUlkGAEgASgDEiwKCmFwcGVhcmFuY2UYAiABKAsyGC5ncmV5dmFycHJvdG8uQXBwZWFyYW5jZSKpAQoQRW50aXR5RGVmaW5pdGlvbhIMCgRuYW1lGAEgASgJEikKBnN0YXRlcxgDIAMoCzIZLmdyZXl2YXJwcm90by5FbnRpdHlTdGF0ZRIPCgd0ZXh0dXJlGAQgASgJEhEKCXRpbGVXaWR0aBgFIAEoBRISCgp0aWxlSGVpZ2h0GAYgASgFEg0KBWZsb29yGAcgASgIEhUKDWludGVyYWN0UmFuZ2UYCCABKAUieAoLRW50aXR5U3RhdGUSDAoEbmFtZRgBIAEoCRIOCgZmcmFtZXMYAiADKAUSDQoFaG9sZHMYAyADKAUSLgoJY29sbGlzaW9uGAQgAygLMhsuZ3JleXZhcnByb3RvLkNvbGxpc2lvblJlY3QSDAoEb25jZRgFIAEoCCIeCgpQbGF5ZXJRdWl0EhAKCHBsYXllcklkGAEgASgDIiUKEVBsYXllckFscmVhZHlIZXJlEhAKCHBsYXllcklkGAEgASgDIjIKDFBsYXllckpvaW5lZBIQCgh1c2VybmFtZRgBIAEoCRIQCghlbnRpdHlJZBgCIAEoAyIdCglQbGF5ZXJZb3USEAoIcGxheWVySWQYASABKAMiOwoNQ29sbGlzaW9uUmVjdBIJCgF4GAEgASgCEgkKAXkYAiABKAISCQoBdxgDIAEoAhIJCgFoGAQgASgCIoYCCgRUaWxlEgsKA2NvbBgBIAEoDRILCgNyb3cYAiABKA0SCwoDdGV4GAMgASgJEg0KBWZsaXBIGAQgASgIEg0KBWZsaXBWGAUgASgIEgsKA3JvdBgGIAEoBRIQCghhdGxhc0tleRgHIAEoCRISCgpmcmFtZUluZGV4GAggASgFEi4KCWNvbGxpc2lvbhgJIAMoCzIbLmdyZXl2YXJwcm90by5Db2xsaXNpb25SZWN0EhgKEGNvbGxpc2lvbkZyb21Uc3gYCiABKAgSDQoFc3RpbGwYCyABKAgSDQoFZGVjb3IYDCABKAgSDwoHb3ZlcmxheRgNIAEoCBINCgVhYm92ZRgOIAEoCCKOAQoHVGlsZXNldBILCgNrZXkYASABKAkSDQoFaW1hZ2UYAiABKAkSEQoJdGlsZVdpZHRoGAMgASgNEhIKCnRpbGVIZWlnaHQYBCABKA0SDwoHY29sdW1ucxgFIAEoDRIvCgphbmltYXRpb25zGAYgAygLMhsuZ3JleXZhcnByb3RvLlRpbGVBbmltYXRpb24iVAoNVGlsZUFuaW1hdGlvbhIOCgZ0aWxlSWQYASABKAUSDgoGZnJhbWVzGAIgAygFEhMKC2R1cmF0aW9uc01zGAMgAygFEg4KBnN5bmNlZBgEIAEoCCJKCglHcmlkTGF5ZXISDAoEbmFtZRgBIAEoCRIMCgRraW5kGAIgASgJEiEKBXRpbGVzGAMgAygLMhIuZ3JleXZhcnByb3RvLlRpbGUiUAoOR3JpZFRyYW5zaXRpb24SEgoKZnJvbUdyaWRJZBgBIAEoCRIUCgxzY3JvbGxEZWx0YVgYAiABKAUSFAoMc2Nyb2xsRGVsdGFZGAMgASgFIoECCgRHcmlkEg0KBXRpdGxlGAEgASgJEiEKBXRpbGVzGAIgAygLMhIuZ3JleXZhcnByb3RvLlRpbGUSEAoIcm93Q291bnQYAyABKA0SEAoIY29sQ291bnQYBCABKA0SDgoGZ3JpZElkGAUgASgJEg8KB3dvcmxkSWQYBiABKAkSJwoIdGlsZXNldHMYByADKAsyFS5ncmV5dmFycHJvdG8uVGlsZXNldBIwCgp0cmFuc2l0aW9uGAggASgLMhwuZ3JleXZhcnByb3RvLkdyaWRUcmFuc2l0aW9uEicKBmxheWVycxgJIAMoCzIXLmdyZXl2YXJwcm90by5HcmlkTGF5ZXIiZwoSQ29ubmVjdGlvblJlc3BvbnNlEhUKDXNlcnZlclZlcnNpb24YASABKAkSOgoRcGxheWVyQWxyZWFkeUhlcmUYBSADKAsyHy5ncmV5dmFycHJvdG8uUGxheWVyQWxyZWFkeUhlcmUiVAoMV29ybGRTdW1tYXJ5Eg8KB3dvcmxkSWQYASABKAkSDQoFdGl0bGUYAiABKAkSEQoJZ3JpZENvdW50GAMgASgNEhEKCXNwYXduR3JpZBgEIAEoCSI/ChFXb3JsZExpc3RSZXNwb25zZRIqCgZ3b3JsZHMYASADKAsyGi5ncmV5dmFycHJvdG8uV29ybGRTdW1tYXJ5Ih4KDkNvbnNvbGVNZXNzYWdlEgwKBHRleHQYASABKAkiPAoKSHVkTWVzc2FnZRIMCgR0ZXh0GAEgASgJEhAKCGVudGl0eUlkGAIgASgDEg4KBnN0aWNreRgDIAEoCCIyCg1JbnZlbnRvcnlJdGVtEhIKCmRlZmluaXRpb24YASABKAkSDQoFY291bnQYAiABKAUiPQoPSW52ZW50b3J5VXBkYXRlEioKBWl0ZW1zGAEgAygLMhsuZ3JleXZhcnByb3RvLkludmVudG9yeUl0ZW0ilwEKDkl0ZW1EZWZpbml0aW9uEgoKAmlkGAEgASgJEg0KBXRpdGxlGAIgASgJEhAKCHN0YWNrTWF4GAMgASgFEhAKCGNhdGVnb3J5GAQgASgJEhIKCmhlbGRTcHJpdGUYBSABKAkSEQoJaGVsZEdyaXBYGAYgASgFEhEKCWhlbGRHcmlwWRgHIAEoBRIMCgRpY29uGAggASgJIioKC1JlY2lwZUlucHV0EgwKBGl0ZW0YASABKAkSDQoFY291bnQYAiABKAUiKwoMUmVjaXBlT3V0cHV0EgwKBGl0ZW0YASABKAkSDQoFY291bnQYAiABKAUihQEKEFJlY2lwZURlZmluaXRpb24SCgoCaWQYASABKAkSDQoFdGl0bGUYAiABKAkSKQoGaW5wdXRzGAMgAygLMhkuZ3JleXZhcnByb3RvLlJlY2lwZUlucHV0EisKB291dHB1dHMYBCADKAsyGi5ncmV5dmFycHJvdG8uUmVjaXBlT3V0cHV0IgwKCk5vUmVzcG9uc2VCFVoTZ2VuL2dyZXl2YXJwcm90b2NvbGIGcHJvdG8z");
 
 /**
  * Describes the message greyvarproto.ServerUpdate.
@@ -18,219 +18,233 @@ export const ServerUpdateSchema = /*@__PURE__*/
   messageDesc(file_server_to_client_messages, 0);
 
 /**
+ * Describes the message greyvarproto.Dialog.
+ * Use `create(DialogSchema)` to create a new message.
+ */
+export const DialogSchema = /*@__PURE__*/
+  messageDesc(file_server_to_client_messages, 1);
+
+/**
+ * Describes the message greyvarproto.DialogOption.
+ * Use `create(DialogOptionSchema)` to create a new message.
+ */
+export const DialogOptionSchema = /*@__PURE__*/
+  messageDesc(file_server_to_client_messages, 2);
+
+/**
  * Describes the message greyvarproto.TileChange.
  * Use `create(TileChangeSchema)` to create a new message.
  */
 export const TileChangeSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 1);
+  messageDesc(file_server_to_client_messages, 3);
 
 /**
  * Describes the message greyvarproto.EntityPosition.
  * Use `create(EntityPositionSchema)` to create a new message.
  */
 export const EntityPositionSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 2);
+  messageDesc(file_server_to_client_messages, 4);
 
 /**
  * Describes the message greyvarproto.EntityStateChange.
  * Use `create(EntityStateChangeSchema)` to create a new message.
  */
 export const EntityStateChangeSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 3);
+  messageDesc(file_server_to_client_messages, 5);
 
 /**
  * Describes the message greyvarproto.EntitySpawn.
  * Use `create(EntitySpawnSchema)` to create a new message.
  */
 export const EntitySpawnSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 4);
+  messageDesc(file_server_to_client_messages, 6);
 
 /**
  * Describes the message greyvarproto.Appearance.
  * Use `create(AppearanceSchema)` to create a new message.
  */
 export const AppearanceSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 5);
+  messageDesc(file_server_to_client_messages, 7);
 
 /**
  * Describes the message greyvarproto.EntityAppearanceChange.
  * Use `create(EntityAppearanceChangeSchema)` to create a new message.
  */
 export const EntityAppearanceChangeSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 6);
+  messageDesc(file_server_to_client_messages, 8);
 
 /**
  * Describes the message greyvarproto.EntityDefinition.
  * Use `create(EntityDefinitionSchema)` to create a new message.
  */
 export const EntityDefinitionSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 7);
+  messageDesc(file_server_to_client_messages, 9);
 
 /**
  * Describes the message greyvarproto.EntityState.
  * Use `create(EntityStateSchema)` to create a new message.
  */
 export const EntityStateSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 8);
+  messageDesc(file_server_to_client_messages, 10);
 
 /**
  * Describes the message greyvarproto.PlayerQuit.
  * Use `create(PlayerQuitSchema)` to create a new message.
  */
 export const PlayerQuitSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 9);
+  messageDesc(file_server_to_client_messages, 11);
 
 /**
  * Describes the message greyvarproto.PlayerAlreadyHere.
  * Use `create(PlayerAlreadyHereSchema)` to create a new message.
  */
 export const PlayerAlreadyHereSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 10);
+  messageDesc(file_server_to_client_messages, 12);
 
 /**
  * Describes the message greyvarproto.PlayerJoined.
  * Use `create(PlayerJoinedSchema)` to create a new message.
  */
 export const PlayerJoinedSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 11);
+  messageDesc(file_server_to_client_messages, 13);
 
 /**
  * Describes the message greyvarproto.PlayerYou.
  * Use `create(PlayerYouSchema)` to create a new message.
  */
 export const PlayerYouSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 12);
+  messageDesc(file_server_to_client_messages, 14);
 
 /**
  * Describes the message greyvarproto.CollisionRect.
  * Use `create(CollisionRectSchema)` to create a new message.
  */
 export const CollisionRectSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 13);
+  messageDesc(file_server_to_client_messages, 15);
 
 /**
  * Describes the message greyvarproto.Tile.
  * Use `create(TileSchema)` to create a new message.
  */
 export const TileSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 14);
+  messageDesc(file_server_to_client_messages, 16);
 
 /**
  * Describes the message greyvarproto.Tileset.
  * Use `create(TilesetSchema)` to create a new message.
  */
 export const TilesetSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 15);
+  messageDesc(file_server_to_client_messages, 17);
 
 /**
  * Describes the message greyvarproto.TileAnimation.
  * Use `create(TileAnimationSchema)` to create a new message.
  */
 export const TileAnimationSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 16);
+  messageDesc(file_server_to_client_messages, 18);
 
 /**
  * Describes the message greyvarproto.GridLayer.
  * Use `create(GridLayerSchema)` to create a new message.
  */
 export const GridLayerSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 17);
+  messageDesc(file_server_to_client_messages, 19);
 
 /**
  * Describes the message greyvarproto.GridTransition.
  * Use `create(GridTransitionSchema)` to create a new message.
  */
 export const GridTransitionSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 18);
+  messageDesc(file_server_to_client_messages, 20);
 
 /**
  * Describes the message greyvarproto.Grid.
  * Use `create(GridSchema)` to create a new message.
  */
 export const GridSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 19);
+  messageDesc(file_server_to_client_messages, 21);
 
 /**
  * Describes the message greyvarproto.ConnectionResponse.
  * Use `create(ConnectionResponseSchema)` to create a new message.
  */
 export const ConnectionResponseSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 20);
+  messageDesc(file_server_to_client_messages, 22);
 
 /**
  * Describes the message greyvarproto.WorldSummary.
  * Use `create(WorldSummarySchema)` to create a new message.
  */
 export const WorldSummarySchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 21);
+  messageDesc(file_server_to_client_messages, 23);
 
 /**
  * Describes the message greyvarproto.WorldListResponse.
  * Use `create(WorldListResponseSchema)` to create a new message.
  */
 export const WorldListResponseSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 22);
+  messageDesc(file_server_to_client_messages, 24);
 
 /**
  * Describes the message greyvarproto.ConsoleMessage.
  * Use `create(ConsoleMessageSchema)` to create a new message.
  */
 export const ConsoleMessageSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 23);
+  messageDesc(file_server_to_client_messages, 25);
 
 /**
  * Describes the message greyvarproto.HudMessage.
  * Use `create(HudMessageSchema)` to create a new message.
  */
 export const HudMessageSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 24);
+  messageDesc(file_server_to_client_messages, 26);
 
 /**
  * Describes the message greyvarproto.InventoryItem.
  * Use `create(InventoryItemSchema)` to create a new message.
  */
 export const InventoryItemSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 25);
+  messageDesc(file_server_to_client_messages, 27);
 
 /**
  * Describes the message greyvarproto.InventoryUpdate.
  * Use `create(InventoryUpdateSchema)` to create a new message.
  */
 export const InventoryUpdateSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 26);
+  messageDesc(file_server_to_client_messages, 28);
 
 /**
  * Describes the message greyvarproto.ItemDefinition.
  * Use `create(ItemDefinitionSchema)` to create a new message.
  */
 export const ItemDefinitionSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 27);
+  messageDesc(file_server_to_client_messages, 29);
 
 /**
  * Describes the message greyvarproto.RecipeInput.
  * Use `create(RecipeInputSchema)` to create a new message.
  */
 export const RecipeInputSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 28);
+  messageDesc(file_server_to_client_messages, 30);
 
 /**
  * Describes the message greyvarproto.RecipeOutput.
  * Use `create(RecipeOutputSchema)` to create a new message.
  */
 export const RecipeOutputSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 29);
+  messageDesc(file_server_to_client_messages, 31);
 
 /**
  * Describes the message greyvarproto.RecipeDefinition.
  * Use `create(RecipeDefinitionSchema)` to create a new message.
  */
 export const RecipeDefinitionSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 30);
+  messageDesc(file_server_to_client_messages, 32);
 
 /**
  * Describes the message greyvarproto.NoResponse.
  * Use `create(NoResponseSchema)` to create a new message.
  */
 export const NoResponseSchema = /*@__PURE__*/
-  messageDesc(file_server_to_client_messages, 31);
+  messageDesc(file_server_to_client_messages, 33);
 

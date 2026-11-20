@@ -11,6 +11,25 @@ type cornerField struct {
 	level      []int
 }
 
+// CornerField is a terrain level per tile corner, for GenerationConfig.Field.
+type CornerField = cornerField
+
+// NewCornerField makes an all-level-0 field for tileRows x tileCols tiles.
+func NewCornerField(tileRows, tileCols int) *CornerField { return newCornerField(tileRows, tileCols) }
+
+// Set sets corner (r, c), 0 <= r <= tileRows, to a terrain level.
+func (f *cornerField) Set(r, c, level int) { f.set(r, c, level) }
+
+// At is corner (r, c)'s terrain level.
+func (f *cornerField) At(r, c int) int { return f.at(r, c) }
+
+// Clone copies the field (Generate may raise corners in place).
+func (f *cornerField) Clone() *CornerField {
+	out := &cornerField{rows: f.rows, cols: f.cols, level: make([]int, len(f.level))}
+	copy(out.level, f.level)
+	return out
+}
+
 func newCornerField(tileRows, tileCols int) *cornerField {
 	return &cornerField{
 		rows:  tileRows + 1,

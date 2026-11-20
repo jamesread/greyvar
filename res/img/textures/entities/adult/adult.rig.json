@@ -1,0 +1,1585 @@
+{
+  "name": "adult",
+  "frameSize": 33,
+  "columns": 8,
+  "frameCount": 72,
+  "layers": [
+    {
+      "name": "pants",
+      "default": "default",
+      "variants": [
+        "default"
+      ],
+      "sheets": {
+        "default": "img/textures/entities/adult/pants_default.png"
+      },
+      "slots": [
+        "skin",
+        "pants"
+      ]
+    },
+    {
+      "name": "body",
+      "default": "default",
+      "variants": [
+        "default"
+      ],
+      "sheets": {
+        "default": "img/textures/entities/adult/body_default.png"
+      },
+      "slots": [
+        "skin"
+      ]
+    },
+    {
+      "name": "form",
+      "default": "none",
+      "variants": [
+        "none",
+        "mannequin"
+      ],
+      "sheets": {
+        "mannequin": "img/textures/entities/adult/form_mannequin.png",
+        "none": "img/textures/entities/adult/form_none.png"
+      },
+      "slots": [
+        "form"
+      ]
+    },
+    {
+      "name": "shirt",
+      "default": "default",
+      "variants": [
+        "default"
+      ],
+      "sheets": {
+        "default": "img/textures/entities/adult/shirt_default.png"
+      },
+      "slots": [
+        "shirt"
+      ]
+    },
+    {
+      "name": "outfit",
+      "default": "none",
+      "variants": [
+        "none",
+        "dress"
+      ],
+      "sheets": {
+        "dress": "img/textures/entities/adult/outfit_dress.png",
+        "none": "img/textures/entities/adult/outfit_none.png"
+      },
+      "slots": [
+        "skin",
+        "garment",
+        "trim"
+      ]
+    },
+    {
+      "name": "beard",
+      "default": "none",
+      "variants": [
+        "none",
+        "beard"
+      ],
+      "sheets": {
+        "beard": "img/textures/entities/adult/beard_beard.png",
+        "none": "img/textures/entities/adult/beard_none.png"
+      },
+      "slots": [
+        "hair"
+      ]
+    },
+    {
+      "name": "hair",
+      "default": "short",
+      "variants": [
+        "short",
+        "long",
+        "ponytail",
+        "bun",
+        "curly",
+        "bob",
+        "bald"
+      ],
+      "sheets": {
+        "bald": "img/textures/entities/adult/hair_bald.png",
+        "bob": "img/textures/entities/adult/hair_bob.png",
+        "bun": "img/textures/entities/adult/hair_bun.png",
+        "curly": "img/textures/entities/adult/hair_curly.png",
+        "long": "img/textures/entities/adult/hair_long.png",
+        "ponytail": "img/textures/entities/adult/hair_ponytail.png",
+        "short": "img/textures/entities/adult/hair_short.png"
+      },
+      "slots": [
+        "hair"
+      ]
+    }
+  ],
+  "slotOrder": [
+    "skin",
+    "hair",
+    "shirt",
+    "pants",
+    "garment",
+    "trim",
+    "form"
+  ],
+  "slots": {
+    "form": [
+      "#5c5852",
+      "#a8a197",
+      "#c4bdb2",
+      "#ddd7cd"
+    ],
+    "garment": [
+      "#20183a",
+      "#3a2c66",
+      "#54428e",
+      "#7262b6"
+    ],
+    "hair": [
+      "#3e282b",
+      "#4e2c29",
+      "#613a41"
+    ],
+    "pants": [
+      "#1e2a5e",
+      "#2e3e86",
+      "#4a5ea8"
+    ],
+    "shirt": [
+      "#3b1a34",
+      "#851667",
+      "#a61684",
+      "#c42f95"
+    ],
+    "skin": [
+      "#935968",
+      "#eba5a0",
+      "#f3aea6",
+      "#f3cebe"
+    ],
+    "trim": [
+      "#5a4a10",
+      "#a88a2a",
+      "#e8cc66"
+    ]
+  },
+  "palettes": {
+    "form": {
+      "linen": [
+        "#6a5a3e",
+        "#c8b48c",
+        "#d8c6a0",
+        "#ece0c2"
+      ],
+      "plaster": [
+        "#5c5852",
+        "#a8a197",
+        "#c4bdb2",
+        "#ddd7cd"
+      ]
+    },
+    "garment": {
+      "black": [
+        "#141218",
+        "#24202a",
+        "#38323e",
+        "#4c4654"
+      ],
+      "blue": [
+        "#1a2440",
+        "#1f4a8a",
+        "#2a64b8",
+        "#4a8ad8"
+      ],
+      "green": [
+        "#183a24",
+        "#26703a",
+        "#33904a",
+        "#58b868"
+      ],
+      "pink": [
+        "#5c0f3e",
+        "#e0198a",
+        "#ff3fa8",
+        "#ff8fd0"
+      ],
+      "purple": [
+        "#24123a",
+        "#4a2480",
+        "#6030a8",
+        "#8850d0"
+      ],
+      "red": [
+        "#3a1416",
+        "#8a1e22",
+        "#b02a2a",
+        "#d84a40"
+      ],
+      "white": [
+        "#7c8090",
+        "#c9ccd6",
+        "#e8eaf0",
+        "#ffffff"
+      ],
+      "yellow": [
+        "#4a3a14",
+        "#a8801e",
+        "#d0a82a",
+        "#ecd060"
+      ]
+    },
+    "hair": {
+      "black": [
+        "#1c1a24",
+        "#2a2733",
+        "#3d3a4a"
+      ],
+      "blonde": [
+        "#a07434",
+        "#d6a94a",
+        "#f0d27a"
+      ],
+      "brown": [
+        "#3e282b",
+        "#4e2c29",
+        "#613a41"
+      ],
+      "grey": [
+        "#5a5a62",
+        "#8a8a94",
+        "#bdbdc6"
+      ],
+      "red": [
+        "#6e2418",
+        "#a83a22",
+        "#d4602e"
+      ]
+    },
+    "pants": {
+      "blue": [
+        "#1a3270",
+        "#2850a8",
+        "#3c6cd0"
+      ],
+      "brown": [
+        "#3a2418",
+        "#4e3222",
+        "#6a4630"
+      ],
+      "charcoal": [
+        "#221e26",
+        "#3a3540",
+        "#544c5a"
+      ],
+      "denim": [
+        "#1e2a44",
+        "#2a3a5e",
+        "#40567e"
+      ],
+      "green": [
+        "#122a1a",
+        "#1e4a2a",
+        "#2e663c"
+      ],
+      "khaki": [
+        "#5a4a30",
+        "#7a6844",
+        "#98865c"
+      ],
+      "lightblue": [
+        "#2e5a9a",
+        "#4a86cc",
+        "#7aaee6"
+      ],
+      "pink": [
+        "#5c0f3e",
+        "#e0198a",
+        "#ff5fb6"
+      ]
+    },
+    "shirt": {
+      "black": [
+        "#100e14",
+        "#221f29",
+        "#302c38",
+        "#433e4e"
+      ],
+      "blue": [
+        "#1a2440",
+        "#1f4a8a",
+        "#2a64b8",
+        "#4a8ad8"
+      ],
+      "green": [
+        "#183a24",
+        "#26703a",
+        "#33904a",
+        "#58b868"
+      ],
+      "magenta": [
+        "#3b1a34",
+        "#851667",
+        "#a61684",
+        "#c42f95"
+      ],
+      "pink": [
+        "#5c0f3e",
+        "#e0198a",
+        "#ff3fa8",
+        "#ff8fd0"
+      ],
+      "red": [
+        "#3a1416",
+        "#8a1e22",
+        "#b02a2a",
+        "#d84a40"
+      ],
+      "white": [
+        "#7c8090",
+        "#c9ccd6",
+        "#e8eaf0",
+        "#ffffff"
+      ],
+      "yellow": [
+        "#4a3a14",
+        "#a8801e",
+        "#d0a82a",
+        "#ecd060"
+      ]
+    },
+    "skin": {
+      "brown": [
+        "#4f2e22",
+        "#8a5638",
+        "#9a6442",
+        "#b8835e"
+      ],
+      "deep": [
+        "#2e1a14",
+        "#5c3a2a",
+        "#6a4532",
+        "#8a6248"
+      ],
+      "mannequin": [
+        "#5c5852",
+        "#a8a197",
+        "#c4bdb2",
+        "#ddd7cd"
+      ],
+      "peach": [
+        "#a8695a",
+        "#f0b48c",
+        "#f6c29c",
+        "#fde0c4"
+      ],
+      "rose": [
+        "#935968",
+        "#eba5a0",
+        "#f3aea6",
+        "#f3cebe"
+      ],
+      "tan": [
+        "#7a4a32",
+        "#b97a54",
+        "#c98b62",
+        "#e0a982"
+      ]
+    },
+    "trim": {
+      "black": [
+        "#141218",
+        "#2a2630",
+        "#3e3846"
+      ],
+      "blue": [
+        "#1f4a8a",
+        "#4a8ad8",
+        "#9ac4f0"
+      ],
+      "gold": [
+        "#7a5a10",
+        "#c8a030",
+        "#f0d870"
+      ],
+      "green": [
+        "#26703a",
+        "#58b868",
+        "#a0e0a0"
+      ],
+      "pink": [
+        "#a0105a",
+        "#ff3fa8",
+        "#ff9fd8"
+      ],
+      "red": [
+        "#6e1418",
+        "#b02a2a",
+        "#e05a48"
+      ],
+      "white": [
+        "#a8acb8",
+        "#e8eaf0",
+        "#ffffff"
+      ]
+    }
+  },
+  "defaults": {
+    "palettes": {
+      "form": "plaster",
+      "garment": "purple",
+      "hair": "brown",
+      "pants": "denim",
+      "shirt": "magenta",
+      "skin": "rose",
+      "trim": "gold"
+    },
+    "parts": {
+      "beard": "none",
+      "form": "none",
+      "hair": "short",
+      "outfit": "none",
+      "pants": "default"
+    }
+  },
+  "poses": [
+    {
+      "name": "idle_south_0",
+      "frame": 0,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "idle_east_0",
+      "frame": 1,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "idle_north_0",
+      "frame": 2,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "idle_west_0",
+      "frame": 3,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_south_0",
+      "frame": 4,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_south_1",
+      "frame": 5,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_south_2",
+      "frame": 6,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_south_3",
+      "frame": 7,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_east_0",
+      "frame": 8,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_east_1",
+      "frame": 9,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_east_2",
+      "frame": 10,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_east_3",
+      "frame": 11,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_north_0",
+      "frame": 12,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_north_1",
+      "frame": 13,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_north_2",
+      "frame": 14,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_north_3",
+      "frame": 15,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_west_0",
+      "frame": 16,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_west_1",
+      "frame": 17,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_west_2",
+      "frame": 18,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "breathe_west_3",
+      "frame": 19,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_south_0",
+      "frame": 20,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_south_1",
+      "frame": 21,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_south_2",
+      "frame": 22,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_south_3",
+      "frame": 23,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_east_0",
+      "frame": 24,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_east_1",
+      "frame": 25,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_east_2",
+      "frame": 26,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_east_3",
+      "frame": 27,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_north_0",
+      "frame": 28,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_north_1",
+      "frame": 29,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_north_2",
+      "frame": 30,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_north_3",
+      "frame": 31,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_west_0",
+      "frame": 32,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_west_1",
+      "frame": 33,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_west_2",
+      "frame": 34,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "pockets_west_3",
+      "frame": 35,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_south_0",
+      "frame": 36,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_south_1",
+      "frame": 37,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_south_2",
+      "frame": 38,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_south_3",
+      "frame": 39,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_south_4",
+      "frame": 40,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_south_5",
+      "frame": 41,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_south_6",
+      "frame": 42,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_south_7",
+      "frame": 43,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_east_0",
+      "frame": 44,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_east_1",
+      "frame": 45,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_east_2",
+      "frame": 46,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_east_3",
+      "frame": 47,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_east_4",
+      "frame": 48,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_east_5",
+      "frame": 49,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_east_6",
+      "frame": 50,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_east_7",
+      "frame": 51,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_north_0",
+      "frame": 52,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_north_1",
+      "frame": 53,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_north_2",
+      "frame": 54,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_north_3",
+      "frame": 55,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_north_4",
+      "frame": 56,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_north_5",
+      "frame": 57,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_north_6",
+      "frame": 58,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_north_7",
+      "frame": 59,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_west_0",
+      "frame": 60,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_west_1",
+      "frame": 61,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_west_2",
+      "frame": 62,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_west_3",
+      "frame": 63,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_west_4",
+      "frame": 64,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_west_5",
+      "frame": 65,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_west_6",
+      "frame": 66,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "walk_west_7",
+      "frame": 67,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "bumpDown",
+      "frame": 68,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "bumpRight",
+      "frame": 69,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "bumpUp",
+      "frame": 70,
+      "hand": null,
+      "itemZ": "front"
+    },
+    {
+      "name": "bumpLeft",
+      "frame": 71,
+      "hand": null,
+      "itemZ": "front"
+    }
+  ],
+  "clips": {
+    "bumpDown": [
+      {
+        "pose": "bumpDown",
+        "frame": 68,
+        "ms": 120
+      },
+      {
+        "pose": "idle_south_0",
+        "frame": 0,
+        "ms": 120
+      }
+    ],
+    "bumpDownLeft": [
+      {
+        "pose": "bumpLeft",
+        "frame": 71,
+        "ms": 120
+      },
+      {
+        "pose": "idle_west_0",
+        "frame": 3,
+        "ms": 120
+      }
+    ],
+    "bumpDownRight": [
+      {
+        "pose": "bumpRight",
+        "frame": 69,
+        "ms": 120
+      },
+      {
+        "pose": "idle_east_0",
+        "frame": 1,
+        "ms": 120
+      }
+    ],
+    "bumpLeft": [
+      {
+        "pose": "bumpLeft",
+        "frame": 71,
+        "ms": 120
+      },
+      {
+        "pose": "idle_west_0",
+        "frame": 3,
+        "ms": 120
+      }
+    ],
+    "bumpRight": [
+      {
+        "pose": "bumpRight",
+        "frame": 69,
+        "ms": 120
+      },
+      {
+        "pose": "idle_east_0",
+        "frame": 1,
+        "ms": 120
+      }
+    ],
+    "bumpUp": [
+      {
+        "pose": "bumpUp",
+        "frame": 70,
+        "ms": 120
+      },
+      {
+        "pose": "idle_north_0",
+        "frame": 2,
+        "ms": 120
+      }
+    ],
+    "bumpUpLeft": [
+      {
+        "pose": "bumpLeft",
+        "frame": 71,
+        "ms": 120
+      },
+      {
+        "pose": "idle_west_0",
+        "frame": 3,
+        "ms": 120
+      }
+    ],
+    "bumpUpRight": [
+      {
+        "pose": "bumpRight",
+        "frame": 69,
+        "ms": 120
+      },
+      {
+        "pose": "idle_east_0",
+        "frame": 1,
+        "ms": 120
+      }
+    ],
+    "idle": [
+      {
+        "pose": "breathe_south_0",
+        "frame": 4,
+        "ms": 600
+      },
+      {
+        "pose": "breathe_south_1",
+        "frame": 5,
+        "ms": 600
+      },
+      {
+        "pose": "breathe_south_2",
+        "frame": 6,
+        "ms": 600
+      },
+      {
+        "pose": "breathe_south_3",
+        "frame": 7,
+        "ms": 600
+      }
+    ],
+    "idleLeft": [
+      {
+        "pose": "breathe_west_0",
+        "frame": 16,
+        "ms": 600
+      },
+      {
+        "pose": "breathe_west_1",
+        "frame": 17,
+        "ms": 600
+      },
+      {
+        "pose": "breathe_west_2",
+        "frame": 18,
+        "ms": 600
+      },
+      {
+        "pose": "breathe_west_3",
+        "frame": 19,
+        "ms": 600
+      }
+    ],
+    "idleRight": [
+      {
+        "pose": "breathe_east_0",
+        "frame": 8,
+        "ms": 600
+      },
+      {
+        "pose": "breathe_east_1",
+        "frame": 9,
+        "ms": 600
+      },
+      {
+        "pose": "breathe_east_2",
+        "frame": 10,
+        "ms": 600
+      },
+      {
+        "pose": "breathe_east_3",
+        "frame": 11,
+        "ms": 600
+      }
+    ],
+    "idleUp": [
+      {
+        "pose": "breathe_north_0",
+        "frame": 12,
+        "ms": 600
+      },
+      {
+        "pose": "breathe_north_1",
+        "frame": 13,
+        "ms": 600
+      },
+      {
+        "pose": "breathe_north_2",
+        "frame": 14,
+        "ms": 600
+      },
+      {
+        "pose": "breathe_north_3",
+        "frame": 15,
+        "ms": 600
+      }
+    ],
+    "pockets": [
+      {
+        "pose": "pockets_south_0",
+        "frame": 20,
+        "ms": 600
+      },
+      {
+        "pose": "pockets_south_1",
+        "frame": 21,
+        "ms": 600
+      },
+      {
+        "pose": "pockets_south_2",
+        "frame": 22,
+        "ms": 600
+      },
+      {
+        "pose": "pockets_south_3",
+        "frame": 23,
+        "ms": 600
+      }
+    ],
+    "pocketsLeft": [
+      {
+        "pose": "pockets_west_0",
+        "frame": 32,
+        "ms": 600
+      },
+      {
+        "pose": "pockets_west_1",
+        "frame": 33,
+        "ms": 600
+      },
+      {
+        "pose": "pockets_west_2",
+        "frame": 34,
+        "ms": 600
+      },
+      {
+        "pose": "pockets_west_3",
+        "frame": 35,
+        "ms": 600
+      }
+    ],
+    "pocketsRight": [
+      {
+        "pose": "pockets_east_0",
+        "frame": 24,
+        "ms": 600
+      },
+      {
+        "pose": "pockets_east_1",
+        "frame": 25,
+        "ms": 600
+      },
+      {
+        "pose": "pockets_east_2",
+        "frame": 26,
+        "ms": 600
+      },
+      {
+        "pose": "pockets_east_3",
+        "frame": 27,
+        "ms": 600
+      }
+    ],
+    "pocketsUp": [
+      {
+        "pose": "pockets_north_0",
+        "frame": 28,
+        "ms": 600
+      },
+      {
+        "pose": "pockets_north_1",
+        "frame": 29,
+        "ms": 600
+      },
+      {
+        "pose": "pockets_north_2",
+        "frame": 30,
+        "ms": 600
+      },
+      {
+        "pose": "pockets_north_3",
+        "frame": 31,
+        "ms": 600
+      }
+    ],
+    "stand": [
+      {
+        "pose": "idle_south_0",
+        "frame": 0,
+        "ms": 1000
+      }
+    ],
+    "useDown": [
+      {
+        "pose": "bumpDown",
+        "frame": 68,
+        "ms": 150
+      },
+      {
+        "pose": "idle_south_0",
+        "frame": 0,
+        "ms": 150
+      }
+    ],
+    "useLeft": [
+      {
+        "pose": "bumpLeft",
+        "frame": 71,
+        "ms": 150
+      },
+      {
+        "pose": "idle_west_0",
+        "frame": 3,
+        "ms": 150
+      }
+    ],
+    "useRight": [
+      {
+        "pose": "bumpRight",
+        "frame": 69,
+        "ms": 150
+      },
+      {
+        "pose": "idle_east_0",
+        "frame": 1,
+        "ms": 150
+      }
+    ],
+    "useUp": [
+      {
+        "pose": "bumpUp",
+        "frame": 70,
+        "ms": 150
+      },
+      {
+        "pose": "idle_north_0",
+        "frame": 2,
+        "ms": 150
+      }
+    ],
+    "walkDown": [
+      {
+        "pose": "walk_south_0",
+        "frame": 36,
+        "ms": 100
+      },
+      {
+        "pose": "walk_south_1",
+        "frame": 37,
+        "ms": 100
+      },
+      {
+        "pose": "walk_south_2",
+        "frame": 38,
+        "ms": 100
+      },
+      {
+        "pose": "walk_south_3",
+        "frame": 39,
+        "ms": 100
+      },
+      {
+        "pose": "walk_south_4",
+        "frame": 40,
+        "ms": 100
+      },
+      {
+        "pose": "walk_south_5",
+        "frame": 41,
+        "ms": 100
+      },
+      {
+        "pose": "walk_south_6",
+        "frame": 42,
+        "ms": 100
+      },
+      {
+        "pose": "walk_south_7",
+        "frame": 43,
+        "ms": 100
+      }
+    ],
+    "walkDownLeft": [
+      {
+        "pose": "walk_west_0",
+        "frame": 60,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_1",
+        "frame": 61,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_2",
+        "frame": 62,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_3",
+        "frame": 63,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_4",
+        "frame": 64,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_5",
+        "frame": 65,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_6",
+        "frame": 66,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_7",
+        "frame": 67,
+        "ms": 100
+      }
+    ],
+    "walkDownRight": [
+      {
+        "pose": "walk_east_0",
+        "frame": 44,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_1",
+        "frame": 45,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_2",
+        "frame": 46,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_3",
+        "frame": 47,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_4",
+        "frame": 48,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_5",
+        "frame": 49,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_6",
+        "frame": 50,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_7",
+        "frame": 51,
+        "ms": 100
+      }
+    ],
+    "walkLeft": [
+      {
+        "pose": "walk_west_0",
+        "frame": 60,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_1",
+        "frame": 61,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_2",
+        "frame": 62,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_3",
+        "frame": 63,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_4",
+        "frame": 64,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_5",
+        "frame": 65,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_6",
+        "frame": 66,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_7",
+        "frame": 67,
+        "ms": 100
+      }
+    ],
+    "walkRight": [
+      {
+        "pose": "walk_east_0",
+        "frame": 44,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_1",
+        "frame": 45,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_2",
+        "frame": 46,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_3",
+        "frame": 47,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_4",
+        "frame": 48,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_5",
+        "frame": 49,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_6",
+        "frame": 50,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_7",
+        "frame": 51,
+        "ms": 100
+      }
+    ],
+    "walkUp": [
+      {
+        "pose": "walk_north_0",
+        "frame": 52,
+        "ms": 100
+      },
+      {
+        "pose": "walk_north_1",
+        "frame": 53,
+        "ms": 100
+      },
+      {
+        "pose": "walk_north_2",
+        "frame": 54,
+        "ms": 100
+      },
+      {
+        "pose": "walk_north_3",
+        "frame": 55,
+        "ms": 100
+      },
+      {
+        "pose": "walk_north_4",
+        "frame": 56,
+        "ms": 100
+      },
+      {
+        "pose": "walk_north_5",
+        "frame": 57,
+        "ms": 100
+      },
+      {
+        "pose": "walk_north_6",
+        "frame": 58,
+        "ms": 100
+      },
+      {
+        "pose": "walk_north_7",
+        "frame": 59,
+        "ms": 100
+      }
+    ],
+    "walkUpLeft": [
+      {
+        "pose": "walk_west_0",
+        "frame": 60,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_1",
+        "frame": 61,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_2",
+        "frame": 62,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_3",
+        "frame": 63,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_4",
+        "frame": 64,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_5",
+        "frame": 65,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_6",
+        "frame": 66,
+        "ms": 100
+      },
+      {
+        "pose": "walk_west_7",
+        "frame": 67,
+        "ms": 100
+      }
+    ],
+    "walkUpRight": [
+      {
+        "pose": "walk_east_0",
+        "frame": 44,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_1",
+        "frame": 45,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_2",
+        "frame": 46,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_3",
+        "frame": 47,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_4",
+        "frame": 48,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_5",
+        "frame": 49,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_6",
+        "frame": 50,
+        "ms": 100
+      },
+      {
+        "pose": "walk_east_7",
+        "frame": 51,
+        "ms": 100
+      }
+    ]
+  },
+  "idle": {
+    "base": "idle",
+    "variants": [],
+    "intervalMs": [
+      4000,
+      9000
+    ]
+  },
+  "states": {
+    "idle": "idle",
+    "pockets": "pockets",
+    "stand": "stand",
+    "walkDown": "walkDown",
+    "walkDownLeft": "walkDownLeft",
+    "walkDownRight": "walkDownRight",
+    "walkLeft": "walkLeft",
+    "walkRight": "walkRight",
+    "walkUp": "walkUp",
+    "walkUpLeft": "walkUpLeft",
+    "walkUpRight": "walkUpRight"
+  },
+  "initialState": "idle",
+  "hitbox": [
+    4,
+    0,
+    8,
+    16
+  ],
+  "size": "adult",
+  "anchor": [
+    16,
+    32
+  ],
+  "hidden": {
+    "skin": [
+      "mannequin"
+    ]
+  }
+}

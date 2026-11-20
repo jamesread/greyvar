@@ -46,7 +46,7 @@ func TestPlayerStaysOutOfWater(t *testing.T) {
 	// hitbox (8x16 = 128px); wading in would put far more of it in water.
 	const maxWaterPx = 24
 
-	for _, grid := range []string{"0.0.tmj", "0.1.tmj", "0.2.tmj", "1.0.tmj", "1.1.tmj", "1.2.tmj", "2.0.tmj"} {
+	for _, grid := range []string{"0.0.tmj", "0.1.tmj", "0.2.tmj", "1.0.tmj", "1.1.tmj", "1.2.tmj", "2.0.tmj", "2.1.tmj"} {
 		rp := &RemotePlayer{CurrentWorldId: world, CurrentGridId: grid, KnownEntities: map[int64]*Entity{}, currentFrame: &pb.ServerUpdate{}}
 		g := s.gridById(world, grid)
 		type pos struct{ x, y int32 }

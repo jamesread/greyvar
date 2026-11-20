@@ -1,0 +1,30 @@
+# Professor Ivan, isleOfStarting 0.0. Options with `wear` change the player's
+# skin tone (palettes from the adult rig, res/sprites/adult/rig.yml).
+speaker: Professor Ivan
+start: hello
+nodes:
+  hello:
+    text: "Ah, a visitor! My latest invention, the Chromatic Tonifier, can change the tone of your skin. Care to try it?"
+    options:
+      - {label: "Yes, please!", goto: tones}
+      - {label: "What does it do?", goto: about}
+      - {label: "Maybe later."}
+  about:
+    text: "Perfectly safe, I assure you. A gentle hum, a soft glow, and you are a new shade. Reversible too!"
+    options:
+      - {label: "Let's try it", goto: tones}
+      - {label: "Maybe later."}
+  tones:
+    text: "Splendid. Which tone shall it be?"
+    options:
+      - {label: "Rose", wear: {skin: rose}, goto: done}
+      - {label: "Peach", wear: {skin: peach}, goto: done}
+      - {label: "Tan", wear: {skin: tan}, goto: done}
+      - {label: "Brown", wear: {skin: brown}, goto: done}
+      - {label: "Deep", wear: {skin: deep}, goto: done}
+      - {label: "Never mind", goto: hello}
+  done:
+    text: "*hum* ... *glow* ... Marvellous! The Tonifier works perfectly. Another go?"
+    options:
+      - {label: "Try another tone", goto: tones}
+      - {label: "That's perfect, thank you!"}

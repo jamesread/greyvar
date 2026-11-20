@@ -243,6 +243,21 @@ describe('use animation', () => {
   })
 })
 
+describe('applyWear (live preview of a dialog option)', () => {
+  it('applies styles and colours; hair decides by value', async () => {
+    const { applyWear, resolveAppearance } = await import('./appearance.js')
+    const look = resolveAppearance(playerRig, { parts: { hair: 'short' }, palettes: { hair: 'brown', shirt: 'magenta' } })
+    expect(applyWear(playerRig, look, { shirt: 'blue' }).palettes.shirt).toBe('blue')
+    const longHair = applyWear(playerRig, look, { hair: 'long' })
+    expect([longHair.parts.hair, longHair.palettes.hair]).toEqual(['long', 'brown'])
+    const blonde = applyWear(playerRig, look, { hair: 'blonde' })
+    expect([blonde.parts.hair, blonde.palettes.hair]).toEqual(['short', 'blonde'])
+    expect(applyWear(playerRig, look, { shirt: 'plaid' }).palettes.shirt).toBe('magenta')
+    expect(applyWear(playerRig, look, null)).toEqual(look)
+    expect(look.palettes.shirt).toBe('magenta') // not modified
+  })
+})
+
 describe('appearanceStore', () => {
   const mem = () => { const m = new Map(); return { getItem: (k) => m.get(k) ?? null, setItem: (k, v) => m.set(k, v) } }
 
@@ -250,11 +265,15 @@ describe('appearanceStore', () => {
     const { saveAppearance, loadSavedAppearance, restoreRequest } = await import('./appearanceStore.js')
     const s = mem()
     expect(loadSavedAppearance(s)).toBe(null)
-    saveAppearance({ parts: { hair: 'long' }, palettes: { hair: 'red' }, heldItem: '' }, s)
+    saveAppearance({ rig: 'adult', parts: { hair: 'long' }, palettes: { hair: 'red' }, heldItem: '' }, s)
     const saved = loadSavedAppearance(s)
-    expect(saved).toEqual({ parts: { hair: 'long' }, palettes: { hair: 'red' }, heldItem: '' })
+    expect(saved).toEqual({ rig: 'adult', parts: { hair: 'long' }, palettes: { hair: 'red' }, heldItem: '' })
     expect(restoreRequest(saved).heldItem).toBe('-')
+    expect(restoreRequest(saved).rig).toBe('adult')
     expect(restoreRequest(null)).toBe(null)
+    // Looks saved before sizes existed carry no rig: the server fits them.
+    s.setItem('greyvar.appearance', JSON.stringify({ parts: { pants: 'skirt' }, palettes: {} }))
+    expect(restoreRequest(loadSavedAppearance(s)).rig).toBe(undefined)
   })
 
   it('survives corrupt or unavailable storage', async () => {

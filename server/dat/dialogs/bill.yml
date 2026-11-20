@@ -1,0 +1,20 @@
+# Bill, the farmer in the red house on isleOfStarting 1.2 (1.2.redHouse.tmj). See datlib/dialogs for the format.
+speaker: Bill
+start: hello
+nodes:
+  hello:
+    text: "Morning! Grand day for farming, isn't it?"
+    options:
+      - {label: "Got any seeds to spare?", goto: seeds}
+      - {label: "What do you grow?", goto: hay}
+      - {label: "Bye, Bill."}
+  hay:
+    text: "Hay, mostly. Plant a seed on grass and give it time to grow."
+    options:
+      - {label: "Could I have some seeds?", goto: seeds}
+      - {label: "Thanks, bye."}
+  seeds:
+    text: "Here, take five. Face some grass, hold them and press E to plant."
+    give: "hay_seeds:5"
+    options:
+      - {label: "Thanks, Bill!"}

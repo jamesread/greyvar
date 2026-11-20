@@ -130,7 +130,9 @@ export function parseAppearanceArgs (rig, args) {
 export function describeAppearanceOptions (rig) {
   const rows = []
   for (const slot of rig.slotOrder) {
-    rows.push(`  ${slot} colour: ${Object.keys(rig.palettes[slot] ?? {}).sort().join(', ')}`)
+    const hidden = rig.hidden?.[slot] ?? []
+    const names = Object.keys(rig.palettes[slot] ?? {}).filter((n) => !hidden.includes(n))
+    rows.push(`  ${slot} colour: ${names.sort().join(', ')}`)
   }
   for (const layer of rig.layers) {
     if (layer.variants.length > 1) {
@@ -139,4 +141,24 @@ export function describeAppearanceOptions (rig) {
   }
   rows.push('  held: <item name> or - to clear')
   return rows
+}
+
+/**
+ * A look with a dialog option's wear applied (e.g. a tailor's "Blue"). Keys
+ * are layers (hair: long) or colour slots (shirt: blue); "hair" is both, so
+ * a variant of the layer is a style and anything else a colour - the same
+ * rule as the server (dialog.go splitWear). Unknown values are ignored.
+ */
+export function applyWear (rig, appearance, wear) {
+  const parts = { ...(appearance?.parts ?? {}) }
+  const palettes = { ...(appearance?.palettes ?? {}) }
+  for (const [key, value] of Object.entries(wear ?? {})) {
+    const layer = rig.layers.find((l) => l.name === key)
+    if (layer?.variants?.includes(value)) {
+      parts[key] = value
+    } else if (Object.hasOwn(rig.palettes?.[key] ?? {}, value)) {
+      palettes[key] = value
+    }
+  }
+  return { ...appearance, parts, palettes }
 }

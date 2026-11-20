@@ -140,10 +140,125 @@
          "y":0
         }, 
         {
+         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147484286, 635, 635, 638, 0,
+            0, 0, 0, 2147484288, 643, 643, 640, 0, 0, 0, 0, 2147484284, 637, 637, 636, 0,
+            0, 0, 0, 2147484294, 650, 649, 646, 0, 0, 0, 0, 2147484294, 650, 649, 646, 0,
+            0, 0, 0, 2147484281, 0, 632, 633, 0, 0, 0, 0, 2147484281, 0, 632, 633, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         "height":16,
+         "id":9,
+         "name":"house",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":16,
+         "x":0,
+         "y":0
+        }, 
+        {
          "draworder":"topdown",
          "id":4,
          "name":"Object Layer 1",
          "objects":[
+                {
+                 "height":16,
+                 "id":4,
+                 "name":"Claire's Hair Salon sign",
+                 "properties":[
+                        {
+                         "name":"msg",
+                         "type":"string",
+                         "value":"Claire's Hair Salon"
+                        }],
+                 "rotation":0,
+                 "type":"signHair",
+                 "visible":true,
+                 "width":16,
+                 "x":192,
+                 "y":64
+                }, 
+                {
+                 "height":16,
+                 "id":5,
+                 "name":"Bill's Farmhouse sign",
+                 "properties":[
+                        {
+                         "name":"msg",
+                         "type":"string",
+                         "value":"Bill's Farmhouse"
+                        }],
+                 "rotation":0,
+                 "type":"signFarm",
+                 "visible":true,
+                 "width":16,
+                 "x":64,
+                 "y":64
+                }, 
+                {
+                 "height":16,
+                 "id":3,
+                 "name":"Claire's salon door",
+                 "properties":[
+                        {
+                         "name":"teleport_destination",
+                         "type":"string",
+                         "value":"1.2.salon.tmj"
+                        }, 
+                        {
+                         "name":"teleport_x",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"teleport_y",
+                         "type":"int",
+                         "value":10
+                        }],
+                 "rotation":0,
+                 "type":"houseDoor",
+                 "visible":true,
+                 "width":16,
+                 "x":192,
+                 "y":80
+                }, 
+                {
+                 "height":16,
+                 "id":2,
+                 "name":"red house door",
+                 "properties":[
+                        {
+                         "name":"teleport_destination",
+                         "type":"string",
+                         "value":"1.2.redHouse.tmj"
+                        }, 
+                        {
+                         "name":"teleport_x",
+                         "type":"int",
+                         "value":7
+                        }, 
+                        {
+                         "name":"teleport_y",
+                         "type":"int",
+                         "value":9
+                        }],
+                 "rotation":0,
+                 "type":"houseDoor",
+                 "visible":true,
+                 "width":16,
+                 "x":64,
+                 "y":80
+                }, 
                 {
                  "height":16,
                  "id":1,
@@ -153,8 +268,8 @@
                  "type":"chest",
                  "visible":true,
                  "width":16,
-                 "x":152,
-                 "y":120
+                 "x":144,
+                 "y":112
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -162,8 +277,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":9,
- "nextobjectid":2,
+ "nextlayerid":10,
+ "nextobjectid":6,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.2",
@@ -421,6 +536,10 @@
         {
          "firstgid":599,
          "source":"..\/..\/..\/..\/res\/img\/textures\/tilesets\/cliff_faces.tsx"
+        }, 
+        {
+         "firstgid":631,
+         "source":"..\/..\/..\/..\/res\/img\/textures\/tilesets\/house.tsx"
         }],
  "tilewidth":16,
  "type":"map",

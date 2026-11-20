@@ -42,20 +42,41 @@ type RigSpec struct {
 	Fixed []string `yaml:"fixed"`
 	// Palettes[slot][name] is a replacement ramp the same length as the slot.
 	Palettes map[string]map[string][]string `yaml:"palettes"`
-	Defaults Defaults                       `yaml:"defaults"`
+	// Hidden[slot] lists palettes that only data uses (a mannequin's grey
+	// skin): never picked for a new player's random look, nor offered.
+	Hidden   map[string][]string `yaml:"hidden,omitempty"`
+	Defaults Defaults            `yaml:"defaults"`
 	Outputs  Outputs                        `yaml:"outputs"`
-	// Hitbox is the collision box [x, y, w, h] within the frame. It should
-	// hug the visible body so walls are touched, not stopped short of.
-	// Default: the whole frame.
+	// Hitbox is the collision box [x, y, w, h] within the 16px cell the
+	// character stands in (its feet), not the frame: an adult drawn taller
+	// still collides with the same footprint. It should hug the visible
+	// body so walls are touched, not stopped short of. Default: the cell.
 	Hitbox *[4]int `yaml:"hitbox,omitempty"`
+	// Size is the character size this rig draws: "child" (16px frames) or
+	// "adult" (taller). Appearances name the rig they use by its size.
+	Size string `yaml:"size"`
+	// Anchor is the point in the frame that sits on the bottom centre of the
+	// character's 16px cell (its feet). Default: [frameSize/2, frameSize].
+	Anchor *[2]int `yaml:"anchor,omitempty"`
 }
 
-// HitboxOrDefault returns the hitbox, or the whole frame.
+// CellSize is the world grid cell a character stands in.
+const CellSize = 16
+
+// AnchorOrDefault returns the anchor, or the bottom centre of the frame.
+func (s RigSpec) AnchorOrDefault() [2]int {
+	if s.Anchor != nil {
+		return *s.Anchor
+	}
+	return [2]int{s.FrameSize / 2, s.FrameSize}
+}
+
+// HitboxOrDefault returns the hitbox, or the whole cell.
 func (s RigSpec) HitboxOrDefault() [4]int {
 	if s.Hitbox != nil {
 		return *s.Hitbox
 	}
-	return [4]int{0, 0, s.FrameSize, s.FrameSize}
+	return [4]int{0, 0, CellSize, CellSize}
 }
 
 // LayerSpec is one draw layer. Variants are alternative part sets (for example

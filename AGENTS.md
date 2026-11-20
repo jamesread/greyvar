@@ -19,6 +19,12 @@ Player art is a layered rig: edit `res/sprites/player/` (YAML + small part PNGs)
 Never hand-edit generated sheets, `player.rig.json`, or `server/dat/entdefs/player.tsx`.
 Recipes and safe-editing rules: [res/sprites/README.md](res/sprites/README.md).
 
+## Art
+
+All new or redrawn art follows [res/ART_RULES.md](res/ART_RULES.md): 16px grid, a character is one
+tile, flat 2D top-down front view, binary alpha, at most 16 colours, and contrast against every ground
+it stands on. Check with `python3 res/tools/artcheck.py`; review perspective by eye.
+
 ## Quick Reference
 
 ```bash

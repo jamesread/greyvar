@@ -3,6 +3,9 @@ import { MENU_THEME } from './menu/MenuTheme.js'
 const BUTTON_SIZE = 44
 const BUTTON_GAP = 4
 const MARGIN = 20
+
+/** How far up from the bottom edge the on-screen D-pad reaches. */
+export const TOUCH_CONTROLS_HEIGHT = MARGIN + 3 * BUTTON_SIZE + 2 * BUTTON_GAP
 const DEPTH = 99
 
 const directions = {

@@ -1,0 +1,7 @@
+title: stoneDoorway
+solid: false
+initialState: idle
+# Walk onto it to go to the map object's teleport_destination grid, arriving
+# at teleport_x/teleport_y (tiles); see server/dat/worlds/PUZZLES.md.
+states:
+  idle: {}

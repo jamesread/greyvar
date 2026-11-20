@@ -43,6 +43,25 @@ type GenerationConfig struct {
 	DecorTilesetPath string
 	DecorTerrain     string
 	DecorDensity     float64
+
+	// Field, when set, is the terrain to draw instead of noise (corner
+	// levels, indexes into Terrains), sized WorldRows*MapRows x
+	// WorldCols*MapCols tiles. Thresholds and NoiseScale are then unused.
+	Field *CornerField
+	// Objects are placed as given, keyed by map file name ("0.0.tmj").
+	Objects map[string][]Object
+	// NoAutoSpawn skips the automatic spawn marker (supply one in Objects).
+	NoAutoSpawn bool
+	// WorldProperties are extra string properties on the .world file.
+	WorldProperties map[string]string
+}
+
+// Object is a typed map object (an entity) at a tile, with custom
+// properties such as id, open_when, requires, loot or msg.
+type Object struct {
+	Type, Name string
+	Row, Col   int
+	Props      map[string]string
 }
 
 // EntityPlacement scatters an entity definition over cells of one terrain.
@@ -59,7 +78,7 @@ func (c *GenerationConfig) Validate() error {
 	if len(c.Terrains) < 1 {
 		return fmt.Errorf("at least one terrain is required")
 	}
-	if len(c.Thresholds) != len(c.Terrains)-1 {
+	if c.Field == nil && len(c.Thresholds) != len(c.Terrains)-1 {
 		return fmt.Errorf("need %d thresholds for %d terrains, got %d", len(c.Terrains)-1, len(c.Terrains), len(c.Thresholds))
 	}
 	for i := 1; i < len(c.Thresholds); i++ {
@@ -70,8 +89,11 @@ func (c *GenerationConfig) Validate() error {
 	if c.MapRows < 2 || c.MapCols < 2 || c.WorldRows < 1 || c.WorldCols < 1 {
 		return fmt.Errorf("invalid size: maps %dx%d tiles, world %dx%d maps", c.MapRows, c.MapCols, c.WorldRows, c.WorldCols)
 	}
-	if c.NoiseScale <= 0 {
+	if c.Field == nil && c.NoiseScale <= 0 {
 		return fmt.Errorf("noise scale must be positive")
+	}
+	if c.Field != nil && (c.Field.rows != c.WorldRows*c.MapRows+1 || c.Field.cols != c.WorldCols*c.MapCols+1) {
+		return fmt.Errorf("field is %dx%d corners, want %dx%d", c.Field.rows, c.Field.cols, c.WorldRows*c.MapRows+1, c.WorldCols*c.MapCols+1)
 	}
 	if c.DecorDensity < 0 || c.DecorDensity > 1 {
 		return fmt.Errorf("decor density must be between 0 and 1, got %v", c.DecorDensity)

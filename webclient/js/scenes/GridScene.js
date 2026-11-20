@@ -2,12 +2,16 @@ import Phaser from 'phaser'
 import { initMovementInput, pollMovementInput, isMovementKeyDown } from '../MovementInput.js'
 import { pollInteractInput } from '../InteractInput.js'
 import LayeredSprite from '../sprites/LayeredSprite.js'
+import OcclusionGhost from '../sprites/OcclusionGhost.js'
+import { logGreyvar } from '../sceneDebug.js'
 import { facingFromState } from '../sprites/facing.js'
 import Tile from '../Tile.js'
 import { updateDebugPos } from '../debugPos.js'
 import { saveAppearance } from '../sprites/appearanceStore.js'
 import { indexTileAnimations, phaserTileAnimConfig, tileAnimKey, tileAnimStartFrame, syncedStartFrame } from '../tileAnimations.js'
-import { preloadRig, getRig } from '../sprites/PlayerRig.js'
+import { preloadRigs, getRig, sizeOf } from '../sprites/PlayerRig.js'
+import { loadZoom, saveZoom, clampZoom } from '../camera/zoom.js'
+import { spriteBounds } from '../sprites/spriteBounds.js'
 import { TILE_SIZE, ENTITY_SIZE, isCollisionDebugEnabled, refreshCollisionDebugOverlay, tileCollisionRectsWorld, entityCollisionRectsWorld, isLegacyTileBlocked } from '../collisionDebug.js'
 
 const MOVE_DURATION_MS = 67
@@ -45,11 +49,21 @@ export default class GridScene extends Phaser.Scene {
 
     // Players render from the layered rig (res/sprites/player); the entdef's
     // composite sheet above is only a fallback if the rig fails to load.
-    preloadRig(this)
+    preloadRigs(this)
 
 
     this.layerGrid = this.add.layer()
+    // Things you walk onto (doors, pads, buttons) draw beneath characters.
+    this.layerFloorEntities = this.add.layer()
     this.layerEntities = this.add.layer()
+    // Tiles marked above (a tree's canopy) draw over characters; behind
+    // them, the local player shows as a shaded outline.
+    this.layerAbove = this.add.layer()
+    // World text under entities (Tiled "label" property), above everything.
+    this.layerLabels = this.add.layer().setDepth(40)
+    this.entityLabels = new Map()
+    this.aboveCells = new Set()
+    this.occlusionGhost = new OcclusionGhost(this, this.layerAbove)
 
     this.preloadTilesets()
     this.preloadAllGridTextures()
@@ -165,14 +179,18 @@ export default class GridScene extends Phaser.Scene {
     const viewH = Math.max(2, Math.floor(this.scale.height / 2) * 2)
     cam.setBounds(0, 0, worldW, worldH)
     cam.setSize(viewW, viewH)
-    cam.setZoom(6)
+    cam.setZoom(this.zoomLevel ?? (this.zoomLevel = loadZoom()))
     cam.roundPixels = true
     this.patchCameraScrollSnap(cam)
     this.snapCameraScroll()
   }
 
-  // Camera follow runs inside Camera.preRender (after Scene.update). Snapping in
-  // update() is overwritten before draw — patch so we snap after follow, before render.
+  // Phaser's follow runs inside Camera.preRender, which builds the view matrix
+  // from the unsnapped scroll; snapping afterwards only fed the next frame, so
+  // every frame drew at a fractional screen pixel and layers drawn with and
+  // without pixel rounding shifted against each other (looked like tearing).
+  // Do the follow step here instead, snap it, then let preRender build the
+  // matrix from the snapped scroll (with its own follow switched off).
   patchCameraScrollSnap (cam) {
     if (cam == null || cam._greyvarScrollSnapPatched) {
       return
@@ -180,10 +198,75 @@ export default class GridScene extends Phaser.Scene {
 
     const originalPreRender = cam.preRender.bind(cam)
     cam.preRender = () => {
-      originalPreRender()
+      const follow = cam._follow
+      if (follow != null && !cam.panEffect.isRunning) {
+        const targetX = follow.x - cam.followOffset.x - cam.width * cam.originX
+        const targetY = follow.y - cam.followOffset.y - cam.height * cam.originY
+        cam.scrollX += (targetX - cam.scrollX) * cam.lerp.x
+        cam.scrollY += (targetY - cam.scrollY) * cam.lerp.y
+      }
       this.snapCameraScroll()
+      cam._follow = null
+      try {
+        originalPreRender()
+      } finally {
+        cam._follow = follow
+      }
     }
     cam._greyvarScrollSnapPatched = true
+  }
+
+  /**
+   * Keep each labelled entity's text centred under it (it moves, scrolls in
+   * with transitions, and goes when the entity does). The text is drawn at
+   * the camera zoom so its pixels match the screen's.
+   */
+  syncEntityLabels () {
+    const zoom = this.cameras.main?.zoom || 1
+    for (const [id, text] of this.entityLabels) {
+      const ent = this.entities[id]
+      if (ent?.img == null || !ent.label) {
+        text.destroy()
+        this.entityLabels.delete(id)
+      }
+    }
+    for (const [id, ent] of Object.entries(this.entities)) {
+      if (!ent.label || ent.img == null) {
+        continue
+      }
+      let text = this.entityLabels.get(id)
+      if (text == null || text.text !== ent.label) {
+        text?.destroy()
+        text = this.add.text(0, 0, ent.label, {
+          fontFamily: 'Courier New, Courier, monospace',
+          fontSize: '5px',
+          fontStyle: 'bold',
+          color: '#ffffff',
+          stroke: '#151215',
+          strokeThickness: 1.5,
+          resolution: zoom
+        }).setOrigin(0.5, 0)
+        this.layerLabels.add(text)
+        this.entityLabels.set(id, text)
+      } else if (text.style.resolution !== zoom) {
+        text.setResolution(zoom)
+      }
+      // Under the sprite as drawn (characters are offset from their cell).
+      const img = ent.img
+      const b = spriteBounds(img)
+      text.setPosition(Math.round((b.left + b.right) / 2), Math.round(b.bottom + 1))
+      text.setVisible(img.visible !== false)
+    }
+  }
+
+  /** Change the camera zoom (whole art pixels per screen pixel) and keep it. */
+  setZoomLevel (z) {
+    this.zoomLevel = clampZoom(z)
+    saveZoom(this.zoomLevel)
+    if (this.grid != null) {
+      this.configureCamera()
+    }
+    return this.zoomLevel
   }
 
   snapCameraScroll () {
@@ -196,11 +279,23 @@ export default class GridScene extends Phaser.Scene {
     cam.scrollY = Math.round(cam.scrollY * z) / z
   }
 
-  // Cover sub-pixel atlas sampling gaps under camera zoom (1 display pixel).
-  applyTileSeamBleed (img, tileSize) {
-    const zoom = Math.max(1, this.cameras.main?.zoom ?? 1)
-    const size = tileSize + (1 / zoom)
-    img.setDisplaySize(size, size)
+  /** Show the local player's outline while something marked above covers them. */
+  updateOcclusionGhost () {
+    const img = this.entities?.[window.gameState?.localPlayerEntityId]?.img
+    let covered = false
+    if (img != null && this.aboveCells?.size > 0) {
+      // Adults rise above their cell (offset.y < 0): check the rows they reach.
+      const r0 = Math.floor((img.y + Math.min(0, img.offset?.y ?? 0)) / 16)
+      const r1 = Math.floor((img.y + 15) / 16)
+      const c0 = Math.floor(img.x / 16)
+      const c1 = Math.floor((img.x + 15) / 16)
+      for (let r = r0; r <= r1 && !covered; r++) {
+        for (let c = c0; c <= c1 && !covered; c++) {
+          covered = this.aboveCells.has(`${r},${c}`)
+        }
+      }
+    }
+    this.occlusionGhost?.update(img?.playState != null ? img : null, covered)
   }
 
   mnuClicked() {
@@ -210,9 +305,18 @@ export default class GridScene extends Phaser.Scene {
   update() {
     this.updateSyncedTiles()
     updateDebugPos(this)
+    this.updateOcclusionGhost()
+
+    this.syncEntityLabels()
 
     if (this.isScrollTransitioning || this.isWarping) {
       return
+    }
+
+    // Draw characters nearer the bottom of the screen in front: adults are
+    // taller than a cell, so they overlap whoever stands in the row above.
+    for (const img of this.layerEntities?.list ?? []) {
+      if (img.depth !== img.y) img.setDepth(img.y)
     }
 
     pollMovementInput()
@@ -284,8 +388,9 @@ export default class GridScene extends Phaser.Scene {
       return
     }
 
-    if (ent.definition === 'player') {
-      const rig = getRig(this)
+    // Players and NPCs (anything sent with an appearance) use the layered rig.
+    if (ent.definition === 'player' || ent.appearance != null) {
+      const rig = getRig(this, sizeOf(ent.appearance))
       if (rig != null) {
         this.renderLayeredEntity(ent, rig)
         return
@@ -326,7 +431,8 @@ export default class GridScene extends Phaser.Scene {
 
     ent.img = img
 
-    this.layerEntities.add(ent.img)
+    const layer = (entdef.floor ? this.layerFloorEntities : null) ?? this.layerEntities
+    layer.add(ent.img)
     this.ensureCameraFollow(ent)
   }
 
@@ -487,7 +593,11 @@ export default class GridScene extends Phaser.Scene {
     const tileSize = 16
     const offsetX = opts.offsetX ?? 0
     const offsetY = opts.offsetY ?? 0
-    const layer = opts.layer ?? this.layerGrid
+    let layer = opts.layer ?? this.layerGrid
+    if (tile.above && this.layerAbove != null && layer !== this.incomingLayer) {
+      layer = this.layerAbove
+      this.aboveCells?.add(`${tile.row},${tile.col}`)
+    }
 
     // Integer top-left cell origin. Keep vertex rounding off under camera zoom:
     // 'safe' rounding snaps each tile independently and opens 1px seams.
@@ -514,8 +624,10 @@ export default class GridScene extends Phaser.Scene {
       img = this.add.image(cellX, cellY, tile.textureName).setOrigin(0)
     }
 
+    // Tiles are drawn at exactly 16px on whole pixels: the camera snaps its
+    // scroll to whole screen pixels (patchCameraScrollSnap), so tile edges
+    // meet without gaps and need no oversizing (which stretched a texel).
     img.setVertexRoundMode('off')
-    this.applyTileSeamBleed(img, tileSize)
     img.angle = tile.textureRotation
     img.flipX = tile.textureHorizontalFlip
     img.flipY = tile.textureVerticalFlip
@@ -542,7 +654,6 @@ export default class GridScene extends Phaser.Scene {
       ? this.add.sprite(cellX + tileSize / 2, cellY + tileSize / 2, tile.atlasKey, tile.frameIndex)
       : this.add.sprite(cellX, cellY, tile.atlasKey, tile.frameIndex).setOrigin(0)
     sprite.setVertexRoundMode('off')
-    this.applyTileSeamBleed(sprite, tileSize)
     sprite.angle = tile.textureRotation
     sprite.flipX = tile.textureHorizontalFlip
     sprite.flipY = tile.textureVerticalFlip
@@ -563,22 +674,27 @@ export default class GridScene extends Phaser.Scene {
     if (!this.syncedTiles?.length) {
       return
     }
+    // Runs every frame: avoid allocating unless a tile was destroyed.
     const now = Date.now()
-    const frameFor = new Map()
-    this.syncedTiles = this.syncedTiles.filter(({ sprite, anim }) => {
+    let lastAnim = null
+    let lastFrame = null
+    let destroyed = false
+    for (const { sprite, anim } of this.syncedTiles) {
       if (!sprite.active) {
-        return false // destroyed with its layer
+        destroyed = true // destroyed with its layer
+        continue
       }
-      let frame = frameFor.get(anim)
-      if (frame === undefined) {
-        frame = anim.frames[syncedStartFrame(anim, now)]
-        frameFor.set(anim, frame)
+      if (anim !== lastAnim) {
+        lastAnim = anim
+        lastFrame = anim.frames[syncedStartFrame(anim, now)]
       }
-      if (sprite.frame?.name !== frame) {
-        sprite.setFrame(frame)
+      if (sprite.frame?.name !== lastFrame) {
+        sprite.setFrame(lastFrame)
       }
-      return true
-    })
+    }
+    if (destroyed) {
+      this.syncedTiles = this.syncedTiles.filter(({ sprite }) => sprite.active)
+    }
   }
 
   preloadTilesets() {
@@ -732,7 +848,7 @@ export default class GridScene extends Phaser.Scene {
       this.renderGridIntoLayer(newGrid, deltaX, deltaY, this.incomingLayer)
     }
     // Draw the incoming grid beneath entities so the player walks over it.
-    this.children.moveBelow(this.incomingLayer, this.layerEntities)
+    this.children.moveBelow(this.incomingLayer, this.layerFloorEntities ?? this.layerEntities)
 
     this.snapCameraScroll()
     const startScrollX = cam.scrollX
@@ -825,6 +941,8 @@ export default class GridScene extends Phaser.Scene {
     }
 
     this.layerGrid.removeAll(true)
+    this.layerAbove?.removeAll(true)
+    this.aboveCells?.clear()
 
     // Old-grid entities stay visible while they scroll off screen; drop them
     // now, before any new-grid spawns that might reuse an id.
@@ -963,7 +1081,26 @@ export default class GridScene extends Phaser.Scene {
     if (ent == null) {
       return
     }
+    this.applyEntityAppearance(ent, appearance)
+  }
+
+  /**
+   * Show a new look; a change of size (adult/child) needs the other rig, so
+   * the sprite is made again.
+   */
+  applyEntityAppearance (ent, appearance) {
     ent.appearance = appearance
+    if (ent.img?.rig != null && ent.img.rig.size !== sizeOf(appearance)) {
+      const wasFollowed = this.playerFollowTarget === ent.img
+      ent.img.destroy()
+      ent.img = null
+      if (wasFollowed) {
+        this.cameras.main.stopFollow()
+        this.playerFollowTarget = null
+      }
+      this.renderEntity(ent)
+      return
+    }
     ent.img?.setAppearance?.(appearance)
   }
 
@@ -981,11 +1118,11 @@ export default class GridScene extends Phaser.Scene {
       existing.definition = ent.definition ?? existing.definition
       existing.state = ent.state ?? existing.state
       if (ent.appearance != null) {
-        existing.appearance = ent.appearance
-        existing.img?.setAppearance?.(ent.appearance)
+        this.applyEntityAppearance(existing, ent.appearance)
       }
       existing.x = ent.x ?? existing.x
       existing.y = ent.y ?? existing.y
+      existing.label = ent.label ?? existing.label
       if (existing.img != null) {
         existing.img.x = existing.x
         existing.img.y = existing.y
@@ -1084,11 +1221,17 @@ export default class GridScene extends Phaser.Scene {
     if (img.x === x && img.y === y) {
       return
     }
+    // Positions are re-sent every frame: one we are already sliding to is not
+    // a new step (it would restart the walk over e.g. an NPC turning to talk).
+    if (ent.moveTween != null && ent.moveTarget?.x === x && ent.moveTarget?.y === y) {
+      return
+    }
+    ent.moveTarget = { x, y }
 
     const fromX = img.x
     const fromY = img.y
 
-    if (ent.definition === 'player') {
+    if (ent.definition === 'player' || img.playState != null) {
       this.playWalkAnimation(img, fromX, fromY, x, y)
     }
 
@@ -1137,14 +1280,16 @@ export default class GridScene extends Phaser.Scene {
   }
 
   onEntityChange(ec) {
-    if (!String(ec.newState).startsWith('bump')) {
-      console.log('entchange', ec)
-    }
-
-    let ent = this.entities[ec.entityId]
+    const ent = this.entities[ec.entityId]
 
     if (ent == null) {
-      console.log('cannot find ent to change', ec.entityId)
+      logGreyvar('entity change for unknown entity', ec)
+      return
+    }
+
+    // An NPC turns to face someone talking to it, and stays idle.
+    if (String(ec.newState).startsWith('face') && ent.img?.playState != null) {
+      ent.img.faceTo(facingFromState(ec.newState) ?? 'Down')
       return
     }
 
@@ -1256,6 +1401,8 @@ export default class GridScene extends Phaser.Scene {
     if (this.layerEntities) {
       this.layerEntities.setDepth(30)
     }
+    this.layerAbove?.setDepth(31)
+    this.occlusionGhost?.root.setDepth(32)
   }
 
   hideCollisionDebugOverlay () {

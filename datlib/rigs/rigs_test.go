@@ -68,3 +68,26 @@ func TestApply(t *testing.T) {
 		}
 	}
 }
+
+func TestSetDefaultsToAdultAndNormalizesOldLooks(t *testing.T) {
+	child := &Rig{Size: "child", Layers: []Layer{{Name: "hair", Default: "short", Variants: []string{"short", "long"}}, {Name: "pants", Default: "default", Variants: []string{"default", "skirt"}}},
+		SlotOrder: []string{"hair"}, Palettes: map[string]map[string][]string{"hair": {"brown": {"#000"}, "red": {"#f00"}}}}
+	adult := &Rig{Size: "adult", Layers: []Layer{{Name: "hair", Default: "short", Variants: []string{"short", "long", "bun"}}, {Name: "pants", Default: "default", Variants: []string{"default"}}},
+		SlotOrder: []string{"hair"}, Palettes: map[string]map[string][]string{"hair": {"brown": {"#000"}, "red": {"#f00"}}}}
+	adult.Defaults.Palettes = map[string]string{"hair": "brown"}
+	set := NewSet(child, adult)
+	if set.Default != "adult" || set.DefaultLook("ada").Rig != "adult" {
+		t.Fatalf("new looks are adult: %+v", set.DefaultLook("ada"))
+	}
+	old := Appearance{Parts: map[string]string{"hair": "long", "pants": "skirt"}, Palettes: map[string]string{"hair": "red", "shirt": "gone"}}
+	got := set.For(&old).Normalize(old)
+	if got.Rig != "adult" || got.Parts["hair"] != "long" || got.Parts["pants"] != "default" || got.Palettes["hair"] != "red" {
+		t.Fatalf("an old child look keeps what the adult rig has: %+v", got)
+	}
+	if _, ok := got.Palettes["shirt"]; ok {
+		t.Fatal("unknown palettes are dropped")
+	}
+	if set.Size("child") != child || set.Size("giant") != adult {
+		t.Fatal("unknown sizes fall back to the default rig")
+	}
+}

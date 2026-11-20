@@ -29,6 +29,9 @@ func LintAll(opts Options) []Check {
 
 	var out []Check
 	out = append(out, LintEntdefs(datDir, resDir)...)
+	out = append(out, LintDialogs(datDir, resDir)...)
+	out = append(out, LintWearProperties(datDir, resDir)...)
+	out = append(out, LintItemdefs(datDir, resDir)...)
 	out = append(out, LintTexdefs(datDir, resDir)...)
 	out = append(out, LintLegacyGrids(datDir)...)
 	out = append(out, LintWorlds(datDir)...)

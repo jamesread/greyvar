@@ -1,0 +1,9 @@
+---
+title: pushBlock
+# Walk into it for a moment to slide it one tile (if the tile beyond is
+# free floor). It holds pressure plates down while it sits on them.
+solid: true
+pushable: true
+initialState: still
+states:
+  still: {}

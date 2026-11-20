@@ -1,3 +1,4 @@
+import { showDialog } from './dialog.js'
 import { greyvarproto } from './greyvarproto.js'
 import { buildGridFromMessage } from './gridFromMessage.js'
 import { normalizeEntityStateChange } from './entityUtils.js'
@@ -124,6 +125,10 @@ export default class ServerConnection {
       window.gameConsole?.log(receivedMessage.consoleMessage.text)
     }
 
+    if (receivedMessage.dialog != null) {
+      showDialog(receivedMessage.dialog)
+    }
+
     if (receivedMessage.hudMessage != null) {
       window.hudScene?.setHudMessage?.(receivedMessage.hudMessage)
     }
@@ -183,6 +188,10 @@ export default class ServerConnection {
     this.sendClientRequest({ interactRequest: req })
   }
 
+  sendDialogChoice (entityId, node, option) {
+    this.sendClientRequest({ dialogChoiceRequest: { entityId: Number(entityId), node: String(node ?? ''), option: Number(option) } })
+  }
+
   sendCraftRequest (recipeId) {
     if (recipeId == null || recipeId === '') {
       return
@@ -216,6 +225,11 @@ export default class ServerConnection {
     this.sendClientRequest({
       worldLoadRequest: { worldId }
     })
+  }
+
+  /** @param {{level: number, seed: number, mechanics: string[], leave: boolean}} req */
+  sendRiftRequest (req) {
+    this.sendClientRequest({ riftRequest: req })
   }
 
   sendWorldReloadRequest (worldId) {

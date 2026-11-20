@@ -17,7 +17,7 @@ func newAppearanceTestServer(t *testing.T) (*serverInterface, *RemotePlayer, *Re
 	if err != nil {
 		t.Fatal(err)
 	}
-	s.playerRig = rig
+	s.rigs = rigs.NewSet(rig)
 	s.itemDefinitions = map[string]*itemdefs.ItemDefinition{"key": {}}
 	return s, a, b
 }
@@ -34,7 +34,7 @@ func TestAppearanceRequestBroadcasts(t *testing.T) {
 		t.Fatalf("other player not told: %+v", b.PendingAppearanceChanges)
 	}
 	// Unchanged slots keep the player's username-derived default.
-	if got, want := a.Entity.Appearance.Palettes["skin"], s.playerRig.Default(a.Username).Palettes["skin"]; got != want {
+	if got, want := a.Entity.Appearance.Palettes["skin"], s.defaultLook(a.Username).Palettes["skin"]; got != want {
 		t.Fatalf("skin changed: %s want %s", got, want)
 	}
 
@@ -106,7 +106,7 @@ func TestHeldItemFollowsInventory(t *testing.T) {
 
 func TestSpawnCarriesAppearance(t *testing.T) {
 	s, a, _ := newAppearanceTestServer(t)
-	look := s.playerRig.Default("someone")
+	look := s.defaultLook("someone")
 	a.Entity.Appearance = &look
 	pbLook := appearanceToPB(a.Entity.Appearance)
 	if pbLook.Palettes["shirt"] != look.Palettes["shirt"] {

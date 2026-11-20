@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"sort"
 
 	log "github.com/sirupsen/logrus"
 
@@ -43,6 +44,10 @@ func Generate(cfg *GenerationConfig) (*Result, error) {
 	}
 
 	palette, err := LoadPalette(ws, cfg.Terrains, blank)
+	if err != nil {
+		return nil, err
+	}
+	faces, err := tiled.FacesBelow(cfg.TilesetPath)
 	if err != nil {
 		return nil, err
 	}
@@ -101,8 +106,18 @@ func Generate(cfg *GenerationConfig) (*Result, error) {
 		}
 	}
 
-	field := newCornerField(cfg.WorldRows*cfg.MapRows, cfg.WorldCols*cfg.MapCols)
-	fillFromNoise(field, cfg)
+	var field *cornerField
+	if cfg.Field != nil {
+		field = cfg.Field.Clone()
+		for i, v := range field.level {
+			if v < 0 || v >= palette.Levels() {
+				return nil, fmt.Errorf("field corner %d has level %d; terrains are 0..%d", i, v, palette.Levels()-1)
+			}
+		}
+	} else {
+		field = newCornerField(cfg.WorldRows*cfg.MapRows, cfg.WorldCols*cfg.MapCols)
+		fillFromNoise(field, cfg)
+	}
 
 	res := &Result{CellsByLevel: make([]int, palette.Levels())}
 	res.CornersRaised = fixUnsupported(field, palette)
@@ -123,12 +138,19 @@ func Generate(cfg *GenerationConfig) (*Result, error) {
 				rng:     rng,
 				row0:    wr * cfg.MapRows,
 				col0:    wc * cfg.MapCols,
+				faces:   faces,
 			}
 
 			doc := m.build(tilesetSource, res.CellsByLevel)
 			used := map[cellPos]bool{}
 
-			if wr == spawnMapRow && wc == spawnMapCol {
+			for _, o := range cfg.Objects[name] {
+				p := cellPos{o.Row, o.Col}
+				used[p] = true
+				m.addObjectWithProps(o.Type, o.Name, p, o.Props)
+			}
+
+			if wr == spawnMapRow && wc == spawnMapCol && !cfg.NoAutoSpawn {
 				if pos, ok := m.spawnCell(spawnLevel); ok {
 					used[pos] = true
 					m.addObject("spawn", "spawn", pos)
@@ -184,6 +206,14 @@ func Generate(cfg *GenerationConfig) (*Result, error) {
 			{Name: "seed", Type: "string", Value: fmt.Sprintf("%d", cfg.Seed)},
 		},
 	}
+	keys := make([]string, 0, len(cfg.WorldProperties))
+	for k := range cfg.WorldProperties {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		world.Properties = append(world.Properties, tiledProperty{Name: k, Type: "string", Value: cfg.WorldProperties[k]})
+	}
 
 	res.WorldPath = filepath.Join(cfg.OutDir, cfg.WorldName+".world")
 	if err := writeJSON(res.WorldPath, world); err != nil {
@@ -230,6 +260,7 @@ type mapBuilder struct {
 	rng        *rand.Rand
 	row0, col0 int
 	objects    []tmjObject
+	faces      map[int]tiled.FaceBelow // tile -> lower half of its tall south face
 }
 
 func (m *mapBuilder) corners(row, col int) [4]int {
@@ -294,6 +325,8 @@ func (m *mapBuilder) build(tilesetSource string, cellsByLevel []int) *tmjDoc {
 			Visible: true,
 		})
 	}
+
+	m.addFaceLayers(doc)
 
 	for r := 0; r < rows; r++ {
 		for c := 0; c < cols; c++ {
@@ -360,15 +393,29 @@ func (m *mapBuilder) scatter(definition string, level int, count int, used map[c
 }
 
 func (m *mapBuilder) addObject(typ, name string, p cellPos) {
+	m.addObjectWithProps(typ, name, p, nil)
+}
+
+func (m *mapBuilder) addObjectWithProps(typ, name string, p cellPos, props map[string]string) {
+	keys := make([]string, 0, len(props))
+	for k := range props {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	var tp []tiledProperty
+	for _, k := range keys {
+		tp = append(tp, tiledProperty{Name: k, Type: "string", Value: props[k]})
+	}
 	m.objects = append(m.objects, tmjObject{
-		ID:      len(m.objects) + 1,
-		Name:    name,
-		Type:    typ,
-		X:       float64(p.col * tileSize),
-		Y:       float64(p.row * tileSize),
-		Width:   tileSize,
-		Height:  tileSize,
-		Visible: true,
+		Properties: tp,
+		ID:         len(m.objects) + 1,
+		Name:       name,
+		Type:       typ,
+		X:          float64(p.col * tileSize),
+		Y:          float64(p.row * tileSize),
+		Width:      tileSize,
+		Height:     tileSize,
+		Visible:    true,
 	})
 }
 
@@ -382,4 +429,63 @@ func (m *mapBuilder) objectLayer(id int) tmjLayer {
 		Opacity:   1,
 		Visible:   true,
 	}
+}
+
+// addFaceLayers gives tall south faces their lower half. A terrain tile with
+// a face_below property continues its face into the cell below; that lower
+// tile goes on a generated layer directly under the terrain's own layer, so
+// a wall standing in that cell (rooms back to back) draws over it. Cells in
+// the next map down are left alone (each map is written on its own).
+func (m *mapBuilder) addFaceLayers(doc *tmjDoc) {
+	if len(m.faces) == 0 {
+		return
+	}
+	rows, cols := m.cfg.MapRows, m.cfg.MapCols
+	var out []tmjLayer
+	for i, l := range doc.Layers {
+		level := i // build adds one layer per level, in order
+		var data []uint32
+		for r := 0; r+1 < rows; r++ {
+			for c := 0; c < cols; c++ {
+				g := l.Data[r*cols+c]
+				if g == 0 {
+					continue
+				}
+				fb, ok := m.faces[int(g-1)]
+				if !ok {
+					continue
+				}
+				id := fb.Full
+				if tiled.FaceBelowShort(levelCorners(m.corners(r, c), level), levelCorners(m.corners(r+1, c), level), 1) {
+					id = fb.Short
+				}
+				if data == nil {
+					data = make([]uint32, rows*cols)
+				}
+				data[(r+1)*cols+c] = uint32(id + 1)
+			}
+		}
+		if data != nil {
+			out = append(out, tmjLayer{
+				Type: "tilelayer", Name: l.Name + " faces (generated)",
+				Width: cols, Height: rows, Data: data, Opacity: 1, Visible: true,
+			})
+		}
+		out = append(out, l)
+	}
+	for i := range out {
+		out[i].ID = i + 1
+	}
+	doc.Layers = out
+}
+
+// levelCorners marks each corner 1 when it is at least this level.
+func levelCorners(c [4]int, level int) tiled.Corners {
+	var out tiled.Corners
+	for i, v := range c {
+		if v >= level {
+			out[i] = 1
+		}
+	}
+	return out
 }

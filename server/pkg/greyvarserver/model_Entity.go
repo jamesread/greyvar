@@ -22,6 +22,13 @@ type Entity struct {
 
 	ServerDebugAlias string
 
-	// Appearance is the layered-rig look (players only); nil otherwise.
+	// Appearance is the layered-rig look (players and NPCs); nil otherwise.
 	Appearance *rigs.Appearance
+
+	// npc is the wander state of an NPC (entdef wander); nil otherwise.
+	npc *npcState
+
+	// resetAt (unix ms) springs a reset_after lever back to its initial
+	// state; 0 when not counting down.
+	resetAt int64
 }

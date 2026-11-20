@@ -21,10 +21,14 @@ func frameSpawnEntities(s *serverInterface, rp* RemotePlayer) {
 			spawn.X = entinst.X
 			spawn.Y = entinst.Y
 			spawn.Appearance = appearanceToPB(entinst.Appearance)
+			spawn.Label = entinst.Properties["label"]
 
 			rp.currentFrame.EntitySpawns = append(rp.currentFrame.EntitySpawns, &spawn)
 
 			rp.KnownEntities[entinst.ServerId] = entinst;
+			// Send its position next frame too (the client may be waiting
+			// for an authoritative one, e.g. after a scroll transition).
+			delete(rp.sentPositions, entinst.ServerId)
 		}
 	}
 }

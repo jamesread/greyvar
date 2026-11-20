@@ -1,0 +1,10 @@
+title: lever
+solid: true
+initialState: flickedLeft
+# A freestanding floor lever (rift castles). Interact throws it; doors watch
+# it with open_when, exactly like a wallSwitch.
+interact:
+  toggle: [flickedLeft, flickedRight]
+states:
+  flickedLeft: {}
+  flickedRight: {}

@@ -1,0 +1,10 @@
+---
+title: caveDoor
+# A cave mouth in a brown hill wall (cliff face). Place it on the hill's
+# edge row so its arch sits in the face below (the sprite is 16x32, the
+# top 16 over the hill's edge tile). Walk up into it: teleport_destination
+# (+ teleport_x/teleport_y) as for houseDoor. Art made with PixelLab.
+solid: false
+initialState: idle
+states:
+  idle: {}

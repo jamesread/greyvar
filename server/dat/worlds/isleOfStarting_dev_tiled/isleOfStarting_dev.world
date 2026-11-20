@@ -22,10 +22,24 @@
             "y": 256
         },
         {
-            "fileName": "1.1.blueHouse.tmj",
+            "fileName": "0.0.tailorShop.tmj",
             "height": 256,
             "width": 256,
             "x": 768,
+            "y": 512
+        },
+        {
+            "fileName": "0.0.professorHouse.tmj",
+            "height": 256,
+            "width": 256,
+            "x": 1024,
+            "y": 512
+        },
+        {
+            "fileName": "1.2.salon.tmj",
+            "height": 256,
+            "width": 256,
+            "x": 1280,
             "y": 512
         },
         {
@@ -36,10 +50,10 @@
             "y": 256
         },
         {
-            "fileName": "1.1.redHouse.tmj",
+            "fileName": "1.2.redHouse.tmj",
             "height": 256,
             "width": 256,
-            "x": 256,
+            "x": 1536,
             "y": 512
         },
         {
@@ -54,6 +68,27 @@
             "height": 256,
             "width": 256,
             "x": 0,
+            "y": 512
+        },
+        {
+            "fileName": "2.1.tmj",
+            "height": 256,
+            "width": 256,
+            "x": 256,
+            "y": 512
+        },
+        {
+            "fileName": "0.1.hermanHouse.tmj",
+            "height": 256,
+            "width": 256,
+            "x": 2048,
+            "y": 512
+        },
+        {
+            "fileName": "1.1.debugCave.tmj",
+            "height": 256,
+            "width": 256,
+            "x": 1792,
             "y": 512
         },
         {

@@ -207,3 +207,128 @@ func TestCount(t *testing.T) {
 		t.Fatalf("Count = %d,%d", errors, warnings)
 	}
 }
+
+func TestCheckEntdefPushableMustBeSolid(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "block.yml")
+	body := "title: block\npushable: true\ninitialState: still\nstates:\n  still: {}\n"
+	if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	check := CheckEntdef(path, &tiled.EntityVisualCatalog{})
+	found := false
+	for _, issue := range check.Issues {
+		if strings.Contains(issue.Issue, "solid") {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatalf("issues = %+v, want a pushable-must-be-solid error", check.Issues)
+	}
+}
+
+func TestCheckTMJResetAfter(t *testing.T) {
+	for value, wantErr := range map[string]bool{`"1500"`: false, `1500`: false, `"0"`: true, `"soon"`: true, `"-5"`: true, `"2.5"`: true} {
+		dir := t.TempDir()
+		tmj := filepath.Join(dir, "map.tmj")
+		body := `{"tilesets":[],"layers":[{"type":"objectgroup","objects":[{"type":"wallSwitch","x":0,"y":0,
+			"properties":[{"name":"reset_after","type":"string","value":` + value + `}]}]}]}`
+		if err := os.WriteFile(tmj, []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		check := CheckTMJFile(tmj, map[string]struct{}{"wallSwitch": {}})
+		got := false
+		for _, issue := range check.Issues {
+			if strings.Contains(issue.Issue, "reset_after") {
+				got = true
+			}
+		}
+		if got != wantErr {
+			t.Errorf("reset_after %s: error %v, want %v (%+v)", value, got, wantErr, check.Issues)
+		}
+	}
+}
+
+// Dialog `wear` entries and NPC looks are checked against the character
+// rigs in res/ (adult by default).
+func TestLintDialogsChecksWearAndLooksAgainstTheRig(t *testing.T) {
+	res := filepath.Join("..", "..", "res")
+	dat := t.TempDir()
+	for _, d := range []string{"dialogs", "entdefs"} {
+		if err := os.MkdirAll(filepath.Join(dat, d), 0o755); err != nil {
+			t.Fatal(err)
+		}
+	}
+	write := func(rel, body string) {
+		if err := os.WriteFile(filepath.Join(dat, rel), []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	write("dialogs/salon.yml", `speaker: Test
+start: hello
+nodes:
+  hello:
+    text: "Hi"
+    options:
+      - {label: "Bun", wear: {hair: bun}}
+      - {label: "Blonde", wear: {hair: blonde}}
+      - {label: "Beard", wear: {beard: beard}}
+      - {label: "Mohawk", wear: {hair: mohawk}}
+      - {label: "Cape", wear: {cape: red}}
+`)
+	write("entdefs/good.yml", "title: good\nstates: {idle: {}}\nappearance:\n  parts: {hair: bob, beard: beard}\n  palettes: {hair: grey}\n")
+	write("entdefs/bad.yml", "title: bad\nstates: {idle: {}}\nappearance:\n  parts: {hair: mohawk}\n")
+	write("entdefs/tiny.yml", "title: tiny\nstates: {idle: {}}\nappearance:\n  rig: giant\n")
+
+	var errs []string
+	for _, c := range LintDialogs(dat, res) {
+		for _, e := range c.Issues {
+			if e.Severity == SeverityError {
+				errs = append(errs, filepath.Base(c.Filename)+": "+e.Issue)
+			}
+		}
+	}
+	joined := strings.Join(errs, "\n")
+	for _, want := range []string{`option "Mohawk"`, `option "Cape"`, "bad.yml: appearance", `tiny.yml: appearance rig "giant"`} {
+		if !strings.Contains(joined, want) {
+			t.Errorf("want an error mentioning %s; got:\n%s", want, joined)
+		}
+	}
+	for _, unwanted := range []string{`option "Bun"`, `option "Blonde"`, `option "Beard"`, "good.yml"} {
+		if strings.Contains(joined, unwanted) {
+			t.Errorf("unexpected error for %s:\n%s", unwanted, joined)
+		}
+	}
+}
+
+// Map objects' `wear` (mannequin outfits) are checked against the rig too.
+func TestLintWearPropertiesChecksMapOutfits(t *testing.T) {
+	res := filepath.Join("..", "..", "res")
+	dat := t.TempDir()
+	w := filepath.Join(dat, "worlds", "w")
+	if err := os.MkdirAll(w, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	doc := `{"layers":[{"type":"objectgroup","objects":[
+ {"id":1,"type":"mannequin","x":16,"y":32,"properties":[{"name":"wear","type":"string","value":"outfit=dress,garment=blue,trim=white"}]},
+ {"id":2,"type":"mannequin","x":32,"y":32,"properties":[{"name":"wear","type":"string","value":"outfit=gown,garment=plaid"}]},
+ {"id":3,"type":"mannequin","x":48,"y":32,"properties":[{"name":"wear","type":"string","value":"just a dress"}]}]}]}`
+	if err := os.WriteFile(filepath.Join(w, "0.tmj"), []byte(doc), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	var errs []string
+	for _, c := range LintWearProperties(dat, res) {
+		for _, e := range c.Issues {
+			errs = append(errs, e.Issue)
+		}
+	}
+	joined := strings.Join(errs, "\n")
+	if strings.Contains(joined, "object 1 ") {
+		t.Errorf("valid outfit flagged:\n%s", joined)
+	}
+	for _, want := range []string{`object 2 (mannequin) at (2,2): wear: unknown outfit variant "gown"`, `garment palette "plaid"`, "object 3 (mannequin) at (3,2): wear \"just a dress\": want key=value"} {
+		if !strings.Contains(joined, want) {
+			t.Errorf("want %s in:\n%s", want, joined)
+		}
+	}
+}

@@ -1,6 +1,7 @@
 package greyvarserver
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/jamesread/greyvar/datlib/gridfiles"
@@ -10,7 +11,20 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// transitionPlayerToGrid moves rp to an adjacent grid it walked into: the
+// client scrolls across (world-file placements give the offset).
 func (s *serverInterface) transitionPlayerToGrid(rp *RemotePlayer, destGridId string, x int32, y int32) bool {
+	return s.moveToGrid(rp, destGridId, x, y, true)
+}
+
+// warpPlayerToGrid moves rp through a door, pad or warp tile: no scroll
+// offset, so the client fades through black even when both grids sit side by
+// side in the world file.
+func (s *serverInterface) warpPlayerToGrid(rp *RemotePlayer, destGridId string, x int32, y int32) bool {
+	return s.moveToGrid(rp, destGridId, x, y, false)
+}
+
+func (s *serverInterface) moveToGrid(rp *RemotePlayer, destGridId string, x int32, y int32, scroll bool) bool {
 	world := s.worldForPlayer(rp)
 	if world == nil {
 		return false
@@ -27,7 +41,7 @@ func (s *serverInterface) transitionPlayerToGrid(rp *RemotePlayer, destGridId st
 	entryX, entryY := s.resolveEntryPosition(rp.CurrentWorldId, destGridId, x, y)
 
 	rp.PendingGridTransition = nil
-	if dx, dy, ok := worlds.ScrollDeltaBetween(world, oldGridId, destGridId); ok && (dx != 0 || dy != 0) {
+	if dx, dy, ok := worlds.ScrollDeltaBetween(world, oldGridId, destGridId); scroll && ok && (dx != 0 || dy != 0) {
 		rp.PendingGridTransition = &GridTransitionInfo{
 			FromGridId:   oldGridId,
 			ScrollDeltaX: dx,
@@ -194,7 +208,7 @@ func (s *serverInterface) tryTeleportTile(rp *RemotePlayer) bool {
 	x := int32(tile.TeleportX * tileSizePx)
 	y := int32(tile.TeleportY * tileSizePx)
 
-	return s.transitionPlayerToGrid(rp, tile.TeleportDst, x, y)
+	return s.warpPlayerToGrid(rp, tile.TeleportDst, x, y)
 }
 
 func (s *serverInterface) tryTeleportPad(rp *RemotePlayer, ent *Entity, vis tiled.TypedTileVisual) {
@@ -202,9 +216,25 @@ func (s *serverInterface) tryTeleportPad(rp *RemotePlayer, ent *Entity, vis tile
 		return
 	}
 
+	// A rift's exit and entry teleporters (rifts.go).
+	switch strings.TrimSpace(entityProp(ent, vis, "rift_exit")) {
+	case "complete":
+		s.completeRift(rp)
+		return
+	case "leave":
+		if err := s.leaveRift(rp); err != nil {
+			s.teleportPadError(rp, ent, "The teleporter hums but does nothing: "+err.Error())
+		}
+		return
+	}
+
 	worldId := strings.TrimSpace(entityProp(ent, vis, "teleport_world"))
 	destination := strings.TrimSpace(entityProp(ent, vis, "teleport_destination"))
 
+	// Doors lead somewhere in the same world unless told otherwise.
+	if worldId == "" && ent.Definition != "teleportPad" {
+		worldId = rp.CurrentWorldId
+	}
 	if worldId == "" {
 		s.teleportPadError(rp, ent, "Teleport failed: teleport_world is missing")
 		return
@@ -231,6 +261,11 @@ func (s *serverInterface) tryTeleportPad(rp *RemotePlayer, ent *Entity, vis tile
 	}
 
 	spawnX, spawnY := spawnPositionOnGrid(destGrid)
+	// teleport_x / teleport_y (tiles) pick the arrival cell, e.g. just inside
+	// a house's door; otherwise the destination's spawn point.
+	if tx, ty, ok := teleportCell(ent, vis); ok {
+		spawnX, spawnY = tx*tileSizePx, ty*tileSizePx
+	}
 
 	log.WithFields(log.Fields{
 		"player":      rp.Username,
@@ -242,10 +277,11 @@ func (s *serverInterface) tryTeleportPad(rp *RemotePlayer, ent *Entity, vis tile
 	}).Info("Teleport pad activated")
 
 	if worldId == rp.CurrentWorldId {
-		s.transitionPlayerToGrid(rp, destGridId, spawnX, spawnY)
+		s.warpPlayerToGrid(rp, destGridId, spawnX, spawnY)
 		return
 	}
 
+	oldWorldId := rp.CurrentWorldId
 	s.leaveCurrentLocation(rp)
 	rp.PendingGridTransition = nil
 	rp.CurrentWorldId = worldId
@@ -255,6 +291,7 @@ func (s *serverInterface) tryTeleportPad(rp *RemotePlayer, ent *Entity, vis tile
 	rp.Entity.X = spawnX
 	rp.Entity.Y = spawnY
 	rp.NeedsGridUpdate = true
+	s.playerLeftWorld(oldWorldId)
 }
 
 func (s *serverInterface) teleportPadError(rp *RemotePlayer, ent *Entity, text string) {
@@ -299,4 +336,20 @@ func spawnPositionOnGrid(grid *gridfiles.Grid) (int32, int32) {
 	row := grid.RowCount / 2
 	col := grid.ColCount / 2
 	return int32(col * tileSizePx), int32(row * tileSizePx)
+}
+
+// teleportCell reads teleport_x / teleport_y (tile coordinates); ok is false
+// unless both are set and valid.
+func teleportCell(ent *Entity, vis tiled.TypedTileVisual) (int32, int32, bool) {
+	xs := strings.TrimSpace(entityProp(ent, vis, "teleport_x"))
+	ys := strings.TrimSpace(entityProp(ent, vis, "teleport_y"))
+	if xs == "" || ys == "" {
+		return 0, 0, false
+	}
+	x, errX := strconv.Atoi(xs)
+	y, errY := strconv.Atoi(ys)
+	if errX != nil || errY != nil || x < 0 || y < 0 {
+		return 0, 0, false
+	}
+	return int32(x), int32(y), true
 }

@@ -11,6 +11,13 @@ type InventoryItem struct {
 }
 
 type RemotePlayer struct {
+	// sentPositions: entity positions this player was last sent (frameEntityPositions).
+	sentPositions     map[int64][2]int32
+	sentPositionsGrid string
+
+	// dialog is the NPC conversation this player is in (dialog.go); nil if none.
+	dialog *activeDialog
+
 	Connection      *websocket.Conn
 	Username        string
 	// key identifies this connection in serverInterface.remotePlayers.
@@ -42,7 +49,17 @@ type RemotePlayer struct {
 	ActiveSignMsg      string
 	PendingHudMessage  *string
 	PendingHudEntityId int64
+	// pendingHudSticky is the sign message that stays until replaced or
+	// cleared; any other PendingHudMessage (set after it) fades on the client.
+	pendingHudSticky *string
 	ActiveEntityIds    map[int64]bool
+
+	// Pushing a block: consecutive blocked moves into the same pushable
+	// entity in the same direction (see tryPush).
+	pushTarget int64
+	pushDirX   int32
+	pushDirY   int32
+	pushCount  int
 
 	TimeOfLastMoveRequest int64
 

@@ -1,0 +1,15 @@
+# Bill: a farmer NPC drawn with the adult character rig in a fixed look. He strolls a
+# little either side of where the map puts him; E talks (dialogs/bill.yml).
+title: bill
+solid: true
+initialState: idle
+states:
+  idle: {}
+appearance:
+  parts: {hair: short, beard: beard}
+  palettes: {skin: tan, hair: grey, shirt: green, pants: khaki}
+wander:
+  rangePx: 24
+  speedPx: 2
+  pauseMs: [1500, 4000]
+dialog: bill

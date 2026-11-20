@@ -7,6 +7,9 @@
 //	spritegen part derive -layer head -from idle_0 -to blink -edit 6,4=skin.0 [-edit ...] [rig-dir]
 //	spritegen part prune [-n]   (delete parts no pose references)
 //	spritegen part longhair -from short -to long [-rows 3]   (derive a whole hair variant)
+//	spritegen part skirt [-from default -to skirt -rows 2]   (derive skirts from trousers)
+//	spritegen import-pixellab -src <frames> [-poses] [-variant hair=long] [-layers hair]   (PixelLab character -> rig layers)
+//	spritegen part outfit -to dress [-style dress] [-poses] [-rows 3]   (one-piece outfits over shirt + trousers)
 //	spritegen flora build|check [flora-dir]        (animated flora tileset)
 //	spritegen flora preview -out file.png [flora-dir]
 //	spritegen flora migrate [-n] map.tmj...         (baked flower tiles -> decor layer)
@@ -52,6 +55,8 @@ func main() {
 		err = runTiles(args)
 	case "import":
 		err = runImport(args)
+	case "import-pixellab":
+		err = runImportPixelLab(args)
 	default:
 		usage()
 	}
@@ -62,7 +67,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: spritegen check|build|preview|part|flora|tiles|import [flags] [rig-dir]")
+	fmt.Fprintln(os.Stderr, "usage: spritegen check|build|preview|part|flora|tiles|import|import-pixellab [flags] [rig-dir]")
 	os.Exit(2)
 }
 
@@ -306,6 +311,57 @@ func runPart(args []string) error {
 		}
 		fmt.Printf("wrote %d parts to %s/%s; add %q to the layer's variants in rig.yml\n", len(paths), *layer, *to, *to)
 		return nil
+	case "skirt":
+		fs := flag.NewFlagSet("part skirt", flag.ExitOnError)
+		layer := fs.String("layer", "pants", "legwear layer")
+		from := fs.String("from", "default", "source variant (trousers)")
+		to := fs.String("to", "skirt", "new variant")
+		rows := fs.Int("rows", 2, "skirt height from the top of the legs")
+		force := fs.Bool("force", false, "overwrite existing parts")
+		_ = fs.Parse(args[1:])
+		r, err := rig.Load(rigDir(fs))
+		if err != nil {
+			return err
+		}
+		paths, err := r.DeriveSkirt(rig.SkirtOptions{Layer: *layer, From: *from, To: *to, Rows: *rows, Force: *force})
+		if err != nil {
+			return err
+		}
+		fmt.Printf("wrote %d parts to %s/%s; add %q to the layer's variants in rig.yml\n", len(paths), *layer, *to, *to)
+		return nil
+	case "outfit":
+		fs := flag.NewFlagSet("part outfit", flag.ExitOnError)
+		to := fs.String("to", "", "variant to write (e.g. none, dress)")
+		style := fs.String("style", "", "none or dress (default: the variant name)")
+		poses := fs.Bool("poses", false, "first point every pose's outfit part at its shirt/trousers (rewrites poses.yml)")
+		rows := fs.Int("rows", 3, "skirt height below the waist, including the hem")
+		force := fs.Bool("force", false, "overwrite existing parts")
+		_ = fs.Parse(args[1:])
+		dir := rigDir(fs)
+		r, err := rig.Load(dir)
+		if err != nil {
+			return err
+		}
+		o := rig.OutfitOptions{To: *to, Style: *style, SkirtRows: *rows, Force: *force}
+		if *poses {
+			n, err := r.SetOutfitPoses(o)
+			if err != nil {
+				return err
+			}
+			fmt.Printf("poses.yml: %d poses now name their outfit part\n", n)
+			if r, err = rig.Load(dir); err != nil {
+				return err
+			}
+		}
+		if *to == "" {
+			return nil
+		}
+		paths, err := r.DeriveOutfit(o)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("wrote %d parts to outfit/%s; add %q to the outfit layer's variants in rig.yml\n", len(paths), *to, *to)
+		return nil
 	default:
 		return fmt.Errorf("part: unknown subcommand %q", args[0])
 	}
@@ -509,5 +565,37 @@ func runFaces(check bool, args []string) error {
 		}
 	}
 	fmt.Printf("faces: %s, %d files changed)\n", summary, len(stale))
+	return nil
+}
+
+// runImportPixelLab splits a palette-locked PixelLab character into rig
+// layers: spritegen import-pixellab -src res/sprites/adult/source/base -poses res/sprites/adult
+func runImportPixelLab(args []string) error {
+	fs := flag.NewFlagSet("import-pixellab", flag.ExitOnError)
+	src := fs.String("src", "", "directory of <anim>_<dir>_<i>.png frames")
+	poses := fs.Bool("poses", false, "also write poses.yml and clips.yml (the base character)")
+	layers := fs.String("layers", "", "comma-separated layers to write (default pants,body,shirt,hair)")
+	variants := fs.String("variant", "", "layer=variant pairs the parts go to, e.g. hair=long (default: default)")
+	force := fs.Bool("force", false, "overwrite existing parts")
+	noStab := fs.Bool("no-stabilize", false, "keep PixelLab's frame positions (default: line each animation up on its first frame's head)")
+	_ = fs.Parse(args)
+	r, err := rig.Load(rigDir(fs))
+	if err != nil {
+		return err
+	}
+	o := rig.PixelLabImportOptions{Source: *src, Poses: *poses, Force: *force, NoStabilize: *noStab, Variant: map[string]string{}}
+	if *layers != "" {
+		o.Layers = strings.Split(*layers, ",")
+	}
+	for _, kv := range strings.Split(*variants, ",") {
+		if k, v, ok := strings.Cut(kv, "="); ok {
+			o.Variant[k] = v
+		}
+	}
+	paths, err := r.ImportPixelLab(o)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("wrote %d parts\n", len(paths))
 	return nil
 }

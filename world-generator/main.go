@@ -18,6 +18,11 @@ func (s *stringList) String() string     { return strings.Join(*s, ",") }
 func (s *stringList) Set(v string) error { *s = append(*s, v); return nil }
 
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "puzzle" {
+		runPuzzle(os.Args[2:])
+		return
+	}
+
 	var (
 		name       = flag.String("name", "generated", "world name; output goes to <worlds-dir>/<name>_tiled/<name>.world")
 		worldsDir  = flag.String("worlds-dir", "../server/dat/worlds", "directory that holds world folders")

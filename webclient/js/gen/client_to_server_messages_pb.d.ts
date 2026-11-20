@@ -53,6 +53,16 @@ export declare type ClientRequests = Message<"greyvarproto.ClientRequests"> & {
    * @generated from field: greyvarproto.AppearanceRequest appearanceRequest = 8;
    */
   appearanceRequest?: AppearanceRequest | undefined;
+
+  /**
+   * @generated from field: greyvarproto.DialogChoiceRequest dialogChoiceRequest = 9;
+   */
+  dialogChoiceRequest?: DialogChoiceRequest | undefined;
+
+  /**
+   * @generated from field: greyvarproto.RiftRequest riftRequest = 10;
+   */
+  riftRequest?: RiftRequest | undefined;
 };
 
 /**
@@ -60,6 +70,71 @@ export declare type ClientRequests = Message<"greyvarproto.ClientRequests"> & {
  * Use `create(ClientRequestsSchema)` to create a new message.
  */
 export declare const ClientRequestsSchema: GenMessage<ClientRequests>;
+
+/**
+ * Enter a rift, a generated puzzle world (console `rift`), or leave the one
+ * you are in. level 0 means one more than your best; seed 0 a random layout;
+ * no mechanics means the level's own mix (lever, keyChest, pushBlock,
+ * timedSwitch).
+ *
+ * @generated from message greyvarproto.RiftRequest
+ */
+export declare type RiftRequest = Message<"greyvarproto.RiftRequest"> & {
+  /**
+   * @generated from field: int32 level = 1;
+   */
+  level: number;
+
+  /**
+   * @generated from field: int64 seed = 2;
+   */
+  seed: bigint;
+
+  /**
+   * @generated from field: repeated string mechanics = 3;
+   */
+  mechanics: string[];
+
+  /**
+   * @generated from field: bool leave = 4;
+   */
+  leave: boolean;
+};
+
+/**
+ * Describes the message greyvarproto.RiftRequest.
+ * Use `create(RiftRequestSchema)` to create a new message.
+ */
+export declare const RiftRequestSchema: GenMessage<RiftRequest>;
+
+/**
+ * The player picked option `option` (0-based) of dialog node `node`, shown
+ * for NPC `entityId` (a Dialog from the server).
+ *
+ * @generated from message greyvarproto.DialogChoiceRequest
+ */
+export declare type DialogChoiceRequest = Message<"greyvarproto.DialogChoiceRequest"> & {
+  /**
+   * @generated from field: int64 entityId = 1;
+   */
+  entityId: bigint;
+
+  /**
+   * @generated from field: string node = 2;
+   */
+  node: string;
+
+  /**
+   * @generated from field: int32 option = 3;
+   */
+  option: number;
+};
+
+/**
+ * Describes the message greyvarproto.DialogChoiceRequest.
+ * Use `create(DialogChoiceRequestSchema)` to create a new message.
+ */
+export declare const DialogChoiceRequestSchema: GenMessage<DialogChoiceRequest>;
 
 /**
  * @generated from message greyvarproto.MoveRequest
@@ -255,6 +330,13 @@ export declare type AppearanceRequest = Message<"greyvarproto.AppearanceRequest"
    * @generated from field: string heldItem = 3;
    */
   heldItem: string;
+
+  /**
+   * Set to change size ("adult" / "child"); the look is fitted to that rig.
+   *
+   * @generated from field: string rig = 4;
+   */
+  rig: string;
 };
 
 /**

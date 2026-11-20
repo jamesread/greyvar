@@ -87,6 +87,16 @@ function menuBlocked () {
   return window.gameConsole?.isOpen?.()
 }
 
+// From an open menu (main -> Inventory) push it, so back returns there;
+// from the Tab/C shortcuts (no menu open) it is the top level.
+function openOrPush (ms, id) {
+  if (ms.isOpen() && ms.currentMenuId() != null && ms.currentMenuId() !== id) {
+    ms.navigateTo(id)
+  } else {
+    ms.open(id)
+  }
+}
+
 export function openInventoryMenu () {
   if (menuBlocked()) {
     return
@@ -103,7 +113,7 @@ export function openInventoryMenu () {
     subtitle: 'Collected items',
     items: buildInventoryMenuItems()
   })
-  ms.open('inventory')
+  openOrPush(ms, 'inventory')
 }
 
 export function openCraftingMenu () {
@@ -122,7 +132,7 @@ export function openCraftingMenu () {
     subtitle: 'Combine materials',
     items: buildCraftingMenuItems()
   })
-  ms.open('crafting')
+  openOrPush(ms, 'crafting')
 }
 
 export function registerInventoryMenus (menuSystem) {

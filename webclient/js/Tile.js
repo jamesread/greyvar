@@ -29,6 +29,7 @@ export default class Tile {
     this.still = netTile.still === true
     this.decor = netTile.decor === true
     this.overlay = netTile.overlay === true
+    this.above = netTile.above === true
     this.collision = (netTile.collision ?? []).map((rect) => ({
       x: rect.x ?? 0,
       y: rect.y ?? 0,

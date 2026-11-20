@@ -170,8 +170,13 @@ func (s *serverInterface) isBlockedBySolidEntity(rp *RemotePlayer, mover *Entity
 	if rp == nil || mover == nil {
 		return false, ""
 	}
+	return s.solidEntityBlocks(rp.CurrentWorldId, rp.CurrentGridId, mover, newX, newY)
+}
 
-	for _, other := range s.entitiesOnGrid(rp.CurrentWorldId, rp.CurrentGridId) {
+// solidEntityBlocks reports whether a solid entity on the grid (other than
+// mover) blocks mover at (newX, newY), and its definition.
+func (s *serverInterface) solidEntityBlocks(worldId, gridId string, mover *Entity, newX int32, newY int32) (bool, string) {
+	for _, other := range s.entitiesOnGrid(worldId, gridId) {
 		if other.ServerId == mover.ServerId {
 			continue
 		}

@@ -2,18 +2,21 @@
   "name": "player",
   "frameSize": 16,
   "columns": 8,
-  "frameCount": 64,
+  "frameCount": 80,
   "layers": [
     {
       "name": "pants",
       "default": "default",
       "variants": [
-        "default"
+        "default",
+        "skirt"
       ],
       "sheets": {
-        "default": "img/textures/entities/player/pants_default.png"
+        "default": "img/textures/entities/player/pants_default.png",
+        "skirt": "img/textures/entities/player/pants_skirt.png"
       },
       "slots": [
+        "skin",
         "pants"
       ]
     },
@@ -42,6 +45,23 @@
       "slots": [
         "skin",
         "shirt"
+      ]
+    },
+    {
+      "name": "outfit",
+      "default": "none",
+      "variants": [
+        "none",
+        "dress"
+      ],
+      "sheets": {
+        "dress": "img/textures/entities/player/outfit_dress.png",
+        "none": "img/textures/entities/player/outfit_none.png"
+      },
+      "slots": [
+        "skin",
+        "garment",
+        "trim"
       ]
     },
     {
@@ -77,9 +97,17 @@
     "skin",
     "hair",
     "shirt",
-    "pants"
+    "pants",
+    "garment",
+    "trim"
   ],
   "slots": {
+    "garment": [
+      "#20183a",
+      "#3a2c66",
+      "#54428e",
+      "#7262b6"
+    ],
     "hair": [
       "#3e282b",
       "#4e2c29",
@@ -101,9 +129,64 @@
       "#eba5a0",
       "#f3aea6",
       "#f3cebe"
+    ],
+    "trim": [
+      "#5a4a10",
+      "#a88a2a",
+      "#e8cc66"
     ]
   },
   "palettes": {
+    "garment": {
+      "black": [
+        "#141218",
+        "#24202a",
+        "#38323e",
+        "#4c4654"
+      ],
+      "blue": [
+        "#1a2440",
+        "#1f4a8a",
+        "#2a64b8",
+        "#4a8ad8"
+      ],
+      "green": [
+        "#183a24",
+        "#26703a",
+        "#33904a",
+        "#58b868"
+      ],
+      "pink": [
+        "#5c0f3e",
+        "#e0198a",
+        "#ff3fa8",
+        "#ff8fd0"
+      ],
+      "purple": [
+        "#24123a",
+        "#4a2480",
+        "#6030a8",
+        "#8850d0"
+      ],
+      "red": [
+        "#3a1416",
+        "#8a1e22",
+        "#b02a2a",
+        "#d84a40"
+      ],
+      "white": [
+        "#7c8090",
+        "#c9ccd6",
+        "#e8eaf0",
+        "#ffffff"
+      ],
+      "yellow": [
+        "#4a3a14",
+        "#a8801e",
+        "#d0a82a",
+        "#ecd060"
+      ]
+    },
     "hair": {
       "black": [
         "#1c1a24",
@@ -132,6 +215,11 @@
       ]
     },
     "pants": {
+      "blue": [
+        "#1a3270",
+        "#2850a8",
+        "#3c6cd0"
+      ],
       "brown": [
         "#3a2418",
         "#4e3222",
@@ -147,13 +235,34 @@
         "#2a3a5e",
         "#40567e"
       ],
+      "green": [
+        "#122a1a",
+        "#1e4a2a",
+        "#2e663c"
+      ],
       "khaki": [
         "#5a4a30",
         "#7a6844",
         "#98865c"
+      ],
+      "lightblue": [
+        "#2e5a9a",
+        "#4a86cc",
+        "#7aaee6"
+      ],
+      "pink": [
+        "#5c0f3e",
+        "#e0198a",
+        "#ff5fb6"
       ]
     },
     "shirt": {
+      "black": [
+        "#100e14",
+        "#221f29",
+        "#302c38",
+        "#433e4e"
+      ],
       "blue": [
         "#1a2440",
         "#1f4a8a",
@@ -172,11 +281,23 @@
         "#a61684",
         "#c42f95"
       ],
+      "pink": [
+        "#5c0f3e",
+        "#e0198a",
+        "#ff3fa8",
+        "#ff8fd0"
+      ],
       "red": [
         "#3a1416",
         "#8a1e22",
         "#b02a2a",
         "#d84a40"
+      ],
+      "white": [
+        "#7c8090",
+        "#c9ccd6",
+        "#e8eaf0",
+        "#ffffff"
       ],
       "yellow": [
         "#4a3a14",
@@ -216,17 +337,58 @@
         "#c98b62",
         "#e0a982"
       ]
+    },
+    "trim": {
+      "black": [
+        "#141218",
+        "#2a2630",
+        "#3e3846"
+      ],
+      "blue": [
+        "#1f4a8a",
+        "#4a8ad8",
+        "#9ac4f0"
+      ],
+      "gold": [
+        "#7a5a10",
+        "#c8a030",
+        "#f0d870"
+      ],
+      "green": [
+        "#26703a",
+        "#58b868",
+        "#a0e0a0"
+      ],
+      "pink": [
+        "#a0105a",
+        "#ff3fa8",
+        "#ff9fd8"
+      ],
+      "red": [
+        "#6e1418",
+        "#b02a2a",
+        "#e05a48"
+      ],
+      "white": [
+        "#a8acb8",
+        "#e8eaf0",
+        "#ffffff"
+      ]
     }
   },
   "defaults": {
     "palettes": {
+      "garment": "blue",
       "hair": "brown",
       "pants": "charcoal",
       "shirt": "magenta",
-      "skin": "rose"
+      "skin": "rose",
+      "trim": "white"
     },
     "parts": {
-      "hair": "short"
+      "hair": "short",
+      "outfit": "none",
+      "pants": "default"
     }
   },
   "poses": [
@@ -805,6 +967,150 @@
         9
       ],
       "itemZ": "behind"
+    },
+    {
+      "name": "walkLeft_s0",
+      "frame": 64,
+      "hand": [
+        7,
+        11
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "walkLeft_s1",
+      "frame": 65,
+      "hand": [
+        7,
+        11
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "walkLeft_s2",
+      "frame": 66,
+      "hand": [
+        6,
+        8
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "walkLeft_s3",
+      "frame": 67,
+      "hand": [
+        6,
+        8
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "walkLeft_s4",
+      "frame": 68,
+      "hand": [
+        6,
+        11
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "walkLeft_s5",
+      "frame": 69,
+      "hand": [
+        6,
+        11
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "walkLeft_s6",
+      "frame": 70,
+      "hand": [
+        6,
+        8
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "walkLeft_s7",
+      "frame": 71,
+      "hand": [
+        6,
+        8
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "walkRight_s0",
+      "frame": 72,
+      "hand": [
+        10,
+        12
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "walkRight_s1",
+      "frame": 73,
+      "hand": [
+        10,
+        12
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "walkRight_s2",
+      "frame": 74,
+      "hand": [
+        9,
+        8
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "walkRight_s3",
+      "frame": 75,
+      "hand": [
+        9,
+        8
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "walkRight_s4",
+      "frame": 76,
+      "hand": [
+        9,
+        8
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "walkRight_s5",
+      "frame": 77,
+      "hand": [
+        9,
+        8
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "walkRight_s6",
+      "frame": 78,
+      "hand": [
+        9,
+        8
+      ],
+      "itemZ": "front"
+    },
+    {
+      "name": "walkRight_s7",
+      "frame": 79,
+      "hand": [
+        9,
+        8
+      ],
+      "itemZ": "front"
     }
   ],
   "clips": {
@@ -1170,90 +1476,170 @@
     ],
     "walkDownLeft": [
       {
-        "pose": "walkDownLeft_0",
-        "frame": 34,
-        "ms": 100
+        "pose": "walkLeft_s6",
+        "frame": 70,
+        "ms": 75
       },
       {
-        "pose": "walkDownLeft_1",
-        "frame": 35,
-        "ms": 100
+        "pose": "walkLeft_s7",
+        "frame": 71,
+        "ms": 75
       },
       {
-        "pose": "walkDownLeft_2",
-        "frame": 36,
-        "ms": 100
+        "pose": "walkLeft_s0",
+        "frame": 64,
+        "ms": 75
       },
       {
-        "pose": "walkDownLeft_3",
-        "frame": 37,
-        "ms": 100
+        "pose": "walkLeft_s1",
+        "frame": 65,
+        "ms": 75
+      },
+      {
+        "pose": "walkLeft_s2",
+        "frame": 66,
+        "ms": 75
+      },
+      {
+        "pose": "walkLeft_s3",
+        "frame": 67,
+        "ms": 75
+      },
+      {
+        "pose": "walkLeft_s4",
+        "frame": 68,
+        "ms": 75
+      },
+      {
+        "pose": "walkLeft_s5",
+        "frame": 69,
+        "ms": 75
       }
     ],
     "walkDownRight": [
       {
-        "pose": "walkDownRight_0",
-        "frame": 38,
-        "ms": 100
+        "pose": "walkRight_s6",
+        "frame": 78,
+        "ms": 75
       },
       {
-        "pose": "walkDownRight_1",
-        "frame": 39,
-        "ms": 100
+        "pose": "walkRight_s7",
+        "frame": 79,
+        "ms": 75
       },
       {
-        "pose": "walkDownRight_2",
-        "frame": 40,
-        "ms": 100
+        "pose": "walkRight_s0",
+        "frame": 72,
+        "ms": 75
       },
       {
-        "pose": "walkDownRight_3",
-        "frame": 41,
-        "ms": 100
+        "pose": "walkRight_s1",
+        "frame": 73,
+        "ms": 75
+      },
+      {
+        "pose": "walkRight_s2",
+        "frame": 74,
+        "ms": 75
+      },
+      {
+        "pose": "walkRight_s3",
+        "frame": 75,
+        "ms": 75
+      },
+      {
+        "pose": "walkRight_s4",
+        "frame": 76,
+        "ms": 75
+      },
+      {
+        "pose": "walkRight_s5",
+        "frame": 77,
+        "ms": 75
       }
     ],
     "walkLeft": [
       {
-        "pose": "walkLeft_0",
-        "frame": 10,
-        "ms": 100
+        "pose": "walkLeft_s0",
+        "frame": 64,
+        "ms": 75
       },
       {
-        "pose": "walkLeft_1",
-        "frame": 11,
-        "ms": 100
+        "pose": "walkLeft_s1",
+        "frame": 65,
+        "ms": 75
       },
       {
-        "pose": "walkLeft_2",
-        "frame": 12,
-        "ms": 100
+        "pose": "walkLeft_s2",
+        "frame": 66,
+        "ms": 75
       },
       {
-        "pose": "walkLeft_3",
-        "frame": 13,
-        "ms": 100
+        "pose": "walkLeft_s3",
+        "frame": 67,
+        "ms": 75
+      },
+      {
+        "pose": "walkLeft_s4",
+        "frame": 68,
+        "ms": 75
+      },
+      {
+        "pose": "walkLeft_s5",
+        "frame": 69,
+        "ms": 75
+      },
+      {
+        "pose": "walkLeft_s6",
+        "frame": 70,
+        "ms": 75
+      },
+      {
+        "pose": "walkLeft_s7",
+        "frame": 71,
+        "ms": 75
       }
     ],
     "walkRight": [
       {
-        "pose": "walkRight_0",
-        "frame": 14,
-        "ms": 100
+        "pose": "walkRight_s0",
+        "frame": 72,
+        "ms": 75
       },
       {
-        "pose": "walkRight_1",
-        "frame": 15,
-        "ms": 100
+        "pose": "walkRight_s1",
+        "frame": 73,
+        "ms": 75
       },
       {
-        "pose": "walkRight_2",
-        "frame": 16,
-        "ms": 100
+        "pose": "walkRight_s2",
+        "frame": 74,
+        "ms": 75
       },
       {
-        "pose": "walkRight_3",
-        "frame": 17,
-        "ms": 100
+        "pose": "walkRight_s3",
+        "frame": 75,
+        "ms": 75
+      },
+      {
+        "pose": "walkRight_s4",
+        "frame": 76,
+        "ms": 75
+      },
+      {
+        "pose": "walkRight_s5",
+        "frame": 77,
+        "ms": 75
+      },
+      {
+        "pose": "walkRight_s6",
+        "frame": 78,
+        "ms": 75
+      },
+      {
+        "pose": "walkRight_s7",
+        "frame": 79,
+        "ms": 75
       }
     ],
     "walkUp": [
@@ -1280,46 +1666,86 @@
     ],
     "walkUpLeft": [
       {
-        "pose": "walkUpLeft_0",
-        "frame": 26,
-        "ms": 100
+        "pose": "walkLeft_s2",
+        "frame": 66,
+        "ms": 75
       },
       {
-        "pose": "walkUpLeft_1",
-        "frame": 27,
-        "ms": 100
+        "pose": "walkLeft_s3",
+        "frame": 67,
+        "ms": 75
       },
       {
-        "pose": "walkUpLeft_2",
-        "frame": 28,
-        "ms": 100
+        "pose": "walkLeft_s4",
+        "frame": 68,
+        "ms": 75
       },
       {
-        "pose": "walkUpLeft_3",
-        "frame": 29,
-        "ms": 100
+        "pose": "walkLeft_s5",
+        "frame": 69,
+        "ms": 75
+      },
+      {
+        "pose": "walkLeft_s6",
+        "frame": 70,
+        "ms": 75
+      },
+      {
+        "pose": "walkLeft_s7",
+        "frame": 71,
+        "ms": 75
+      },
+      {
+        "pose": "walkLeft_s0",
+        "frame": 64,
+        "ms": 75
+      },
+      {
+        "pose": "walkLeft_s1",
+        "frame": 65,
+        "ms": 75
       }
     ],
     "walkUpRight": [
       {
-        "pose": "walkUpRight_0",
-        "frame": 30,
-        "ms": 100
+        "pose": "walkRight_s2",
+        "frame": 74,
+        "ms": 75
       },
       {
-        "pose": "walkUpRight_1",
-        "frame": 31,
-        "ms": 100
+        "pose": "walkRight_s3",
+        "frame": 75,
+        "ms": 75
       },
       {
-        "pose": "walkUpRight_2",
-        "frame": 32,
-        "ms": 100
+        "pose": "walkRight_s4",
+        "frame": 76,
+        "ms": 75
       },
       {
-        "pose": "walkUpRight_3",
-        "frame": 33,
-        "ms": 100
+        "pose": "walkRight_s5",
+        "frame": 77,
+        "ms": 75
+      },
+      {
+        "pose": "walkRight_s6",
+        "frame": 78,
+        "ms": 75
+      },
+      {
+        "pose": "walkRight_s7",
+        "frame": 79,
+        "ms": 75
+      },
+      {
+        "pose": "walkRight_s0",
+        "frame": 72,
+        "ms": 75
+      },
+      {
+        "pose": "walkRight_s1",
+        "frame": 73,
+        "ms": 75
       }
     ]
   },
@@ -1359,6 +1785,11 @@
   "hitbox": [
     4,
     0,
+    8,
+    16
+  ],
+  "size": "child",
+  "anchor": [
     8,
     16
   ]

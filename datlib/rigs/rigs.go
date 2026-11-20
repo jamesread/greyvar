@@ -22,6 +22,13 @@ type Rig struct {
 	Hitbox [4]int32 `json:"hitbox"`
 	SlotOrder []string                       `json:"slotOrder"`
 	Palettes  map[string]map[string][]string `json:"palettes"`
+	// Size is "child" or "adult" (rig.yml size); Anchor is the frame point
+	// on the bottom centre of the character's cell (its feet).
+	Size   string `json:"size"`
+	Anchor [2]int `json:"anchor"`
+	// Hidden[slot]: palettes only data uses (a mannequin's grey skin), never
+	// picked for a random look.
+	Hidden map[string][]string `json:"hidden"`
 	Defaults  struct {
 		Palettes map[string]string `json:"palettes"`
 		Parts    map[string]string `json:"parts"`
@@ -35,20 +42,140 @@ type Layer struct {
 	Variants []string `json:"variants"`
 }
 
-// Appearance is a validated look.
+// Appearance is a validated look. Rig is the size it is drawn at
+// ("child" or "adult"); empty means the default size.
 type Appearance struct {
+	Rig      string
 	Parts    map[string]string
 	Palettes map[string]string
 	HeldItem string
 }
 
-// PlayerRigPath is where the player rig manifest lives under ResDir.
+// PlayerRigPath is where the child rig manifest lives under ResDir (the
+// original player rig).
 func PlayerRigPath() string {
-	res := common.ResDir()
+	return RigPath("child")
+}
+
+// RigPath is where a size's rig manifest lives under ResDir.
+func RigPath(size string) string {
+	return RigPathIn(common.ResDir(), size)
+}
+
+// RigPathIn is where a size's rig manifest lives under the res directory.
+func RigPathIn(res, size string) string {
 	if res == "" {
 		return ""
 	}
-	return filepath.Join(res, "img", "textures", "entities", "player", "player.rig.json")
+	if size == "child" {
+		return filepath.Join(res, "img", "textures", "entities", "player", "player.rig.json")
+	}
+	return filepath.Join(res, "img", "textures", "entities", size, size+".rig.json")
+}
+
+// Sizes are the character sizes, default first.
+var Sizes = []string{"adult", "child"}
+
+// Set is every loaded rig by size. New looks use Default (the first of Sizes
+// that is loaded).
+type Set struct {
+	BySize  map[string]*Rig
+	Default string
+}
+
+// LoadSet loads the rig for each size that has a manifest.
+func LoadSet() (*Set, []error) {
+	return LoadSetFrom(common.ResDir())
+}
+
+// LoadSetFrom loads the rig for each size from a res directory.
+func LoadSetFrom(res string) (*Set, []error) {
+	set := &Set{BySize: map[string]*Rig{}}
+	var errs []error
+	for _, size := range Sizes {
+		path := RigPathIn(res, size)
+		if path == "" {
+			continue
+		}
+		r, err := Load(path)
+		if err != nil {
+			errs = append(errs, err)
+			continue
+		}
+		if r.Size == "" {
+			r.Size = size
+		}
+		set.BySize[size] = r
+		if set.Default == "" {
+			set.Default = size
+		}
+	}
+	return set, errs
+}
+
+// NewSet wraps already loaded rigs (tests).
+func NewSet(rs ...*Rig) *Set {
+	set := &Set{BySize: map[string]*Rig{}}
+	for _, r := range rs {
+		set.BySize[r.Size] = r
+	}
+	for _, size := range Sizes {
+		if _, ok := set.BySize[size]; ok {
+			set.Default = size
+			break
+		}
+	}
+	return set
+}
+
+// Size is the rig for a size, or the default rig when that size is missing.
+func (s *Set) Size(size string) *Rig {
+	if s == nil {
+		return nil
+	}
+	if r, ok := s.BySize[size]; ok {
+		return r
+	}
+	return s.BySize[s.Default]
+}
+
+// For is the rig an appearance is drawn with.
+func (s *Set) For(a *Appearance) *Rig {
+	if a == nil {
+		return s.Size("")
+	}
+	return s.Size(a.Rig)
+}
+
+// DefaultLook is a stable default look at the default size.
+func (s *Set) DefaultLook(seed string) Appearance {
+	return s.Size("").Default(seed)
+}
+
+// Normalize fits a look onto this rig: parts and palettes the rig lacks fall
+// back to its defaults (so a child look, or an old look with no size, still
+// loads as an adult), and Rig is set to this rig's size.
+func (r *Rig) Normalize(a Appearance) Appearance {
+	out := Appearance{Rig: r.Size, Parts: map[string]string{}, Palettes: map[string]string{}, HeldItem: a.HeldItem}
+	for _, l := range r.Layers {
+		if l.Default != "" {
+			out.Parts[l.Name] = l.Default
+		}
+	}
+	for k, v := range r.Defaults.Palettes {
+		out.Palettes[k] = v
+	}
+	for k, v := range a.Parts {
+		if l, ok := r.layer(k); ok && contains(l.Variants, v) {
+			out.Parts[k] = v
+		}
+	}
+	for k, v := range a.Palettes {
+		if _, ok := r.Palettes[k][v]; ok {
+			out.Palettes[k] = v
+		}
+	}
+	return out
 }
 
 // Load reads a rig.json.
@@ -100,14 +227,25 @@ func pick(seed, key string, options []string) string {
 // Default derives a stable look from seed (e.g. a username): the same seed
 // always gets the same look, different seeds usually differ.
 func (r *Rig) Default(seed string) Appearance {
-	a := Appearance{Parts: map[string]string{}, Palettes: map[string]string{}}
+	a := Appearance{Rig: r.Size, Parts: map[string]string{}, Palettes: map[string]string{}}
 	for _, l := range r.Layers {
-		if len(l.Variants) > 1 {
+		switch {
+		case len(l.Variants) > 0 && l.Variants[0] == "none":
+			// Optional layers (outfits) start empty: new players wear their
+			// shirt and trousers, not a random dress.
+			a.Parts[l.Name] = "none"
+		case len(l.Variants) > 1:
 			a.Parts[l.Name] = pick(seed, "part:"+l.Name, l.Variants)
 		}
 	}
 	for _, slot := range r.SlotOrder {
-		if names := r.PaletteNames(slot); len(names) > 0 {
+		var names []string
+		for _, n := range r.PaletteNames(slot) {
+			if !contains(r.Hidden[slot], n) {
+				names = append(names, n)
+			}
+		}
+		if len(names) > 0 {
 			a.Palettes[slot] = pick(seed, "palette:"+slot, names)
 		}
 	}
@@ -117,7 +255,7 @@ func (r *Rig) Default(seed string) Appearance {
 // Apply returns base with the requested changes, or an error naming the
 // first unknown layer/variant/slot/palette. base is not modified.
 func (r *Rig) Apply(base Appearance, parts, palettes map[string]string) (Appearance, error) {
-	out := Appearance{Parts: map[string]string{}, Palettes: map[string]string{}, HeldItem: base.HeldItem}
+	out := Appearance{Rig: r.Size, Parts: map[string]string{}, Palettes: map[string]string{}, HeldItem: base.HeldItem}
 	for k, v := range base.Parts {
 		out.Parts[k] = v
 	}
@@ -144,6 +282,31 @@ func (r *Rig) Apply(base Appearance, parts, palettes map[string]string) (Appeara
 		out.Palettes[k] = palettes[k]
 	}
 	return out, nil
+}
+
+// CheckWear reports whether a dialog `wear` entry means something on this
+// rig: a layer and one of its variants (hair: bun), or a colour slot and one
+// of its palettes (hair: blonde). `hair` is both a layer and a slot.
+func (r *Rig) CheckWear(key, value string) error {
+	l, isLayer := r.layer(key)
+	if isLayer && contains(l.Variants, value) {
+		return nil
+	}
+	_, isSlot := r.Palettes[key]
+	if isSlot {
+		if _, ok := r.Palettes[key][value]; ok {
+			return nil
+		}
+	}
+	switch {
+	case isLayer && isSlot:
+		return fmt.Errorf("%s %q is neither a %s style %v nor a colour %v", key, value, key, l.Variants, r.PaletteNames(key))
+	case isLayer:
+		return fmt.Errorf("unknown %s variant %q (have %v)", key, value, l.Variants)
+	case isSlot:
+		return fmt.Errorf("unknown %s palette %q (have %v)", key, value, r.PaletteNames(key))
+	}
+	return fmt.Errorf("unknown layer or colour slot %q", key)
 }
 
 func contains(xs []string, x string) bool {

@@ -51,8 +51,17 @@ func CheckEntdef(filename string, visuals *tiled.EntityVisualCatalog) Check {
 		title = filepath.Base(filename)
 	}
 
+	if entdef.Pushable && !entdef.Solid {
+		check.AddError("pushable entdef must also be solid (a block you walk through cannot be pushed)")
+	}
+
 	if len(entdef.States) == 0 {
 		check.AddError("entdef has no states")
+		return check
+	}
+
+	// NPCs with an appearance are drawn with the player rig, not a tileset.
+	if entdef.Appearance != nil {
 		return check
 	}
 

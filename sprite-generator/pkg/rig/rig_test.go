@@ -13,6 +13,7 @@ import (
 var update = flag.Bool("update", false, "rewrite golden files in testdata/golden")
 
 const miniRigYML = `name: mini
+size: child
 frameSize: 16
 columns: 2
 layers:

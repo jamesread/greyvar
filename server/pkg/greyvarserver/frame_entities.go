@@ -26,7 +26,8 @@ func frameNewEntdefs(s *serverInterface, p *RemotePlayer) {
 		}
 
 		netEntdef := &pb.EntityDefinition{
-			Name: title,
+			Name:          title,
+			InteractRange: int32(serverEntdef.InteractRange),
 		}
 
 		for stateName := range serverEntdef.States {
@@ -62,6 +63,9 @@ func frameNewEntdefs(s *serverInterface, p *RemotePlayer) {
 			}
 
 			netEntdef.States = append(netEntdef.States, netState)
+			if vis.CollisionType.OrDefault() == tiled.CollisionPressure {
+				netEntdef.Floor = true
+			}
 		}
 
 		p.currentFrame.EntityDefinitions = append(p.currentFrame.EntityDefinitions, netEntdef)

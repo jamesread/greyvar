@@ -23,6 +23,7 @@ export default class GameConsole {
     this.history = []
     this.historyIndex = -1
     this.scrollOffset = 0
+    this.viewportLines = 10 // updated by layout()
     this.commands = new Map()
     this.boundScene = null
     this.ui = null
@@ -54,8 +55,12 @@ export default class GameConsole {
 
   log (message) {
     const text = String(message)
-    for (const line of text.split('\n')) {
+    const added = text.split('\n')
+    for (const line of added) {
       this.lines.push(line)
+    }
+    if (this.scrollOffset > 0) {
+      this.scrollOffset += added.length // stay on what is being read
     }
 
     while (this.lines.length > CONSOLE_THEME.maxLines) {
@@ -133,11 +138,13 @@ export default class GameConsole {
   attachScene (scene) {
     this.boundScene = scene
     scene.input.keyboard?.on('keydown', this.onSceneKeydown, this)
+    scene.input.on('wheel', this.onWheel, this)
     this.render()
   }
 
   detachScene () {
     this.boundScene?.input.keyboard?.off('keydown', this.onSceneKeydown, this)
+    this.boundScene?.input.off('wheel', this.onWheel, this)
     this.clearUi()
     this.boundScene = null
   }
@@ -163,6 +170,12 @@ export default class GameConsole {
     this.toggle()
   }
 
+  onWheel (_pointer, _over, _dx, dy) {
+    if (this.openState && dy !== 0) {
+      this.scrollBy(dy < 0 ? 3 : -3)
+    }
+  }
+
   onSceneKeydown (event) {
     if (!this.openState) {
       return
@@ -186,9 +199,29 @@ export default class GameConsole {
     }
 
     if (event.code === 'Backspace') {
+      // Ctrl+Backspace clears the whole line (and keeps the browser from
+      // acting on it); plain Backspace deletes one character.
       event.preventDefault()
-      this.input = this.input.slice(0, -1)
+      this.input = event.ctrlKey || event.metaKey ? '' : this.input.slice(0, -1)
+      this.historyIndex = -1
       this.render()
+      return
+    }
+
+    // Scrollback: PageUp/PageDown by a page, Shift+Up/Down by a line,
+    // Ctrl+Home/End to the top/bottom. Plain Up/Down walk the history.
+    const page = Math.max(1, this.viewportLines - 1)
+    const scroll = {
+      PageUp: page,
+      PageDown: -page,
+      ArrowUp: event.shiftKey ? 1 : null,
+      ArrowDown: event.shiftKey ? -1 : null,
+      Home: event.ctrlKey ? Infinity : null,
+      End: event.ctrlKey ? -Infinity : null
+    }[event.code]
+    if (scroll != null) {
+      event.preventDefault()
+      this.scrollBy(scroll)
       return
     }
 
@@ -204,23 +237,23 @@ export default class GameConsole {
       return
     }
 
-    if (event.code === 'PageUp') {
-      event.preventDefault()
-      this.scrollOffset += 5
-      this.render()
-      return
-    }
-
-    if (event.code === 'PageDown') {
-      event.preventDefault()
-      this.scrollOffset = Math.max(0, this.scrollOffset - 5)
-      this.render()
-      return
-    }
-
     if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
       event.preventDefault()
       this.input += event.key
+      this.render()
+    }
+  }
+
+  /** Lines the scrollback can move up (0 when it all fits). */
+  maxScroll () {
+    return Math.max(0, this.lines.length - this.viewportLines)
+  }
+
+  /** Scroll the output: positive is back (older lines), negative forward. */
+  scrollBy (n) {
+    const next = Math.min(this.maxScroll(), Math.max(0, this.scrollOffset + n))
+    if (next !== this.scrollOffset) {
+      this.scrollOffset = next
       this.render()
     }
   }
@@ -344,6 +377,7 @@ export default class GameConsole {
     const total = this.lines.length
     const maxScroll = Math.max(0, total - viewportLines)
     const offset = Math.min(this.scrollOffset, maxScroll)
+    this.scrollOffset = offset
     const end = total - offset
     const start = Math.max(0, end - viewportLines)
     return this.lines.slice(start, end)
@@ -389,7 +423,12 @@ export default class GameConsole {
       bg.setPosition(0, 0)
       bg.setSize(width, consoleH)
 
+      this.viewportLines = viewportLines
       const visible = this.visibleLines(viewportLines)
+      if (this.scrollOffset > 0) {
+        // Show that newer lines are below, and how far back we are.
+        visible[visible.length - 1] = `-- scrolled back ${this.scrollOffset} line(s); PageDown or Ctrl+End for latest --`
+      }
       outputText.setText(visible.join('\n'))
       outputText.setPosition(pad, pad)
       outputText.setWordWrapWidth(width - pad * 2)

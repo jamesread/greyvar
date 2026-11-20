@@ -160,6 +160,9 @@ type tsxInfo struct {
 	image    *image.NRGBA
 	decor    map[int]bool
 	wangsets map[string]wangset
+	// faceBelows: wall tiles whose face continues into the cell below
+	// ({full, short} lower tile ids; see walls.go).
+	faceBelows map[int][2]int
 }
 
 type wangset struct {
@@ -184,7 +187,7 @@ func readTsx(path string) (*tsxInfo, error) {
 		return nil, err
 	}
 	tsx := string(raw)
-	info := &tsxInfo{decor: map[int]bool{}, wangsets: map[string]wangset{}}
+	info := &tsxInfo{decor: map[int]bool{}, wangsets: map[string]wangset{}, faceBelows: faceBelows(tsx)}
 	m := reColumns.FindStringSubmatch(tsx)
 	c := reCount.FindStringSubmatch(tsx)
 	im := reImage.FindStringSubmatch(tsx)
@@ -592,7 +595,7 @@ func (f *Faces) applyMap(mapPath, outTsx string, count int, index map[string]int
 	for cell := 0; cell < W*H; cell++ {
 		for li := len(m.Layers) - 1; li >= 0; li-- {
 			l := m.Layers[li]
-			if l.Type != "tilelayer" || l.Name == CapLayer || l.Name == FaceLayer || cell >= len(l.Data) || l.Data[cell] == 0 {
+			if l.Type != "tilelayer" || isGenerated(l.Name) || cell >= len(l.Data) || l.Data[cell] == 0 {
 				continue
 			}
 			path, local, decor := lookup(l.Data[cell])
@@ -611,18 +614,28 @@ func (f *Faces) applyMap(mapPath, outTsx string, count int, index map[string]int
 	}
 
 	if placed == 0 && !hasGenerated {
-		return original, 0, nil // no cliffs: leave the map untouched
-	}
-	// Write (or replace) the two generated layers above the map's own.
-	for _, gen := range []struct {
-		name string
-		data []int64
-	}{{CapLayer, caps}, {FaceLayer, exts}} {
-		text, err = upsertLayer(text, gen.name, gen.data, W, H)
-		if err != nil {
-			return nil, 0, err
+		text = string(original) // no cliffs: no hill layers (nor their tileset)
+	} else {
+		// Write (or replace) the two generated layers above the map's own.
+		for _, gen := range []struct {
+			name string
+			data []int64
+		}{{CapLayer, caps}, {FaceLayer, exts}} {
+			text, err = upsertLayer(text, gen.name, gen.data, W, H)
+			if err != nil {
+				return nil, 0, err
+			}
 		}
 	}
+	// Tall wall faces: their lower halves, under the wall's own layer.
+	text, walls, err := applyWallFaces(text, dir, outTsx)
+	if err != nil {
+		return nil, 0, err
+	}
+	if placed == 0 && !hasGenerated && walls == 0 && text == string(original) {
+		return original, 0, nil
+	}
+	placed += walls
 	var check tmjMap
 	if err := json.Unmarshal([]byte(text), &check); err != nil {
 		return nil, 0, fmt.Errorf("edited map is not valid JSON: %w", err)

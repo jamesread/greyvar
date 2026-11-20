@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	grids "github.com/jamesread/greyvar/datlib/gridfiles"
@@ -30,10 +31,16 @@ type tmjLayer struct {
 }
 
 type tmjMapObject struct {
-	Template string `json:"template"`
-	Type     string `json:"type"`
-	Class    string `json:"class"`
-	Name     string `json:"name"`
+	Template   string        `json:"template"`
+	Type       string        `json:"type"`
+	Class      string        `json:"class"`
+	Name       string        `json:"name"`
+	Properties []tmjProperty `json:"properties"`
+}
+
+type tmjProperty struct {
+	Name  string      `json:"name"`
+	Value interface{} `json:"value"`
 }
 
 // LintTMJMaps loads referenced tilesets then every worlds/**/*.tmj map.
@@ -284,6 +291,7 @@ func CheckTMJFile(path string, entdefNames map[string]struct{}) Check {
 				}
 			}
 			addObjectEntdefIssue(&check, mapDir, obj, entdefNames)
+			addObjectPropertyIssues(&check, obj)
 		}
 	}
 
@@ -355,4 +363,18 @@ func templateRefIssue(mapDir, template string) string {
 		candidates = append(candidates, path+".tx")
 	}
 	return fmt.Sprintf("missing object template %q (tried %s)", template, strings.Join(candidates, ", "))
+}
+
+// addObjectPropertyIssues checks puzzle properties whose values the server
+// parses (see server/dat/worlds/PUZZLES.md).
+func addObjectPropertyIssues(check *Check, obj tmjMapObject) {
+	for _, p := range obj.Properties {
+		if p.Name != "reset_after" {
+			continue
+		}
+		raw := strings.TrimSpace(fmt.Sprint(p.Value))
+		if ms, err := strconv.ParseFloat(raw, 64); err != nil || ms <= 0 || ms != float64(int64(ms)) {
+			check.AddError(fmt.Sprintf("%s: reset_after %q should be a whole number of milliseconds above 0", firstNonEmpty(obj.Name, obj.Type), raw))
+		}
+	}
 }

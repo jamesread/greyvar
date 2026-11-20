@@ -81,3 +81,27 @@ func TestPlayerNearEntityCollisionMargin(t *testing.T) {
 		t.Fatal("gap 2 should be within margin 3")
 	}
 }
+
+// Sign text stays (sticky) while you stand there; other messages, even one
+// set after a sign's in the same frame, fade on the client.
+func TestHudMessageStickyOnlyForSigns(t *testing.T) {
+	rp := &RemotePlayer{currentFrame: &pb.ServerUpdate{}}
+	sign := "Welcome!"
+	rp.PendingHudMessage, rp.pendingHudSticky = &sign, &sign
+	frameHudMessages(nil, rp)
+	if !rp.currentFrame.HudMessage.Sticky {
+		t.Fatal("a sign's message should be sticky")
+	}
+
+	rp.currentFrame = &pb.ServerUpdate{}
+	rp.PendingHudMessage, rp.pendingHudSticky = &sign, &sign
+	got := "Got Hay x1"
+	rp.PendingHudMessage = &got // e.g. a harvest later in the same frame
+	frameHudMessages(nil, rp)
+	if rp.currentFrame.HudMessage.Sticky || rp.currentFrame.HudMessage.Text != got {
+		t.Fatalf("a replacing pickup message must fade, got %+v", rp.currentFrame.HudMessage)
+	}
+	if rp.pendingHudSticky != nil {
+		t.Fatal("sticky marker should reset after sending")
+	}
+}

@@ -22,6 +22,26 @@ message ServerUpdate {
 	repeated RecipeDefinition recipeDefinitions = 16;
 	repeated EntityAppearanceChange entityAppearanceChanges = 17;
 	repeated TileChange tileChanges = 18;
+	Dialog dialog = 19;
+}
+
+// One step of a conversation with an NPC: show text and options; the client
+// answers with a DialogChoiceRequest.
+message Dialog {
+	int64 entityId = 1;
+	string node = 2;
+	string speaker = 3;
+	string text = 4;
+	repeated DialogOption options = 5;
+}
+
+message DialogOption {
+	string label = 1;
+	// Picking it ends the conversation (no next node).
+	bool ends = 2;
+	// Look change it applies (layer -> variant or slot -> palette), so the
+	// client can preview it while the option is focused.
+	map<string, string> wear = 3;
 }
 
 // A live change to a server-owned grid layer (e.g. "crops"). An unset tile
@@ -55,6 +75,9 @@ message EntitySpawn {
 	string initialState = 10;
 	// Layered-rig look (players). Unset for entities without a rig.
 	Appearance appearance = 11;
+	// Text shown under the entity in the world (the Tiled object's "label"
+	// property, e.g. where a teleport pad goes). Empty for none.
+	string label = 12;
 }
 
 // Look of a layered sprite rig (res/sprites/<rig>). Keys and values are names
@@ -66,6 +89,8 @@ message Appearance {
 	map<string, string> palettes = 2;
 	// itemdef name drawn at the pose's hand anchor; empty for none
 	string heldItem = 3;
+	// character size, i.e. which rig draws it: "adult" or "child"
+	string rig = 4;
 }
 
 message EntityAppearanceChange {
@@ -80,6 +105,12 @@ message EntityDefinition {
 	// Frame size of the entity tileset (most are 15px, newer ones 16px).
 	int32 tileWidth = 5;
 	int32 tileHeight = 6;
+	// Walked onto (doors, teleport pads, pressure buttons): drawn beneath
+	// characters instead of with them.
+	bool floor = 7;
+	// How close (px, Chebyshev) a player must be to interact; 0 = default 24.
+	// Larger for NPCs behind a counter (Herman).
+	int32 interactRange = 8;
 }
 
 message EntityState {
@@ -138,6 +169,8 @@ message Tile {
 	// client mirrors the server's collision rule for the debug overlay.
 	bool decor = 12;
 	bool overlay = 13;
+	// Draw over characters (e.g. a tree's canopy).
+	bool above = 14;
 }
 
 message Tileset {
@@ -209,6 +242,10 @@ message ConsoleMessage {
 message HudMessage {
 	string text = 1;
 	int64 entityId = 2;
+	// Sticky messages stay until the server replaces or clears them (a sign
+	// while you stand at it). Others (pickups, harvests, "locked") fade out
+	// on the client after a few seconds.
+	bool sticky = 3;
 }
 
 message InventoryItem {
@@ -229,6 +266,8 @@ message ItemDefinition {
 	string heldSprite = 5;
 	int32 heldGripX = 6;
 	int32 heldGripY = 7;
+	// Inventory/HUD picture (path under /res/); empty for none.
+	string icon = 8;
 }
 
 message RecipeInput {

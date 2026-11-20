@@ -13,6 +13,27 @@ message ClientRequests {
 	CraftRequest craftRequest = 6;
 	WorldReloadRequest worldReloadRequest = 7;
 	AppearanceRequest appearanceRequest = 8;
+	DialogChoiceRequest dialogChoiceRequest = 9;
+	RiftRequest riftRequest = 10;
+}
+
+// Enter a rift, a generated puzzle world (console `rift`), or leave the one
+// you are in. level 0 means one more than your best; seed 0 a random layout;
+// no mechanics means the level's own mix (lever, keyChest, pushBlock,
+// timedSwitch).
+message RiftRequest {
+	int32 level = 1;
+	int64 seed = 2;
+	repeated string mechanics = 3;
+	bool leave = 4;
+}
+
+// The player picked option `option` (0-based) of dialog node `node`, shown
+// for NPC `entityId` (a Dialog from the server).
+message DialogChoiceRequest {
+	int64 entityId = 1;
+	string node = 2;
+	int32 option = 3;
 }
 
 message MoveRequest {
@@ -66,4 +87,6 @@ message AppearanceRequest {
 	map<string, string> palettes = 2;
 	// Set to change the held item; "-" clears it.
 	string heldItem = 3;
+	// Set to change size ("adult" / "child"); the look is fitted to that rig.
+	string rig = 4;
 }

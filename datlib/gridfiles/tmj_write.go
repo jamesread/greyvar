@@ -121,8 +121,9 @@ func WriteGridTMJ(grid *Grid, filename string, opts TMJWriteOptions) error {
 		objects = append(objects, tmjMapObject{
 			ID:       nextObjectID,
 			Type:     ent.Definition,
-			X:        float64(ent.Col*uint32(tileSize)) + float64(tileSize)/2,
-			Y:        float64(ent.Row*uint32(tileSize)) + float64(tileSize)/2,
+			// A rectangle object's x/y is its top-left (see objectCell).
+			X:        float64(ent.Col * uint32(tileSize)),
+			Y:        float64(ent.Row * uint32(tileSize)),
 			Width:    float64(tileSize),
 			Height:   float64(tileSize),
 			Rotation: 0,

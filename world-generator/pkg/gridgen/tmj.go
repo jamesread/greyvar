@@ -53,6 +53,8 @@ type tmjObject struct {
 	Height   float64 `json:"height"`
 	Rotation float64 `json:"rotation"`
 	Visible  bool    `json:"visible"`
+
+	Properties []tiledProperty `json:"properties,omitempty"`
 }
 
 type tmjTileset struct {

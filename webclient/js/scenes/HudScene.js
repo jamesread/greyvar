@@ -6,6 +6,7 @@ import { initMenuShortcuts } from '../MenuShortcuts.js'
 import { initTouchControls } from '../TouchControls.js'
 import { createFloatingMessageBox } from '../ui/FloatingMessageBox.js'
 import { preloadMenuBorder } from '../menu/menuBorder.js'
+import Hotbar from '../hud/Hotbar.js'
 
 export default class HudScene extends Phaser.Scene {
   constructor () {
@@ -32,6 +33,7 @@ export default class HudScene extends Phaser.Scene {
     btnMenu.on('pointerdown', this.mnuClicked)
 
     this.floatingMessage = createFloatingMessageBox(this)
+    this.hotbar = new Hotbar(this)
 
     this.input.keyboard?.on('keydown-ESC', this.onEscape, this)
     this.events.once('shutdown', this.onShutdown, this)
@@ -41,6 +43,7 @@ export default class HudScene extends Phaser.Scene {
 
   update () {
     this.floatingMessage?.update()
+    this.hotbar?.refresh()
   }
 
   /**
@@ -63,6 +66,7 @@ export default class HudScene extends Phaser.Scene {
     }
     this.floatingMessage?.show({
       text: String(text),
+      sticky: msg.sticky === true,
       entityId: msg.entityId != null ? Number(msg.entityId) : null,
       worldX: msg.worldX,
       worldY: msg.worldY
@@ -73,17 +77,22 @@ export default class HudScene extends Phaser.Scene {
     window.menuSystem?.toggle('main')
   }
 
-  onEscape () {
-    if (window.gameConsole?.isOpen?.()) {
+  // Escape with no menu open opens the main menu. With a menu open, the menu
+  // handles it as "back" (MenuSystem.onMenuKeyDown); it marks the event in
+  // case it closed the menu before this listener ran.
+  onEscape (event) {
+    if (window.gameConsole?.isOpen?.() || event?.greyvarMenuHandled || window.menuSystem?.isOpen?.()) {
       return
     }
-    window.menuSystem?.toggle('main')
+    window.menuSystem?.open('main')
   }
 
   onShutdown () {
     this.input.keyboard?.off('keydown-ESC', this.onEscape, this)
     this.floatingMessage?.destroy()
     this.floatingMessage = null
+    this.hotbar?.destroy()
+    this.hotbar = null
     if (window.hudScene === this) {
       window.hudScene = null
     }

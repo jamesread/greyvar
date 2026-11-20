@@ -1,14 +1,25 @@
 # Generated once by `spritegen import`; now the source of truth. Edit freely.
 name: player
+# The child size: 16px frames, one tile tall (res/sprites/adult is the adult).
+size: child
 frameSize: 16
 columns: 8
 layers:
   - name: pants
-    variants: []
+    # default = trousers; skirt is derived from them by `part skirt`.
+    variants:
+      - default
+      - skirt
   - name: body
     variants: []
   - name: shirt
     variants: []
+  - name: outfit
+    # One-piece outfits drawn over shirt + trousers (rows 7-15); `none` (the
+    # default) draws nothing. Parts come from `part outfit` (see README).
+    variants:
+      - none
+      - dress
   - name: head
     variants: []
   - name: hair
@@ -34,11 +45,23 @@ slots:
     - '#eba5a0'
     - '#f3aea6'
     - '#f3cebe'
+  # Outfit colours: the garment's main ramp and a trim (sash, hem).
+  garment:
+    - '#20183a'
+    - '#3a2c66'
+    - '#54428e'
+    - '#7262b6'
+  trim:
+    - '#5a4a10'
+    - '#a88a2a'
+    - '#e8cc66'
 slotOrder:
   - skin
   - hair
   - shirt
   - pants
+  - garment
+  - trim
 fixed:
   - '#151215'
   - '#1f1a1f'
@@ -62,19 +85,47 @@ palettes:
     green: ['#183a24', '#26703a', '#33904a', '#58b868']
     red: ['#3a1416', '#8a1e22', '#b02a2a', '#d84a40']
     yellow: ['#4a3a14', '#a8801e', '#d0a82a', '#ecd060']
+    pink: ['#5c0f3e', '#e0198a', '#ff3fa8', '#ff8fd0']
+    white: ['#7c8090', '#c9ccd6', '#e8eaf0', '#ffffff']
+    black: ['#100e14', '#221f29', '#302c38', '#433e4e']
   pants:
     charcoal: ['#221e26', '#3a3540', '#544c5a']
     denim: ['#1e2a44', '#2a3a5e', '#40567e']
     khaki: ['#5a4a30', '#7a6844', '#98865c']
     brown: ['#3a2418', '#4e3222', '#6a4630']
+    pink: ['#5c0f3e', '#e0198a', '#ff5fb6']
+    green: ['#122a1a', '#1e4a2a', '#2e663c']
+    blue: ['#1a3270', '#2850a8', '#3c6cd0']
+    lightblue: ['#2e5a9a', '#4a86cc', '#7aaee6']
+  garment:
+    blue: ['#1a2440', '#1f4a8a', '#2a64b8', '#4a8ad8']
+    green: ['#183a24', '#26703a', '#33904a', '#58b868']
+    red: ['#3a1416', '#8a1e22', '#b02a2a', '#d84a40']
+    yellow: ['#4a3a14', '#a8801e', '#d0a82a', '#ecd060']
+    pink: ['#5c0f3e', '#e0198a', '#ff3fa8', '#ff8fd0']
+    purple: ['#24123a', '#4a2480', '#6030a8', '#8850d0']
+    white: ['#7c8090', '#c9ccd6', '#e8eaf0', '#ffffff']
+    black: ['#141218', '#24202a', '#38323e', '#4c4654']
+  trim:
+    white: ['#a8acb8', '#e8eaf0', '#ffffff']
+    gold: ['#7a5a10', '#c8a030', '#f0d870']
+    black: ['#141218', '#2a2630', '#3e3846']
+    red: ['#6e1418', '#b02a2a', '#e05a48']
+    pink: ['#a0105a', '#ff3fa8', '#ff9fd8']
+    blue: ['#1f4a8a', '#4a8ad8', '#9ac4f0']
+    green: ['#26703a', '#58b868', '#a0e0a0']
 defaults:
   palettes:
     hair: brown
     pants: charcoal
     shirt: magenta
     skin: rose
+    garment: blue
+    trim: white
   parts:
     hair: short
+    pants: default
+    outfit: none
 # Collision box [x, y, w, h] in frame pixels: the side-view body is x 4..11,
 # so walls are touched from every side (the whole 16px frame left 4px gaps).
 hitbox: [4, 0, 8, 16]

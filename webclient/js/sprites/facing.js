@@ -1,6 +1,6 @@
-// Which way a character faces, derived from its last walk/bump/use state.
+// Which way a character faces, derived from its last walk/bump/use/face state.
 
-const DIRECTIONAL = /^(?:walk|bump|use)(Up|Down)?(Left|Right)?$/
+const DIRECTIONAL = /^(?:walk|bump|use|face)(Up|Down)?(Left|Right)?$/
 
 /**
  * "walkUpLeft" -> "UpLeft", "bumpRight" -> "Right"; null for non-directional

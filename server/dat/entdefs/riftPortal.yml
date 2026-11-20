@@ -1,0 +1,10 @@
+---
+title: riftPortal
+# Step on it to open a rift: a generated puzzle world, one level above your
+# best. Everyone who steps on it while that rift is open joins the party.
+# Map properties: rift_level (a fixed level), rift_mechanics
+# (e.g. "lever,keyChest"). See server/dat/worlds/PUZZLES.md.
+solid: false
+initialState: idle
+states:
+  idle: {}

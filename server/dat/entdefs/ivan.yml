@@ -1,0 +1,16 @@
+# Professor Ivan, in his house on isleOfStarting 0.0 (0.0.professorHouse.tmj),
+# beside Geraldine's shop. Talking to him (dialogs/ivan.yml) changes the
+# player's skin tone.
+title: ivan
+solid: true
+initialState: idle
+states:
+  idle: {}
+appearance:
+  parts: {hair: bald, beard: beard}
+  palettes: {skin: brown, hair: grey, shirt: red, pants: charcoal}
+wander:
+  rangePx: 24
+  speedPx: 2
+  pauseMs: [2500, 6000]
+dialog: ivan

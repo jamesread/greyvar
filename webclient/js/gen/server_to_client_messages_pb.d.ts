@@ -98,6 +98,11 @@ export declare type ServerUpdate = Message<"greyvarproto.ServerUpdate"> & {
    * @generated from field: repeated greyvarproto.TileChange tileChanges = 18;
    */
   tileChanges: TileChange[];
+
+  /**
+   * @generated from field: greyvarproto.Dialog dialog = 19;
+   */
+  dialog?: Dialog | undefined;
 };
 
 /**
@@ -105,6 +110,76 @@ export declare type ServerUpdate = Message<"greyvarproto.ServerUpdate"> & {
  * Use `create(ServerUpdateSchema)` to create a new message.
  */
 export declare const ServerUpdateSchema: GenMessage<ServerUpdate>;
+
+/**
+ * One step of a conversation with an NPC: show text and options; the client
+ * answers with a DialogChoiceRequest.
+ *
+ * @generated from message greyvarproto.Dialog
+ */
+export declare type Dialog = Message<"greyvarproto.Dialog"> & {
+  /**
+   * @generated from field: int64 entityId = 1;
+   */
+  entityId: bigint;
+
+  /**
+   * @generated from field: string node = 2;
+   */
+  node: string;
+
+  /**
+   * @generated from field: string speaker = 3;
+   */
+  speaker: string;
+
+  /**
+   * @generated from field: string text = 4;
+   */
+  text: string;
+
+  /**
+   * @generated from field: repeated greyvarproto.DialogOption options = 5;
+   */
+  options: DialogOption[];
+};
+
+/**
+ * Describes the message greyvarproto.Dialog.
+ * Use `create(DialogSchema)` to create a new message.
+ */
+export declare const DialogSchema: GenMessage<Dialog>;
+
+/**
+ * @generated from message greyvarproto.DialogOption
+ */
+export declare type DialogOption = Message<"greyvarproto.DialogOption"> & {
+  /**
+   * @generated from field: string label = 1;
+   */
+  label: string;
+
+  /**
+   * Picking it ends the conversation (no next node).
+   *
+   * @generated from field: bool ends = 2;
+   */
+  ends: boolean;
+
+  /**
+   * Look change it applies (layer -> variant or slot -> palette), so the
+   * client can preview it while the option is focused.
+   *
+   * @generated from field: map<string, string> wear = 3;
+   */
+  wear: { [key: string]: string };
+};
+
+/**
+ * Describes the message greyvarproto.DialogOption.
+ * Use `create(DialogOptionSchema)` to create a new message.
+ */
+export declare const DialogOptionSchema: GenMessage<DialogOption>;
 
 /**
  * A live change to a server-owned grid layer (e.g. "crops"). An unset tile
@@ -237,6 +312,14 @@ export declare type EntitySpawn = Message<"greyvarproto.EntitySpawn"> & {
    * @generated from field: greyvarproto.Appearance appearance = 11;
    */
   appearance?: Appearance | undefined;
+
+  /**
+   * Text shown under the entity in the world (the Tiled object's "label"
+   * property, e.g. where a teleport pad goes). Empty for none.
+   *
+   * @generated from field: string label = 12;
+   */
+  label: string;
 };
 
 /**
@@ -272,6 +355,13 @@ export declare type Appearance = Message<"greyvarproto.Appearance"> & {
    * @generated from field: string heldItem = 3;
    */
   heldItem: string;
+
+  /**
+   * character size, i.e. which rig draws it: "adult" or "child"
+   *
+   * @generated from field: string rig = 4;
+   */
+  rig: string;
 };
 
 /**
@@ -331,6 +421,22 @@ export declare type EntityDefinition = Message<"greyvarproto.EntityDefinition"> 
    * @generated from field: int32 tileHeight = 6;
    */
   tileHeight: number;
+
+  /**
+   * Walked onto (doors, teleport pads, pressure buttons): drawn beneath
+   * characters instead of with them.
+   *
+   * @generated from field: bool floor = 7;
+   */
+  floor: boolean;
+
+  /**
+   * How close (px, Chebyshev) a player must be to interact; 0 = default 24.
+   * Larger for NPCs behind a counter (Herman).
+   *
+   * @generated from field: int32 interactRange = 8;
+   */
+  interactRange: number;
 };
 
 /**
@@ -558,6 +664,13 @@ export declare type Tile = Message<"greyvarproto.Tile"> & {
    * @generated from field: bool overlay = 13;
    */
   overlay: boolean;
+
+  /**
+   * Draw over characters (e.g. a tree's canopy).
+   *
+   * @generated from field: bool above = 14;
+   */
+  above: boolean;
 };
 
 /**
@@ -854,6 +967,15 @@ export declare type HudMessage = Message<"greyvarproto.HudMessage"> & {
    * @generated from field: int64 entityId = 2;
    */
   entityId: bigint;
+
+  /**
+   * Sticky messages stay until the server replaces or clears them (a sign
+   * while you stand at it). Others (pickups, harvests, "locked") fade out
+   * on the client after a few seconds.
+   *
+   * @generated from field: bool sticky = 3;
+   */
+  sticky: boolean;
 };
 
 /**
@@ -939,6 +1061,13 @@ export declare type ItemDefinition = Message<"greyvarproto.ItemDefinition"> & {
    * @generated from field: int32 heldGripY = 7;
    */
   heldGripY: number;
+
+  /**
+   * Inventory/HUD picture (path under /res/); empty for none.
+   *
+   * @generated from field: string icon = 8;
+   */
+  icon: string;
 };
 
 /**

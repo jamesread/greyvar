@@ -1,0 +1,15 @@
+# Geraldine: the tailor in her shop on isleOfStarting 0.0 (0.0.tailorShop.tmj).
+# Talking to her (dialogs/geraldine.yml) changes the player's clothes.
+title: geraldine
+solid: true
+initialState: idle
+states:
+  idle: {}
+appearance:
+  parts: {hair: bun, outfit: dress}
+  palettes: {skin: peach, hair: red, shirt: blue, pants: denim, garment: purple, trim: gold}
+wander:
+  rangePx: 24
+  speedPx: 2
+  pauseMs: [2000, 5000]
+dialog: geraldine

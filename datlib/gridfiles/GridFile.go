@@ -33,10 +33,15 @@ type Tile struct {
 	// whose animation should only play when water is under it.
 	Water           bool `yaml:"-"`
 	NeedsWaterBelow bool `yaml:"-"`
-	// Overlay tiles (property overlay=true, e.g. generated cliff faces) draw
-	// over the tile beneath and add their collision to it: CollisionTileAt
-	// returns the tile beneath with the overlay's rects appended.
+	// Overlay tiles (property overlay=true, e.g. generated cliff faces and the
+	// lower halves of tall wall faces) add their collision to the cell's
+	// deciding tile: CollisionTileAt returns that tile with the overlays'
+	// rects appended, whether the overlay is drawn above it or below it.
 	Overlay bool `yaml:"-"`
+	// Above tiles (property above=true, e.g. a tree) draw over characters.
+	// For collision they act like overlays: their own rects (the trunk) are
+	// added, and they do not hide the ground beneath.
+	Above bool `yaml:"-"`
 	// SeeThrough / WaterPixels: the tile art's transparent and water-coloured
 	// pixels, used to give water collision where it shows (water_collision.go).
 	SeeThrough  *tiled.PixelMask `yaml:"-"`
@@ -172,9 +177,16 @@ func (g *Grid) CollisionTileAt(row, col uint32) *Tile {
 		if tile == nil || tile.Decor {
 			continue
 		}
-		if tile.Overlay {
+		if tile.Overlay || tile.Above {
 			extra = append(extra, tile.Collision...)
 			continue
+		}
+		// Overlays under the deciding tile (a tall wall face's lower half,
+		// drawn beneath a nearer wall) still collide.
+		for j := i - 1; j >= 0; j-- {
+			if t := g.Layers[j].TileAt(row, col); t != nil && t.Overlay && !t.Decor {
+				extra = append(extra, t.Collision...)
+			}
 		}
 		if len(extra) == 0 {
 			return tile
@@ -184,7 +196,7 @@ func (g *Grid) CollisionTileAt(row, col uint32) *Tile {
 		return &merged
 	}
 	top := g.TopTileAt(row, col)
-	if top != nil && (top.Decor || top.Overlay) {
+	if top != nil && (top.Decor || top.Overlay || top.Above) {
 		// Only decor/overlays in this cell: an empty cell plus overlay rects.
 		return &Tile{Row: row, Col: col, Traversable: len(extra) == 0, Collision: extra, CollisionFromTSX: true}
 	}

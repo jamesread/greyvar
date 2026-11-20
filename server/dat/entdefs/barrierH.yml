@@ -1,0 +1,11 @@
+---
+title: barrierH
+# Low stone barrier across an up-down passage (between generated puzzle
+# rooms). Blocks only while closed; it sinks into the ground when its
+# open_when map property holds. Art: res/img/textures/entities/barrier.png.
+solid: true
+initialState: closed
+passableStates: [open]
+states:
+  closed: {}
+  open: {}

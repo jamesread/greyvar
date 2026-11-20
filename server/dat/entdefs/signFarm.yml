@@ -1,0 +1,7 @@
+title: signFarm
+solid: false
+initialState: idle
+# A hanging shop sign over a house door; its map object's msg is the shop's
+# name, shown while you stand near (touch_range in entdefs/shopsigns.tsx).
+states:
+  idle: {}

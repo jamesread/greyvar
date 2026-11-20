@@ -6,6 +6,9 @@ type ItemDefinition struct {
 	Title    string `yaml:"title" json:"title"`
 	StackMax int32  `yaml:"stackMax" json:"stackMax"`
 	Category string `yaml:"category" json:"category"`
+	// Icon is the inventory/HUD picture: a PNG path under res/
+	// (img/textures/items/icons/<id>.png, 16x16).
+	Icon string `yaml:"icon,omitempty" json:"icon,omitempty"`
 	// Held is the optional sprite drawn in a player's hand (see res/sprites/README.md).
 	Held *HeldSprite `yaml:"held,omitempty" json:"held,omitempty"`
 }

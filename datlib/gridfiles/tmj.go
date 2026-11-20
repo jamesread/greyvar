@@ -6,6 +6,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/jamesread/greyvar/datlib/tiled"
@@ -123,11 +124,12 @@ func ReadGridTMJ(filename string) (*Grid, error) {
 		case "objectgroup":
 			objectLayer := NewTileLayer(layer.Name, LayerKindObject)
 			before := len(g.Entities)
-			applyObjectLayer(g, catalog, doc, layer, mapDir, &objectLayer)
+			overlaps := applyObjectLayer(g, catalog, doc, layer, mapDir, &objectLayer)
 			for range g.Entities[before:] {
 				entityLayer = append(entityLayer, len(g.Layers))
 			}
 			g.Layers = append(g.Layers, objectLayer)
+			g.Layers = append(g.Layers, overlaps...)
 		}
 	}
 
@@ -198,6 +200,7 @@ func tileFromCatalog(decoded tiled.GID, catalog *tiled.TilesetCatalog, row, col 
 		tile.Water = info.Water
 		tile.NeedsWaterBelow = info.NeedsWaterBelow
 		tile.Overlay = info.Overlay
+		tile.Above = info.Above
 		tile.SeeThrough = info.SeeThrough
 		tile.WaterPixels = info.WaterPixels
 		if len(info.Collision) > 0 {
@@ -208,8 +211,22 @@ func tileFromCatalog(decoded tiled.GID, catalog *tiled.TilesetCatalog, row, col 
 	return tile
 }
 
-func applyObjectLayer(g *Grid, catalog *tiled.TilesetCatalog, doc tmjMap, layer tmjLayer, mapDir string, objectLayer *TileLayer) {
+// applyObjectLayer turns an object group into entities (and spawn points)
+// plus tile objects drawn on objectLayer. Tile objects can overlap (two
+// trees side by side share a cell); each cell holds one tile per layer, so
+// a tile object whose cell is taken goes on a further layer above, returned
+// as overlaps. Objects are stacked in Tiled's draw order (topdown: by the
+// bottom edge, so the nearer object is drawn over the farther one; index:
+// as listed).
+func applyObjectLayer(g *Grid, catalog *tiled.TilesetCatalog, doc tmjMap, layer tmjLayer, mapDir string, objectLayer *TileLayer) (overlaps []TileLayer) {
 	templates := map[string]*tiled.Template{}
+	type placed struct {
+		row, col uint32
+		bottom   float64
+		order    int
+		tile     *Tile
+	}
+	var tiles []placed
 
 	for _, obj := range layer.Objects {
 		if !objectVisible(obj) {
@@ -239,11 +256,11 @@ func applyObjectLayer(g *Grid, catalog *tiled.TilesetCatalog, doc tmjMap, layer 
 			entityName = catalog.EntityName(decoded.ID)
 		}
 
-		col := uint32(math.Floor(obj.X / float64(doc.TileWidth)))
-		row := uint32(math.Floor(obj.Y / float64(doc.TileHeight)))
+		isTile := obj.GID != 0 || (tpl != nil && tpl.GID.ID != 0)
+		col, row := objectCell(obj, isTile, doc.TileWidth, doc.TileHeight)
 
 		if isSpawnMarker(entityName, obj) {
-			if sp, ok := spawnPointFromObject(obj, doc, g); ok {
+			if sp, ok := spawnPointFromObject(col, row, doc, g); ok {
 				g.SpawnPoints = append(g.SpawnPoints, sp)
 			}
 			continue
@@ -278,12 +295,31 @@ func applyObjectLayer(g *Grid, catalog *tiled.TilesetCatalog, doc tmjMap, layer 
 			continue
 		}
 
-		objectLayer.SetTile(row, col, tileFromCatalog(decoded, catalog, row, col))
+		bottom := obj.Y
+		if !isTile {
+			bottom += obj.Height
+		}
+		tiles = append(tiles, placed{row: row, col: col, bottom: bottom, order: len(tiles), tile: tileFromCatalog(decoded, catalog, row, col)})
 
 		if obj.ID > 0 {
 			g.LastEntityId = fmt.Sprintf("%d", obj.ID)
 		}
 	}
+
+	if layer.DrawOrder != "index" {
+		sort.SliceStable(tiles, func(i, j int) bool { return tiles[i].bottom < tiles[j].bottom })
+	}
+	for _, p := range tiles {
+		target := objectLayer
+		for level := 0; target.TileAt(p.row, p.col) != nil; level++ {
+			if level == len(overlaps) {
+				overlaps = append(overlaps, NewTileLayer(fmt.Sprintf("%s (overlap %d)", layer.Name, level+1), LayerKindObject))
+			}
+			target = &overlaps[level]
+		}
+		target.SetTile(p.row, p.col, p.tile)
+	}
+	return overlaps
 }
 
 func resolveTemplate(cache map[string]*tiled.Template, mapDir string, ref string) (*tiled.Template, error) {
@@ -322,9 +358,36 @@ func isSpawnMarker(entityName string, obj tmjMapObject) bool {
 	return strings.EqualFold(strings.TrimSpace(obj.Type), "spawn")
 }
 
-func spawnPointFromObject(obj tmjMapObject, doc tmjMap, g *Grid) (SpawnPoint, bool) {
-	x := int32(math.Floor(obj.X))
-	y := int32(math.Floor(obj.Y))
+// objectCell is the tile cell a map object is in, as Tiled shows it: a tile
+// object (one with a gid, or from a tile template) is anchored at its
+// bottom-left corner, any other object at its top-left; the object goes to
+// the nearest cell (objects dragged in Tiled sit a few pixels off the grid,
+// sometimes just above or left of the map's edge).
+func objectCell(obj tmjMapObject, isTile bool, tileW, tileH int) (col, row uint32) {
+	left, top := obj.X, obj.Y
+	if isTile {
+		h := obj.Height
+		if h <= 0 {
+			h = float64(tileH)
+		}
+		top -= h
+	}
+	snap := func(v float64, size int) uint32 {
+		if size <= 0 {
+			size = 16
+		}
+		n := math.Round(v / float64(size))
+		if n < 0 {
+			return 0
+		}
+		return uint32(n)
+	}
+	return snap(left, tileW), snap(top, tileH)
+}
+
+func spawnPointFromObject(col, row uint32, doc tmjMap, g *Grid) (SpawnPoint, bool) {
+	x := int32(col) * int32(doc.TileWidth)
+	y := int32(row) * int32(doc.TileHeight)
 	maxX := int32(g.ColCount)*int32(doc.TileWidth) - int32(doc.TileWidth)
 	maxY := int32(g.RowCount)*int32(doc.TileHeight) - int32(doc.TileHeight)
 
@@ -332,9 +395,6 @@ func spawnPointFromObject(obj tmjMapObject, doc tmjMap, g *Grid) (SpawnPoint, bo
 		log.Warnf("Ignoring out-of-bounds spawn point at (%d,%d) on %s", x, y, g.Filename)
 		return SpawnPoint{}, false
 	}
-
-	row := uint32(y / int32(doc.TileHeight))
-	col := uint32(x / int32(doc.TileWidth))
 
 	return SpawnPoint{
 		Row: row,

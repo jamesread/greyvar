@@ -102,6 +102,7 @@ func netTileFromMem(memTile *gridfiles.Tile) *pb.Tile {
 		CollisionFromTsx: memTile.CollisionFromTSX,
 		Decor:            memTile.Decor,
 		Overlay:          memTile.Overlay,
+		Above:            memTile.Above,
 	}
 
 	for _, rect := range memTile.Collision {

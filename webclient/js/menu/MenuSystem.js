@@ -38,7 +38,10 @@ export default class MenuSystem {
       id: config.id,
       title: config.title ?? config.id,
       subtitle: config.subtitle ?? '',
-      items: config.items ?? []
+      items: config.items ?? [],
+      // Optional extras drawn with the menu (e.g. a live preview):
+      // decorate({scene, root}) -> {layout(rect), focus(itemId)}
+      decorate: config.decorate ?? null
     })
 
     return this
@@ -208,8 +211,18 @@ export default class MenuSystem {
       return
     }
 
-    if (code === 'ArrowLeft' || code === 'KeyA' || code === 'Backspace' ||
-        key === 'ArrowLeft' || key === 'a' || key === 'A' || key === 'Backspace') {
+    // Escape and Backspace go back: up a level, or close at the top (an NPC
+    // conversation closes too). The event is marked so the HUD's own Escape
+    // (open the main menu) does not reopen what was just closed.
+    if (code === 'Escape' || code === 'Backspace' || key === 'Escape' || key === 'Backspace') {
+      event.preventDefault?.()
+      event.greyvarMenuHandled = true
+      this.navigateBack()
+      return
+    }
+
+    if (code === 'ArrowLeft' || code === 'KeyA' ||
+        key === 'ArrowLeft' || key === 'a' || key === 'A') {
       if (this.stack.length > 1) {
         event.preventDefault?.()
         this.navigateBack()
@@ -252,6 +265,7 @@ export default class MenuSystem {
     for (const row of rows) {
       this.applyFocusStyle(row, row.index === clamped)
     }
+    this.ui?.decoration?.focus?.(this.focusItemId)
   }
 
   activateFocused () {
@@ -340,7 +354,8 @@ export default class MenuSystem {
       ? scene.add.text(0, 0, menu.subtitle, {
         fontFamily: MENU_THEME.fontFamily,
         fontSize: '13px',
-        color: MENU_THEME.subtitle
+        color: MENU_THEME.subtitle,
+        align: 'center'
       }).setOrigin(0.5, 0)
       : null
 
@@ -381,11 +396,13 @@ export default class MenuSystem {
       const pad = 28
       const panelW = Math.min(360, width - 48)
       const rowH = 40
-      const headerH = subtitle != null ? 88 : 64
+      const innerW = panelW - pad * 2
+      // Long subtitles (e.g. an NPC's line) wrap; the header grows to fit.
+      subtitle?.setWordWrapWidth(innerW)
+      const headerH = subtitle != null ? Math.max(88, 36 + subtitle.height + 24) : 64
       const panelH = pad * 2 + headerH + itemRows.length * rowH
       const panelX = (width - panelW) / 2
       const panelY = Math.max(24, (height - panelH) / 2)
-      const innerW = panelW - pad * 2
 
       overlay.setPosition(0, 0)
       overlay.setSize(width, height)
@@ -409,14 +426,17 @@ export default class MenuSystem {
         row.label.setWordWrapWidth(innerW - 28)
         rowY += rowH
       }
+      decoration?.layout?.({ panelX, panelY, panelW, panelH, width, height })
     }
 
+    const decoration = menu.decorate?.({ scene, root }) ?? null
     layout()
     this.ui = {
       root,
       layout,
       layoutHandler: layout,
-      itemRows
+      itemRows,
+      decoration
     }
     scene.scale.on('resize', layout)
 

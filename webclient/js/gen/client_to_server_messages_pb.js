@@ -8,7 +8,7 @@ import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
  * Describes the file client_to_server_messages.proto.
  */
 export const file_client_to_server_messages = /*@__PURE__*/
-  fileDesc("Ch9jbGllbnRfdG9fc2VydmVyX21lc3NhZ2VzLnByb3RvEgxncmV5dmFycHJvdG8i2AMKDkNsaWVudFJlcXVlc3RzEj4KE3JlZ2lzdHJhdGlvblJlcXVlc3QYASABKAsyIS5ncmV5dmFycHJvdG8uUmVnaXN0cmF0aW9uUmVxdWVzdBIuCgttb3ZlUmVxdWVzdBgCIAEoCzIZLmdyZXl2YXJwcm90by5Nb3ZlUmVxdWVzdBI4ChB3b3JsZExpc3RSZXF1ZXN0GAMgASgLMh4uZ3JleXZhcnByb3RvLldvcmxkTGlzdFJlcXVlc3QSOAoQd29ybGRMb2FkUmVxdWVzdBgEIAEoCzIeLmdyZXl2YXJwcm90by5Xb3JsZExvYWRSZXF1ZXN0EjYKD2ludGVyYWN0UmVxdWVzdBgFIAEoCzIdLmdyZXl2YXJwcm90by5JbnRlcmFjdFJlcXVlc3QSMAoMY3JhZnRSZXF1ZXN0GAYgASgLMhouZ3JleXZhcnByb3RvLkNyYWZ0UmVxdWVzdBI8ChJ3b3JsZFJlbG9hZFJlcXVlc3QYByABKAsyIC5ncmV5dmFycHJvdG8uV29ybGRSZWxvYWRSZXF1ZXN0EjoKEWFwcGVhcmFuY2VSZXF1ZXN0GAggASgLMh8uZ3JleXZhcnByb3RvLkFwcGVhcmFuY2VSZXF1ZXN0IjUKC01vdmVSZXF1ZXN0EhAKCHBsYXllcklkGAEgASgFEgkKAXgYAiABKAUSCQoBeRgDIAEoBSITChFDb25uZWN0aW9uUmVxdWVzdCInChNSZWdpc3RyYXRpb25SZXF1ZXN0EhAKCHVzZXJuYW1lGAEgASgJIhIKEFdvcmxkTGlzdFJlcXVlc3QiIwoQV29ybGRMb2FkUmVxdWVzdBIPCgd3b3JsZElkGAEgASgJIlsKD0ludGVyYWN0UmVxdWVzdBIQCghlbnRpdHlJZBgBIAEoAxImCgRjZWxsGAIgASgLMhguZ3JleXZhcnByb3RvLkNlbGxUYXJnZXQSDgoGZmFjaW5nGAMgASgJIiYKCkNlbGxUYXJnZXQSCwoDcm93GAEgASgNEgsKA2NvbBgCIAEoDSIgCgxDcmFmdFJlcXVlc3QSEAoIcmVjaXBlSWQYASABKAkiJQoSV29ybGRSZWxvYWRSZXF1ZXN0Eg8KB3dvcmxkSWQYASABKAkigAIKEUFwcGVhcmFuY2VSZXF1ZXN0EjkKBXBhcnRzGAEgAygLMiouZ3JleXZhcnByb3RvLkFwcGVhcmFuY2VSZXF1ZXN0LlBhcnRzRW50cnkSPwoIcGFsZXR0ZXMYAiADKAsyLS5ncmV5dmFycHJvdG8uQXBwZWFyYW5jZVJlcXVlc3QuUGFsZXR0ZXNFbnRyeRIQCghoZWxkSXRlbRgDIAEoCRosCgpQYXJ0c0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAEaLwoNUGFsZXR0ZXNFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBQhVaE2dlbi9ncmV5dmFycHJvdG9jb2xiBnByb3RvMw");
+  fileDesc("Ch9jbGllbnRfdG9fc2VydmVyX21lc3NhZ2VzLnByb3RvEgxncmV5dmFycHJvdG8iyAQKDkNsaWVudFJlcXVlc3RzEj4KE3JlZ2lzdHJhdGlvblJlcXVlc3QYASABKAsyIS5ncmV5dmFycHJvdG8uUmVnaXN0cmF0aW9uUmVxdWVzdBIuCgttb3ZlUmVxdWVzdBgCIAEoCzIZLmdyZXl2YXJwcm90by5Nb3ZlUmVxdWVzdBI4ChB3b3JsZExpc3RSZXF1ZXN0GAMgASgLMh4uZ3JleXZhcnByb3RvLldvcmxkTGlzdFJlcXVlc3QSOAoQd29ybGRMb2FkUmVxdWVzdBgEIAEoCzIeLmdyZXl2YXJwcm90by5Xb3JsZExvYWRSZXF1ZXN0EjYKD2ludGVyYWN0UmVxdWVzdBgFIAEoCzIdLmdyZXl2YXJwcm90by5JbnRlcmFjdFJlcXVlc3QSMAoMY3JhZnRSZXF1ZXN0GAYgASgLMhouZ3JleXZhcnByb3RvLkNyYWZ0UmVxdWVzdBI8ChJ3b3JsZFJlbG9hZFJlcXVlc3QYByABKAsyIC5ncmV5dmFycHJvdG8uV29ybGRSZWxvYWRSZXF1ZXN0EjoKEWFwcGVhcmFuY2VSZXF1ZXN0GAggASgLMh8uZ3JleXZhcnByb3RvLkFwcGVhcmFuY2VSZXF1ZXN0Ej4KE2RpYWxvZ0Nob2ljZVJlcXVlc3QYCSABKAsyIS5ncmV5dmFycHJvdG8uRGlhbG9nQ2hvaWNlUmVxdWVzdBIuCgtyaWZ0UmVxdWVzdBgKIAEoCzIZLmdyZXl2YXJwcm90by5SaWZ0UmVxdWVzdCJMCgtSaWZ0UmVxdWVzdBINCgVsZXZlbBgBIAEoBRIMCgRzZWVkGAIgASgDEhEKCW1lY2hhbmljcxgDIAMoCRINCgVsZWF2ZRgEIAEoCCJFChNEaWFsb2dDaG9pY2VSZXF1ZXN0EhAKCGVudGl0eUlkGAEgASgDEgwKBG5vZGUYAiABKAkSDgoGb3B0aW9uGAMgASgFIjUKC01vdmVSZXF1ZXN0EhAKCHBsYXllcklkGAEgASgFEgkKAXgYAiABKAUSCQoBeRgDIAEoBSITChFDb25uZWN0aW9uUmVxdWVzdCInChNSZWdpc3RyYXRpb25SZXF1ZXN0EhAKCHVzZXJuYW1lGAEgASgJIhIKEFdvcmxkTGlzdFJlcXVlc3QiIwoQV29ybGRMb2FkUmVxdWVzdBIPCgd3b3JsZElkGAEgASgJIlsKD0ludGVyYWN0UmVxdWVzdBIQCghlbnRpdHlJZBgBIAEoAxImCgRjZWxsGAIgASgLMhguZ3JleXZhcnByb3RvLkNlbGxUYXJnZXQSDgoGZmFjaW5nGAMgASgJIiYKCkNlbGxUYXJnZXQSCwoDcm93GAEgASgNEgsKA2NvbBgCIAEoDSIgCgxDcmFmdFJlcXVlc3QSEAoIcmVjaXBlSWQYASABKAkiJQoSV29ybGRSZWxvYWRSZXF1ZXN0Eg8KB3dvcmxkSWQYASABKAkijQIKEUFwcGVhcmFuY2VSZXF1ZXN0EjkKBXBhcnRzGAEgAygLMiouZ3JleXZhcnByb3RvLkFwcGVhcmFuY2VSZXF1ZXN0LlBhcnRzRW50cnkSPwoIcGFsZXR0ZXMYAiADKAsyLS5ncmV5dmFycHJvdG8uQXBwZWFyYW5jZVJlcXVlc3QuUGFsZXR0ZXNFbnRyeRIQCghoZWxkSXRlbRgDIAEoCRILCgNyaWcYBCABKAkaLAoKUGFydHNFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBGi8KDVBhbGV0dGVzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4AUIVWhNnZW4vZ3JleXZhcnByb3RvY29sYgZwcm90bzM");
 
 /**
  * Describes the message greyvarproto.ClientRequests.
@@ -18,72 +18,86 @@ export const ClientRequestsSchema = /*@__PURE__*/
   messageDesc(file_client_to_server_messages, 0);
 
 /**
+ * Describes the message greyvarproto.RiftRequest.
+ * Use `create(RiftRequestSchema)` to create a new message.
+ */
+export const RiftRequestSchema = /*@__PURE__*/
+  messageDesc(file_client_to_server_messages, 1);
+
+/**
+ * Describes the message greyvarproto.DialogChoiceRequest.
+ * Use `create(DialogChoiceRequestSchema)` to create a new message.
+ */
+export const DialogChoiceRequestSchema = /*@__PURE__*/
+  messageDesc(file_client_to_server_messages, 2);
+
+/**
  * Describes the message greyvarproto.MoveRequest.
  * Use `create(MoveRequestSchema)` to create a new message.
  */
 export const MoveRequestSchema = /*@__PURE__*/
-  messageDesc(file_client_to_server_messages, 1);
+  messageDesc(file_client_to_server_messages, 3);
 
 /**
  * Describes the message greyvarproto.ConnectionRequest.
  * Use `create(ConnectionRequestSchema)` to create a new message.
  */
 export const ConnectionRequestSchema = /*@__PURE__*/
-  messageDesc(file_client_to_server_messages, 2);
+  messageDesc(file_client_to_server_messages, 4);
 
 /**
  * Describes the message greyvarproto.RegistrationRequest.
  * Use `create(RegistrationRequestSchema)` to create a new message.
  */
 export const RegistrationRequestSchema = /*@__PURE__*/
-  messageDesc(file_client_to_server_messages, 3);
+  messageDesc(file_client_to_server_messages, 5);
 
 /**
  * Describes the message greyvarproto.WorldListRequest.
  * Use `create(WorldListRequestSchema)` to create a new message.
  */
 export const WorldListRequestSchema = /*@__PURE__*/
-  messageDesc(file_client_to_server_messages, 4);
+  messageDesc(file_client_to_server_messages, 6);
 
 /**
  * Describes the message greyvarproto.WorldLoadRequest.
  * Use `create(WorldLoadRequestSchema)` to create a new message.
  */
 export const WorldLoadRequestSchema = /*@__PURE__*/
-  messageDesc(file_client_to_server_messages, 5);
+  messageDesc(file_client_to_server_messages, 7);
 
 /**
  * Describes the message greyvarproto.InteractRequest.
  * Use `create(InteractRequestSchema)` to create a new message.
  */
 export const InteractRequestSchema = /*@__PURE__*/
-  messageDesc(file_client_to_server_messages, 6);
+  messageDesc(file_client_to_server_messages, 8);
 
 /**
  * Describes the message greyvarproto.CellTarget.
  * Use `create(CellTargetSchema)` to create a new message.
  */
 export const CellTargetSchema = /*@__PURE__*/
-  messageDesc(file_client_to_server_messages, 7);
+  messageDesc(file_client_to_server_messages, 9);
 
 /**
  * Describes the message greyvarproto.CraftRequest.
  * Use `create(CraftRequestSchema)` to create a new message.
  */
 export const CraftRequestSchema = /*@__PURE__*/
-  messageDesc(file_client_to_server_messages, 8);
+  messageDesc(file_client_to_server_messages, 10);
 
 /**
  * Describes the message greyvarproto.WorldReloadRequest.
  * Use `create(WorldReloadRequestSchema)` to create a new message.
  */
 export const WorldReloadRequestSchema = /*@__PURE__*/
-  messageDesc(file_client_to_server_messages, 9);
+  messageDesc(file_client_to_server_messages, 11);
 
 /**
  * Describes the message greyvarproto.AppearanceRequest.
  * Use `create(AppearanceRequestSchema)` to create a new message.
  */
 export const AppearanceRequestSchema = /*@__PURE__*/
-  messageDesc(file_client_to_server_messages, 10);
+  messageDesc(file_client_to_server_messages, 12);
 

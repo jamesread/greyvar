@@ -1,0 +1,177 @@
+# The adult size: about 1.5 tiles tall (a 27px figure) on 33px frames,
+# colliding with the same one-tile footprint at its feet as the child rig
+# (res/sprites/player). Parts come from PixelLab character states whose
+# palette is locked to the slot keys below (source/<state>/): run
+# `python3 res/sprites/adult/source/assemble.py` then `make sprites` (see the
+# docstring there). Do not edit parts/, poses.yml or clips.yml by hand.
+name: adult
+size: adult
+# Odd frame (33x33) so the frame has a true centre column and row (x = 16):
+# the figure is centred on it, as entities use 15/31 px canvases for the
+# same reason (res/ART_RULES.md). The anchor is the feet: centre column, and
+# the row below the soles.
+frameSize: 33
+columns: 8
+anchor: [16, 32]
+layers:
+  - name: pants
+    variants:
+      - default
+  - name: body
+    variants: []
+  - name: form
+    # A mannequin's faceless figure over the body (its silhouette in the form
+    # colours), under the clothes; `none` (the default) draws nothing.
+    variants:
+      - none
+      - mannequin
+  - name: shirt
+    variants: []
+  - name: outfit
+    # One-piece outfits drawn over the shirt, trousers and limbs below the
+    # neck; `none` (the default) draws nothing.
+    variants:
+      - none
+      - dress
+  - name: beard
+    # Drawn in the hair colours.
+    variants:
+      - none
+      - beard
+  - name: hair
+    # bald is empty: the body layer has a full (bald) head under every style.
+    variants:
+      - short
+      - long
+      - ponytail
+      - bun
+      - curly
+      - bob
+      - bald
+slots:
+  # Key ramps, dark -> light. Skin, hair and shirt match the child rig; the
+  # trouser keys are blue so they never mix with the outline when the
+  # PixelLab frames are split into layers.
+  skin:
+    - '#935968'
+    - '#eba5a0'
+    - '#f3aea6'
+    - '#f3cebe'
+  hair:
+    - '#3e282b'
+    - '#4e2c29'
+    - '#613a41'
+  shirt:
+    - '#3b1a34'
+    - '#851667'
+    - '#a61684'
+    - '#c42f95'
+  pants:
+    - '#1e2a5e'
+    - '#2e3e86'
+    - '#4a5ea8'
+  # Outfit colours (as the child rig): the garment's ramp and a trim.
+  garment:
+    - '#20183a'
+    - '#3a2c66'
+    - '#54428e'
+    - '#7262b6'
+  trim:
+    - '#5a4a10'
+    - '#a88a2a'
+    - '#e8cc66'
+  # Mannequin figure (form layer).
+  form:
+    - '#5c5852'
+    - '#a8a197'
+    - '#c4bdb2'
+    - '#ddd7cd'
+slotOrder:
+  - skin
+  - hair
+  - shirt
+  - pants
+  - garment
+  - trim
+  - form
+fixed:
+  - '#151215'
+  - '#1f1a1f'
+palettes:
+  # Each palette replaces its slot's key ramp, dark -> light, same length.
+  skin:
+    rose: ['#935968', '#eba5a0', '#f3aea6', '#f3cebe']
+    peach: ['#a8695a', '#f0b48c', '#f6c29c', '#fde0c4']
+    tan: ['#7a4a32', '#b97a54', '#c98b62', '#e0a982']
+    brown: ['#4f2e22', '#8a5638', '#9a6442', '#b8835e']
+    deep: ['#2e1a14', '#5c3a2a', '#6a4532', '#8a6248']
+    mannequin: ['#5c5852', '#a8a197', '#c4bdb2', '#ddd7cd']
+  hair:
+    brown: ['#3e282b', '#4e2c29', '#613a41']
+    black: ['#1c1a24', '#2a2733', '#3d3a4a']
+    blonde: ['#a07434', '#d6a94a', '#f0d27a']
+    red: ['#6e2418', '#a83a22', '#d4602e']
+    grey: ['#5a5a62', '#8a8a94', '#bdbdc6']
+  shirt:
+    magenta: ['#3b1a34', '#851667', '#a61684', '#c42f95']
+    blue: ['#1a2440', '#1f4a8a', '#2a64b8', '#4a8ad8']
+    green: ['#183a24', '#26703a', '#33904a', '#58b868']
+    red: ['#3a1416', '#8a1e22', '#b02a2a', '#d84a40']
+    yellow: ['#4a3a14', '#a8801e', '#d0a82a', '#ecd060']
+    pink: ['#5c0f3e', '#e0198a', '#ff3fa8', '#ff8fd0']
+    white: ['#7c8090', '#c9ccd6', '#e8eaf0', '#ffffff']
+    black: ['#100e14', '#221f29', '#302c38', '#433e4e']
+  pants:
+    charcoal: ['#221e26', '#3a3540', '#544c5a']
+    denim: ['#1e2a44', '#2a3a5e', '#40567e']
+    khaki: ['#5a4a30', '#7a6844', '#98865c']
+    brown: ['#3a2418', '#4e3222', '#6a4630']
+    pink: ['#5c0f3e', '#e0198a', '#ff5fb6']
+    green: ['#122a1a', '#1e4a2a', '#2e663c']
+    blue: ['#1a3270', '#2850a8', '#3c6cd0']
+    lightblue: ['#2e5a9a', '#4a86cc', '#7aaee6']
+  garment:
+    blue: ['#1a2440', '#1f4a8a', '#2a64b8', '#4a8ad8']
+    green: ['#183a24', '#26703a', '#33904a', '#58b868']
+    red: ['#3a1416', '#8a1e22', '#b02a2a', '#d84a40']
+    yellow: ['#4a3a14', '#a8801e', '#d0a82a', '#ecd060']
+    pink: ['#5c0f3e', '#e0198a', '#ff3fa8', '#ff8fd0']
+    purple: ['#24123a', '#4a2480', '#6030a8', '#8850d0']
+    white: ['#7c8090', '#c9ccd6', '#e8eaf0', '#ffffff']
+    black: ['#141218', '#24202a', '#38323e', '#4c4654']
+  trim:
+    white: ['#a8acb8', '#e8eaf0', '#ffffff']
+    gold: ['#7a5a10', '#c8a030', '#f0d870']
+    black: ['#141218', '#2a2630', '#3e3846']
+    red: ['#6e1418', '#b02a2a', '#e05a48']
+    pink: ['#a0105a', '#ff3fa8', '#ff9fd8']
+    blue: ['#1f4a8a', '#4a8ad8', '#9ac4f0']
+    green: ['#26703a', '#58b868', '#a0e0a0']
+  form:
+    plaster: ['#5c5852', '#a8a197', '#c4bdb2', '#ddd7cd']
+    linen: ['#6a5a3e', '#c8b48c', '#d8c6a0', '#ece0c2']
+# Palettes only data uses: never picked for a new player's random look.
+hidden:
+  skin: [mannequin]
+defaults:
+  palettes:
+    form: plaster
+    garment: purple
+    hair: brown
+    pants: denim
+    shirt: magenta
+    skin: rose
+    trim: gold
+  parts:
+    beard: none
+    form: none
+    hair: short
+    outfit: none
+    pants: default
+# Collision box [x, y, w, h] in the character's 16px cell (its feet): the
+# same footprint as the child rig, so doors and corridors work unchanged.
+hitbox: [4, 0, 8, 16]
+outputs:
+  sheetsDir: ../../img/textures/entities/adult
+  composite: ../../img/textures/entities/adult/composite.png
+  webRoot: ../..

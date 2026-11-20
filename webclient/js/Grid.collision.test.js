@@ -32,4 +32,12 @@ describe('Grid.collisionTileAt (mirrors the server)', () => {
   it('looks through decor', () => {
     expect(gridWith([sand], [flower]).collisionTileAt(0, 1)).toBe(sand)
   })
+
+  it('adds an overlay drawn under a nearer wall (a tall face\'s lower half)', () => {
+    const lower = tile(0, 1, { overlay: true, collision: [{ x: 0, y: 0, w: 16, h: 6 }] })
+    const wall = tile(0, 1, { textureName: 'wall', collision: [{ x: 0, y: 6, w: 16, h: 4 }] })
+    const got = gridWith([sand], [lower], [wall]).collisionTileAt(0, 1)
+    expect(got.textureName).toBe('wall')
+    expect(got.collision).toEqual([{ x: 0, y: 6, w: 16, h: 4 }, { x: 0, y: 0, w: 16, h: 6 }])
+  })
 })

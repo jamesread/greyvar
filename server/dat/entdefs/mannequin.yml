@@ -1,0 +1,14 @@
+# A shop mannequin: a faceless figure (the adult rig's `form` layer) that
+# wears a real outfit, set per map object with a `wear` property, e.g.
+#   wear: outfit=dress,garment=blue,trim=white   (title: blue dress)
+# Its skin is the hidden `mannequin` palette (the plaster grey), so bare arms
+# in an outfit (a dress) match its head. Using it (E) puts that outfit on the
+# player. It stands still (`stand`).
+title: mannequin
+solid: true
+initialState: stand
+states:
+  stand: {}
+appearance:
+  parts: {form: mannequin, hair: bald, beard: none}
+  palettes: {form: plaster, skin: mannequin}

@@ -1,7 +1,13 @@
 # Layered sprite rigs
 
-Characters are drawn as stacked **layers** (pants, body, shirt, head, hair,
-plus a held item). The client recolours each layer at runtime and every layer
+All art follows [../ART_RULES.md](../ART_RULES.md) (scale, perspective, palette, contrast); check new
+art with `python3 res/tools/artcheck.py`.
+
+Characters come in two **sizes**, each its own rig (see
+[Character sizes](#character-sizes-adult-and-child)): **adult**
+(`res/sprites/adult`, players and NPCs) and **child** (`res/sprites/player`,
+kept for child NPCs). Characters are drawn as stacked **layers** (pants, body,
+shirt, head, hair, plus a held item). The client recolours each layer at runtime and every layer
 shows the same **pose**. The rig directory is the only source of truth:
 
 ```
@@ -52,10 +58,14 @@ go run ./sprite-generator part longhair -from short -to long     # derive a whol
 go run ./sprite-generator part prune [-n]                        # delete parts no pose uses
 ```
 
-Diagonal walks reuse the horizontal walk parts, as classic Zelda does. They are
-still separate poses (`walkUpLeft_0`...), so real diagonal art only needs
-new parts and a `parts:` change. Walk-down uses the idle upper body, so the head
-stays identical to idle, over an authored leg cycle (`pants/walkDown_step*`).
+Side walks (`walkLeft`/`walkRight`) are 8-frame cycles (poses `walk<Dir>_s0..7`,
+75ms each): one side-view head throughout, torsos from the original frames
+0-2, and half-stride legs (`pants/walk<Dir>_legsHalfA/B`) between the stride
+and feet-together poses. Diagonal walks play the same side cycle, as classic
+Zelda does; their own poses (`walkUpLeft_0`...) remain, so real diagonal art
+only needs new parts, poses and a clip change. Walk-down uses the idle upper
+body, so the head stays identical to idle, over an authored leg cycle
+(`pants/walkDown_step*`).
 When repointing poses, run `part prune` afterwards and re-run
 `part longhair -force` so the long-hair variant matches the short one.
 
@@ -108,6 +118,54 @@ Then run `build`. The server offers it in default looks and accepts it in
 `appearance shirt=purple`. You don't need to restart the server for the client
 side, but the server reads `player.rig.json` at startup.
 
+### Outfits (dresses)
+
+The `outfit` layer holds one-piece garments drawn **over** the shirt and
+trousers (rows 7-15). Variants: `none` (the default: nothing drawn; new
+players always start with it) and `dress`. Two colour slots colour them:
+`garment` (4-colour main ramp) and `trim` (3 colours, used for the waist sash
+and the hem), each with its own palettes in `rig.yml`.
+
+Outfit parts are derived, never painted by hand:
+
+```bash
+go run ./sprite-generator part outfit -poses            # every pose names its outfit part (poses.yml)
+go run ./sprite-generator part outfit -to none -force   # empty parts
+go run ./sprite-generator part outfit -to dress -force  # the dress
+go run ./sprite-generator build
+```
+
+A pose's outfit part is named after the shirt and trousers parts it covers
+(plus their offsets), so poses that share them share a part. The dress is the
+shirt as a bodice (garment colours), the waist filled across the torso with a
+trim sash, the top three rows of the trousers as an A-line skirt (flared
+1px, lit from the top left, a trim hem), and bare legs and shoes below.
+`TestDressCoversShirtAndTrousers` checks that in every pose the dress covers
+every shirt and trousers pixel, so nothing underneath shows. After changing
+shirt or trouser parts or poses, re-run the three `part outfit` commands and
+`build`.
+
+To add another style (overalls, a robe), add a case to `DeriveOutfit` in
+`sprite-generator/pkg/rig/outfit.go`, derive it, and add the variant to the
+`outfit` layer in `rig.yml`. In dialogs, wear one with
+`wear: {outfit: dress, garment: blue}` and `wear: {trim: gold}`;
+`wear: {outfit: none}` takes it off.
+
+### Skirts (no longer sold)
+
+`pants` still has a `skirt` variant (derived by `part skirt` from the
+trousers) so saved looks that use it keep loading, but it has only two rows
+to work with; dresses replace it in Geraldine's shop.
+
+### Long hair and faces
+
+`part longhair` derives `hair/long` from `hair/short` and must never cover the
+face: front views get two-column locks hanging just outside the face (placed
+from the head part's skin pixels), side views grow only the back of the head
+(facing comes from the pose name: Left/Right), and back views grow every
+column. `TestLongHairLeavesTheFaceVisible` checks every pose. After changing
+short hair parts, re-run `part longhair -force` and `build`.
+
 ### Add a hairstyle (or any layer variant)
 
 1. Create `parts/hair/<style>/` with one PNG for every hair part that
@@ -129,6 +187,82 @@ side, but the server reads `player.rig.json` at startup.
    under the body, which the up-facing poses use. A pose without `hand` hides
    the item.
 4. In game, run `appearance held=<item>`. `held=-` clears it.
+
+## Character sizes: adult and child
+
+| | adult (`res/sprites/adult`) | child (`res/sprites/player`) |
+|---|---|---|
+| frame | 33×33, figure 17×27 (13 wide from the side), centred on column 16 | 16×16 |
+| anchor (feet) | `[16, 32]` | `[8, 16]` (default) |
+| footprint / hitbox | one cell, `[4, 0, 8, 16]` | the same |
+| layers | pants, body, form (none, mannequin), shirt, outfit (none, dress), beard (none, beard), hair (short, long, ponytail, bun, curly, bob, bald) | pants, body, shirt, outfit, head, hair (short, long) |
+| art | PixelLab (below) | hand-edited parts |
+
+- `rig.yml` has `size:` and `anchor:`; the build writes both into
+  `<name>.rig.json`. The client draws a character so its anchor lands on the
+  bottom centre of its 16px cell (`LayeredSprite.offset`): an adult rises
+  above its cell and overlaps the row behind it (entities are depth-sorted by
+  y). Use `spriteBounds(img)` (`webclient/js/sprites/spriteBounds.js`), not
+  `img.x/y`, to place anything over or under a character.
+- An appearance carries `rig` (`adult` or `child`; empty means adult). The
+  server and datlib (`rigs.Set`) pick the rig per look and fit older or
+  other-size looks onto it (unknown styles fall back to that rig's default,
+  shared colours are kept). Console: `appearance size=child`.
+- Dialog `wear:` and NPC looks are checked by datlint against the adult rig.
+- Characters are an odd number of pixels wide on an odd frame, so they have a
+  centre column (ART_RULES.md).
+
+### The adult rig's art (PixelLab)
+
+Every adult part comes from PixelLab character **states** of one base
+character, palette-locked to the rig's key colours, in `source/<state>/`
+(each folder's `download.cfg` lists where its frames came from):
+
+- `base_v2/`: the base (`create_character`, `view: "side"`, `mode: "pro"`,
+  `palette` = the rig's slot keys and fixed colours), standing pose
+  (`idle_<dir>_0`) and walk (`animate_character`, `walking-8-frames`,
+  `mode: "skeleton-v3"`, `walk_<dir>_<i>`).
+- `bald/`, `long/`, `ponytail/`, `bun/`, `curly/`, `bob/`, `beard/`, `dress/`:
+  `create_character_state` of the base (same person, proportions and pose)
+  with the same palette (the dress swaps the shirt and trouser keys for the
+  garment and trim keys); only `dress/` has its own skeleton walk.
+
+`python3 res/sprites/adult/source/assemble.py` then `make sprites` rebuilds
+the parts. The script runs `spritegen import-pixellab` (split by key colour
+into layers; writes poses.yml and clips.yml) and then:
+
+- gives every frame the standing pose's head for its direction (PixelLab
+  repaints head shading every walk frame, which flickers);
+- builds the body layer's head from the bald state, so every hairstyle (and
+  bald) has a whole head under it;
+- lifts each hairstyle and the beard from its state, lined up with the base
+  on the unchanged clothes; moves hair-coloured shoes to the pants layer;
+- takes the dress (everything below the collar) from the dress state's own
+  walk and grows it over any shirt or trouser pixel left showing;
+- doubles the middle column of the front and back views (16 → 17 px) and
+  centres the side views on the centre column;
+- closes the gap between the legs in the front standing pose;
+- fixes the hands from the front and back (PixelLab flares them outwards):
+  in the idle they hang naturally at the sides (lined up under the forearm,
+  soft fingertips in the darkest skin shade); a second breathing stance,
+  **hands in pockets** (`pockets_<dir>_*`, clips `pockets`, `pocketsUp`,
+  `pocketsLeft`, `pocketsRight`, state `pockets`), tucks them over the hips
+  (a dress keeps natural hands); sleeves come 1 px further down the arm;
+- makes the breathing idle (`breathe_<dir>_0..3`, 600 ms a frame): the
+  standing pose, then the head and shoulders 1 px lower, on every layer
+  (PixelLab's breathing-idle barely moves at this size); the `stand` state is
+  the still standing pose, for mannequins;
+- derives the `form/mannequin` layer: the finished body in the `form`
+  colours (plaster, linen) with the face filled in.
+
+**Add an adult hairstyle (or outfit):** `create_character_state` on the base
+(`80d3154c-…`) with the rig palette and a description that keeps "same face,
+same clothes, same standing pose"; download its four rotations into
+`source/<style>/idle_<dir>_0.png`; add the name to `STYLES` in
+`assemble.py` and to the hair layer's variants in `rig.yml`; run the script,
+`make sprites`, and `go test ./sprite-generator/pkg/rig` (eyes stay visible,
+the bald head has no holes, the dress covers the clothes). An outfit that
+changes the legs also needs a skeleton walk of its state.
 
 ## Use (action key)
 
@@ -298,6 +432,11 @@ To change the look, regenerate the PixelLab steps listed in `tileanim.yml`
 (e.g. another seed or action text), replace `frames/*.png`, and run
 `make sprites`.
 
+Rows after the frame block (from tile 560: terrain variants, castle floors
+and wall faces) are hand-added tiles and are kept as they are. If the
+animation ever needs more frame rows, `make sprites` stops rather than
+overwrite them; move those tiles down first.
+
 ## Taller cliff faces (`res/sprites/faces`)
 
 South-facing hill edges get a face 12px taller than the hand-drawn tiles,
@@ -318,3 +457,35 @@ the generated layers or `cliff_faces.*`. `make sprites-check` fails if a
 listed map changed since. To roll out to another map, add it under `maps:`.
 Leave room for the taller face: the row under a south cliff is now mostly
 cliff (only its bottom 4px are walkable).
+
+### Castle walls
+
+Castle walls (the `wall` colour of grass_terrains) are taller by design rather
+than grown: each south-facing wall tile draws the top 6px of a 22px brick
+face, open at the bottom, and the tileset holds the lower 16px (tiles
+628–638, plus 640–650 with a shorter collision box). A wall tile names its lower half
+with the properties `face_below` / `face_below_short`.
+
+- The lower half goes on a locked layer `<layer> faces (generated)` directly
+  **under** the wall's own layer, so a nearer wall in that cell (rift rooms
+  back to back) draws over it. No caps are needed.
+- `face_below_short` (collision on its top 6px only) is used where the cell
+  below starts another wall under the whole face; otherwise the full one
+  blocks the entire row. Overlay collision counts even under the cell's own
+  tile (`Grid.CollisionTileAt`, and `Grid.collisionTileAt` on the client).
+- Hand-made maps get the layer from `make sprites` (maps listed in
+  `faces.yml`; it renumbers later tilesets' firstgids if grass_terrains'
+  range is too small, as Tiled does on save). The world generator and rifts
+  add it themselves (`gridgen.addFaceLayers`).
+- Leave the row under a south wall clear: it is wall face now.
+- To change the art, redraw the face tile and its lower half together so the
+  brick courses line up across the join.
+
+## Back view (walking up)
+
+The back-facing poses (`walkUp_*`, `up_breathe`, `useUp_reach`) use the parts
+named `back` (`body/back`, `body/back_armsL|R`, `body/back_reach`,
+`shirt/back`, `hair/short/back`) over the front leg cycle (`pants/idle_0`,
+`walkDown_stepL|R`). They are the front silhouette, so the character keeps
+the same size and head shape when turning away. Edit them together with
+their front counterparts; afterwards re-run `part longhair -force`.

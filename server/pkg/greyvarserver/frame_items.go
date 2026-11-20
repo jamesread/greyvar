@@ -39,6 +39,7 @@ func frameItemDefinitions(s *serverInterface, p *RemotePlayer) {
 			Title:    item.Title,
 			StackMax: item.StackMax,
 			Category: item.Category,
+			Icon:     item.Icon,
 		}
 		if item.Held != nil {
 			def.HeldSprite = item.Held.Sprite

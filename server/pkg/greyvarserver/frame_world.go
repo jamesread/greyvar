@@ -65,6 +65,10 @@ func (s *serverInterface) reloadWorld(worldId string) error {
 		return errSpawnGridMissing
 	}
 
+	if inst := s.riftFor(worldId); inst != nil {
+		return s.regenerateRift(inst)
+	}
+
 	s.purgeWorldEntities(worldId)
 	delete(s.loadedWorlds, worldId)
 
@@ -152,6 +156,7 @@ func (s *serverInterface) loadPlayerWorld(rp *RemotePlayer, worldId string) erro
 	if err != nil {
 		return err
 	}
+	oldWorldId := rp.CurrentWorldId
 
 	s.leaveCurrentLocation(rp)
 
@@ -177,6 +182,9 @@ func (s *serverInterface) loadPlayerWorld(rp *RemotePlayer, worldId string) erro
 		"grid":   spawnGridId,
 	}).Info("Player loaded world")
 
+	if oldWorldId != worldId {
+		s.playerLeftWorld(oldWorldId)
+	}
 	return nil
 }
 
@@ -208,6 +216,10 @@ func (s *serverInterface) leaveCurrentLocation(rp *RemotePlayer) {
 
 	clearSignHud(rp)
 	rp.ActiveEntityIds = make(map[int64]bool)
+	s.resetPush(rp)
+	if rp.Entity != nil {
+		s.refreshPlates(oldWorldId, oldGridId, rp.Entity.ServerId)
+	}
 }
 
 func frameConsoleMessages(s *serverInterface, p *RemotePlayer) {
@@ -228,9 +240,11 @@ func frameHudMessages(s *serverInterface, p *RemotePlayer) {
 	p.currentFrame.HudMessage = &pb.HudMessage{
 		Text:     *p.PendingHudMessage,
 		EntityId: p.PendingHudEntityId,
+		Sticky:   p.PendingHudMessage == p.pendingHudSticky,
 	}
 	p.PendingHudMessage = nil
 	p.PendingHudEntityId = 0
+	p.pendingHudSticky = nil
 }
 
 func frameInventoryUpdates(s *serverInterface, p *RemotePlayer) {
